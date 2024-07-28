@@ -87,6 +87,9 @@ public class XmlEqualityExample {
                 .collect(Collectors.toSet());
 
         System.out.printf("Both documents have the same element names: %b%n", elementNames1.equals(elementNames2));
+
+        System.out.println();
+        System.out.printf("Element names: %s%n", elementNames1.stream().map(Object::toString).collect(Collectors.joining(", ")));
     }
 
     private static String divText() {
