@@ -30,6 +30,9 @@ import java.util.stream.IntStream;
 /**
  * Example showing equality of different XML documents that use different namespace prefixes and namespace
  * declarations in different elements but that are otherwise equal.
+ * <p>
+ * The example is taken from <a href="https://www.lenzconsulting.com/namespaces/">Understanding XML Namespaces</a>
+ * (and slightly adapted).
  *
  * @author Chris de Vreeze
  */
