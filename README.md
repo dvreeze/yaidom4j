@@ -39,6 +39,7 @@ Some characteristics of yaidom4j are as follows:
 * It is *not* a schema validator (against DTD or XSD), nor is it an O-X mapper, or XPath/XQuery processor, or HTML library
 * The *element query API* mostly returns *Java Streams*, which can be used in Java Stream pipelines
 * Some of those Java element Stream factory methods are *inspired by XPath axes*
+* The *immutable DOM elements* can even be transformed recursively; formatting of the resulting XML could then be left to *xmllint*, for example
 * The library does not try to implement XML standards, but tries to make XML easier to use in some respects
 * In particular, it knows nothing about DTDs or XSDs
 * Also, it only partially "implements" the *XML InfoSet* (see below)
@@ -60,9 +61,9 @@ As said above, yaidom4j does not try to implement the full XML InfoSet in its *i
 * It contains *no DTD information items*
 * It contains *no notation information items*
 
-In a way, yaidom4j is more *type-safe* than the XML InfoSet, in that the compiler does not allow text nodes
-as child nodes of documents. Neither does the compiler allow for element children to be any other node than
-element nodes, text nodes, comment nodes and processing instructions.
+In a way, yaidom4j is more *type-safe* than a "direct" representation of the XML InfoSet, in that the compiler does not allow
+text nodes as child nodes of documents. Neither does the compiler allow for element children to be any other node than
+element nodes, text nodes, comment nodes or processing instructions.
 
 On the other hand, if desired, an element query API implementation can be created for DOM implementations that
 do model XML InfoSet information items that yaidom4j itself is not interested in.
