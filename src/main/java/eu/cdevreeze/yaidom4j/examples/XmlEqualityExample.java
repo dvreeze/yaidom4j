@@ -25,6 +25,8 @@ import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -67,15 +69,24 @@ public class XmlEqualityExample {
 
         boolean areEqual = areEqual(doc1.documentElement(), doc2.documentElement());
 
-        System.out.printf("All documents are equal: %b%n", areEqual);
+        System.out.printf("Both documents are equal: %b%n", areEqual);
 
-        List<Element> allElems1 = Elements.INSTANCE.elementStream(doc1.documentElement()).toList();
-        List<Element> allElems2 = Elements.INSTANCE.elementStream(doc2.documentElement()).toList();
+        List<Element> allElems1 = Elements.queryApi().elementStream(doc1.documentElement()).toList();
+        List<Element> allElems2 = Elements.queryApi().elementStream(doc2.documentElement()).toList();
 
         areEqual = allElems1.size() == allElems2.size() &&
                 IntStream.range(0, allElems1.size()).allMatch(i -> areEqual(allElems1.get(i), allElems2.get(i)));
 
-        System.out.printf("All documents are equal (by comparing element streams): %b%n", areEqual);
+        System.out.printf("Both documents are equal (by comparing element streams): %b%n", areEqual);
+
+        Set<QName> elementNames1 = Elements.queryApi().elementStream(doc1.documentElement())
+                .map(Element::name)
+                .collect(Collectors.toSet());
+        Set<QName> elementNames2 = Elements.queryApi().elementStream(doc2.documentElement())
+                .map(Element::name)
+                .collect(Collectors.toSet());
+
+        System.out.printf("Both documents have the same element names: %b%n", elementNames1.equals(elementNames2));
     }
 
     private static String divText() {

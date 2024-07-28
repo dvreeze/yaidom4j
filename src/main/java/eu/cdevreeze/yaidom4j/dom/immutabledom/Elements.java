@@ -25,105 +25,112 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Element query API.
+ * Several element utilities, such as an element query API.
  *
  * @author Chris de Vreeze
  */
-public class Elements implements ElementQueryApi<Element> {
+public class Elements {
 
     private Elements() {
     }
 
-    public static Elements INSTANCE = new Elements();
+    private static final QueryApi queryApi = new QueryApi();
 
-    @Override
-    public QName elementName(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.name();
+    public static QueryApi queryApi() {
+        return queryApi;
     }
 
-    @Override
-    public ImmutableMap<QName, String> attributes(Element element) {
-        Objects.requireNonNull(element);
+    public static final class QueryApi implements ElementQueryApi<Element> {
 
-        return element.attributes();
-    }
+        @Override
+        public QName elementName(Element element) {
+            Objects.requireNonNull(element);
 
-    @Override
-    public Stream<Node> childNodeStream(Element element) {
-        Objects.requireNonNull(element);
+            return element.name();
+        }
 
-        return element.children().stream();
-    }
+        @Override
+        public ImmutableMap<QName, String> attributes(Element element) {
+            Objects.requireNonNull(element);
 
-    @Override
-    public Stream<Element> childElementStream(Element element) {
-        Objects.requireNonNull(element);
+            return element.attributes();
+        }
 
-        return childNodeStream(element).filter(Node::isElement).map(n -> (Element) n);
-    }
+        @Override
+        public Stream<Node> childNodeStream(Element element) {
+            Objects.requireNonNull(element);
 
-    @Override
-    public Stream<Element> childElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
+            return element.children().stream();
+        }
 
-        return childElementStream(element).filter(predicate);
-    }
+        @Override
+        public Stream<Element> childElementStream(Element element) {
+            Objects.requireNonNull(element);
 
-    @Override
-    public Stream<Element> descendantElementOrSelfStream(Element element) {
-        Objects.requireNonNull(element);
+            return childNodeStream(element).filter(Node::isElement).map(n -> (Element) n);
+        }
 
-        Stream<Element> selfStream = Stream.of(element);
-        // Recursion
-        Stream<Element> descendantElemStream =
-                childElementStream(element).flatMap(this::descendantElementOrSelfStream);
-        return Stream.concat(selfStream, descendantElemStream);
-    }
+        @Override
+        public Stream<Element> childElementStream(Element element, Predicate<Element> predicate) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(predicate);
 
-    @Override
-    public Stream<Element> descendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
+            return childElementStream(element).filter(predicate);
+        }
 
-        return descendantElementOrSelfStream(element).filter(predicate);
-    }
+        @Override
+        public Stream<Element> descendantElementOrSelfStream(Element element) {
+            Objects.requireNonNull(element);
 
-    @Override
-    public Stream<Element> descendantElementStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return childElementStream(element).flatMap(this::descendantElementOrSelfStream);
-    }
-
-    @Override
-    public Stream<Element> descendantElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return descendantElementStream(element).filter(predicate);
-    }
-
-    @Override
-    public Stream<Element> topmostDescendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        if (predicate.test(element)) {
-            return Stream.of(element);
-        } else {
+            Stream<Element> selfStream = Stream.of(element);
             // Recursion
+            Stream<Element> descendantElemStream =
+                    childElementStream(element).flatMap(this::descendantElementOrSelfStream);
+            return Stream.concat(selfStream, descendantElemStream);
+        }
+
+        @Override
+        public Stream<Element> descendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(predicate);
+
+            return descendantElementOrSelfStream(element).filter(predicate);
+        }
+
+        @Override
+        public Stream<Element> descendantElementStream(Element element) {
+            Objects.requireNonNull(element);
+
+            return childElementStream(element).flatMap(this::descendantElementOrSelfStream);
+        }
+
+        @Override
+        public Stream<Element> descendantElementStream(Element element, Predicate<Element> predicate) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(predicate);
+
+            return descendantElementStream(element).filter(predicate);
+        }
+
+        @Override
+        public Stream<Element> topmostDescendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(predicate);
+
+            if (predicate.test(element)) {
+                return Stream.of(element);
+            } else {
+                // Recursion
+                return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
+            }
+        }
+
+        @Override
+        public Stream<Element> topmostDescendantElementStream(Element element, Predicate<Element> predicate) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(predicate);
+
             return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
         }
-    }
-
-    @Override
-    public Stream<Element> topmostDescendantElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
     }
 }
