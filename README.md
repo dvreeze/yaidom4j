@@ -49,6 +49,7 @@ Some characteristics of yaidom4j are as follows:
 
 Comparisons to some other XML libraries are as follows:
 * Unlike JDOM, DOM4J, XOM, JAXP DOM, the native element implementations in yaidom4j are deeply immutable and thread-safe
+* Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
 * Unlike JAXP XPath (1.0) support, the element query API in yaidom4j is very easy to use without any involved bootstrapping
 * Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is element-node-centric
 
