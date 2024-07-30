@@ -49,6 +49,11 @@ public class JaxpDomToImmutableDomConverter {
     // TODO Review and improve implementation (are corner cases handled appropriately?)
 
     public static Document convertDocument(org.w3c.dom.Document doc) {
+        Preconditions.checkArgument(
+                Optional.ofNullable(doc.getDocumentElement().getLocalName()).isPresent(),
+                "Could not get the local name of the document element. Was the document created in a namespace-aware manner?"
+        );
+
         // It seems that the DOM Document does not keep the URI from which it was loaded. Related (but not the same) is bug
         // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4916415.
 
@@ -76,6 +81,11 @@ public class JaxpDomToImmutableDomConverter {
     }
 
     public static Element convertElement(org.w3c.dom.Element elem, NamespaceScope namespaceScope) {
+        Preconditions.checkArgument(
+                Optional.ofNullable(elem.getLocalName()).isPresent(),
+                "Could not get the local name of the element. Was the element created in a namespace-aware manner?"
+        );
+
         QName name = extractName(elem);
 
         ImmutableMap<QName, String> attrs = extractAttributes(elem.getAttributes());
@@ -160,7 +170,7 @@ public class JaxpDomToImmutableDomConverter {
         String[] parts = name.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         Preconditions.checkArgument(parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE));
-        String prefix = (parts.length == 2) ? parts[1] : parts[0];
+        String prefix = (parts.length == 2) ? parts[1] : XMLConstants.DEFAULT_NS_PREFIX;
         String ns = attr.getValue();
         return Map.entry(prefix, ns);
     }

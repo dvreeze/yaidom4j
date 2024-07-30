@@ -38,6 +38,9 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
 
     public NamespaceScope {
         Preconditions.checkArgument(inScopeNamespaces.values().stream().noneMatch(String::isBlank));
+        Preconditions.checkArgument(
+                inScopeNamespaces.keySet().stream().noneMatch(pref -> pref.startsWith(XMLConstants.XMLNS_ATTRIBUTE))
+        );
         Preconditions.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XML_NS_PREFIX));
     }
 
