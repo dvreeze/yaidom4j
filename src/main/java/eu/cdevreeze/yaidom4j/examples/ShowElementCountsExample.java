@@ -55,7 +55,6 @@ public class ShowElementCountsExample {
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         Document doc = JaxpDomToImmutableDomConverter.convertDocument(docBuilder.parse(new InputSource(inputFile.toURL().openStream())));
 
-        // TODO
         System.out.printf(
                 "Number of elements: %d%n",
                 Elements.queryApi().elementStream(doc.documentElement()).count());
