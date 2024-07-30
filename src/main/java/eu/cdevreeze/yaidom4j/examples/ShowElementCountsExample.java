@@ -30,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -50,14 +51,28 @@ public class ShowElementCountsExample {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
+        logTime("Going to parse document ...");
+
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
         docBuilderFactory.setNamespaceAware(true); // Important!
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = JaxpDomToImmutableDomConverter.convertDocument(docBuilder.parse(new InputSource(inputFile.toURL().openStream())));
 
+        var domDoc = docBuilder.parse(new InputSource(inputFile.toURL().openStream()));
+        domDoc.setDocumentURI(inputFile.toString());
+
+        logTime("Parsed document " + domDoc.getDocumentURI());
+
+        Document doc = JaxpDomToImmutableDomConverter.convertDocument(domDoc);
+
+        logTime("Converted document (to \"immutable DOM\") " + doc.uriOption().map(Object::toString).orElse(""));
+
+        System.out.println();
         System.out.printf(
                 "Number of elements: %d%n",
                 Elements.queryApi().elementStream(doc.documentElement()).count());
+
+        System.out.println();
+        logTime("Retrieving element counts ...");
 
         List<ElementNameCount> elementCounts =
                 Elements.queryApi().elementStream(doc.documentElement())
@@ -75,5 +90,12 @@ public class ShowElementCountsExample {
         elementCounts.forEach(elemCount ->
                 System.out.printf("Element count for %s: %d%n", elemCount.name(), elemCount.count())
         );
+
+        System.out.println();
+        logTime("Ready");
+    }
+
+    private static void logTime(String message) {
+        System.out.printf("[%s] %s%n", Instant.now(), message);
     }
 }
