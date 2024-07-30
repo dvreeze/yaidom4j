@@ -80,7 +80,7 @@ public class JaxpDomToImmutableDomConverter {
         return new Document(uriOption, children);
     }
 
-    public static Element convertElement(org.w3c.dom.Element elem, NamespaceScope namespaceScope) {
+    public static Element convertElement(org.w3c.dom.Element elem, NamespaceScope parentNamespaceScope) {
         Preconditions.checkArgument(
                 Optional.ofNullable(elem.getLocalName()).isPresent(),
                 "Could not get the local name of the element. Was the element created in a namespace-aware manner?"
@@ -90,7 +90,7 @@ public class JaxpDomToImmutableDomConverter {
 
         ImmutableMap<QName, String> attrs = extractAttributes(elem.getAttributes());
 
-        NamespaceScope scopeTakingNsDeclsIntoAccount = resolve(namespaceScope, extractNamespaceDeclarations(elem.getAttributes()));
+        NamespaceScope scopeTakingNsDeclsIntoAccount = resolve(parentNamespaceScope, extractNamespaceDeclarations(elem.getAttributes()));
         Set<QName> qnames = ImmutableSet.<QName>builder().addAll(attrs.keySet()).add(name).build();
         NamespaceScope newScope = resolve(scopeTakingNsDeclsIntoAccount, extractNamespaceDeclarations(qnames));
 
@@ -102,21 +102,21 @@ public class JaxpDomToImmutableDomConverter {
         return new Element(name, attrs, newScope, childNodes);
     }
 
-    public static Optional<Node> convertNode(org.w3c.dom.Node node, NamespaceScope namespaceScope) {
+    public static Optional<Node> convertNode(org.w3c.dom.Node node, NamespaceScope parentNamespaceScope) {
         if (node instanceof org.w3c.dom.Element e) {
-            return Optional.of(convertElement(e, namespaceScope));
+            return Optional.of(convertElement(e, parentNamespaceScope));
         } else if (node instanceof org.w3c.dom.Text t) {
-            return Optional.of(convertText(t, namespaceScope));
+            return Optional.of(convertText(t, parentNamespaceScope));
         } else if (node instanceof org.w3c.dom.Comment c) {
-            return Optional.of(convertComment(c, namespaceScope));
+            return Optional.of(convertComment(c, parentNamespaceScope));
         } else if (node instanceof org.w3c.dom.ProcessingInstruction pi) {
-            return Optional.of(convertProcessingInstruction(pi, namespaceScope));
+            return Optional.of(convertProcessingInstruction(pi, parentNamespaceScope));
         } else {
             return Optional.empty();
         }
     }
 
-    public static Text convertText(org.w3c.dom.Text text, NamespaceScope namespaceScope) {
+    public static Text convertText(org.w3c.dom.Text text, NamespaceScope parentNamespaceScope) {
         if (text instanceof org.w3c.dom.CDATASection cdata && text.getNodeType() == org.w3c.dom.Node.CDATA_SECTION_NODE) {
             return new Text(text.getData(), true);
         } else {
@@ -124,11 +124,11 @@ public class JaxpDomToImmutableDomConverter {
         }
     }
 
-    public static Comment convertComment(org.w3c.dom.Comment comment, NamespaceScope namespaceScope) {
+    public static Comment convertComment(org.w3c.dom.Comment comment, NamespaceScope parentNamespaceScope) {
         return new Comment(comment.getData());
     }
 
-    public static ProcessingInstruction convertProcessingInstruction(org.w3c.dom.ProcessingInstruction pi, NamespaceScope namespaceScope) {
+    public static ProcessingInstruction convertProcessingInstruction(org.w3c.dom.ProcessingInstruction pi, NamespaceScope parentNamespaceScope) {
         return new ProcessingInstruction(pi.getTarget(), pi.getData());
     }
 
