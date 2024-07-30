@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 
 import javax.xml.XMLConstants;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Mapping from namespace prefixes to namespace strings. Instances of this class are used to represent
@@ -52,7 +53,65 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         }
     }
 
+    /**
+     * Functionally updates the namespace scope with the parameter prefix and corresponding namespace.
+     * The namespace must not be an empty string, so this method cannot be used for un-declaring namespaces.
+     */
+    public NamespaceScope resolve(String prefix, String namespace) {
+        Preconditions.checkArgument(!namespace.isBlank());
+
+        if (prefix.equals(XMLConstants.XML_NS_PREFIX)) {
+            Preconditions.checkArgument(namespace.equals(XMLConstants.XML_NS_URI));
+            return this;
+        } else {
+            if (inScopeNamespaces.containsKey(prefix) && namespace.equals(inScopeNamespaces.get(prefix))) {
+                return this; // No unnecessary object creation
+            } else {
+                return new NamespaceScope(
+                        ImmutableMap.<String, String>builder()
+                                .putAll(this.inScopeNamespaces)
+                                .put(prefix, namespace)
+                                .buildKeepingLast()
+                );
+            }
+        }
+    }
+
+    /**
+     * Returns the result of applying the overloaded "resolve" function for all prefix-namespace pairs
+     * in the parameter prefix-namespace map.
+     */
+    public NamespaceScope resolve(ImmutableMap<String, String> prefixNamespaceMap) {
+        NamespaceScope accScope = this;
+        for (var prefixNamespace : prefixNamespaceMap.entrySet()) {
+            accScope = accScope.resolve(prefixNamespace.getKey(), prefixNamespace.getValue());
+        }
+        return accScope;
+    }
+
     // TODO Other functional update methods and query methods
 
-    // TODO Factory method that checks and removes "xml" prefix, if any
+    /**
+     * Factory method that removes the "xml" prefix from the parameter prefix-namespace map, if any
+     * (but nonetheless checking that prefix "xml" refers to the correct namespace).
+     */
+    public static NamespaceScope from(ImmutableMap<String, String> inScopeNamespaces) {
+        Preconditions.checkArgument(
+                Optional.ofNullable(inScopeNamespaces.get(XMLConstants.XML_NS_PREFIX))
+                        .stream()
+                        .allMatch(ns -> ns.equals(XMLConstants.XML_NS_URI))
+        );
+
+        return new NamespaceScope(
+                inScopeNamespaces.entrySet().stream()
+                        .filter(kv -> !kv.getKey().equals(XMLConstants.XML_NS_PREFIX))
+                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
+    }
+
+    private static final NamespaceScope EMPTY = new NamespaceScope(ImmutableMap.of());
+
+    public static NamespaceScope empty() {
+        return EMPTY;
+    }
 }
