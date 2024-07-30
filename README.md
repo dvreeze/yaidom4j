@@ -54,7 +54,7 @@ Comparisons to some other XML libraries are as follows:
 * Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is element-node-centric
 
 As said above, yaidom4j does not try to implement the full XML InfoSet in its *immutable DOM* implementation. For example:
-* A *Document* is not treated as a separate *information item*, or *node*
+* If *information item* loosely means *node*, a *document* is not treated as an information item or node
 * Neither are *attributes*, which are simply properties of *element nodes*
 * Neither are *namespace information items*; instead, element nodes contain the in-scope namespaces as property of the element
 * *Namespace attributes* do not exist in yaidom4j; instead, all attributes are "normal attributes" binding a string value to an attribute name
