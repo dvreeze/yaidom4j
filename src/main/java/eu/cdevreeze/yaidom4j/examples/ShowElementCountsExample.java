@@ -92,6 +92,18 @@ public class ShowElementCountsExample {
         );
 
         System.out.println();
+        logTime("Retrieving distinct namespace scopes ...");
+
+        System.out.println();
+        System.out.printf(
+                "Distinct namespace scopes: %s%n",
+                Elements.queryApi().elementStream(doc.documentElement())
+                        .map(Element::namespaceScope)
+                        .distinct()
+                        .toList()
+        );
+
+        System.out.println();
         logTime("Ready");
     }
 

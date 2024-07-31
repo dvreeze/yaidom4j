@@ -29,12 +29,13 @@ import java.util.Optional;
  * <p>
  * The empty namespace prefix is used to represent the default namespace. The namespace strings themselves
  * must not be empty strings.
+ * <p>
+ * This class does not implement interface NamespaceContext, because this class does not consider
+ * "namespace declaration attributes" to be attributes.
  *
  * @author Chris de Vreeze
  */
 public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
-
-    // TODO Consider implementing interface NamespaceContext
 
     public NamespaceScope {
         Preconditions.checkArgument(inScopeNamespaces.values().stream().noneMatch(String::isBlank));

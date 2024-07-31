@@ -59,8 +59,7 @@ public class ShowElementCountsExampleUsingSax {
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
         parser.parse(new InputSource(inputFile.toURL().openStream()), saxHandler);
-        Document doc = saxHandler.resultingDocument();
-        doc = doc.withUri(inputFile);
+        Document doc = saxHandler.resultingDocument().withUri(inputFile);
 
         logTime("Parsed \"immutable DOM\" document " + doc.uriOption().map(Object::toString).orElse(""));
 
@@ -87,6 +86,18 @@ public class ShowElementCountsExampleUsingSax {
         System.out.println();
         elementCounts.forEach(elemCount ->
                 System.out.printf("Element count for %s: %d%n", elemCount.name(), elemCount.count())
+        );
+
+        System.out.println();
+        logTime("Retrieving distinct namespace scopes ...");
+
+        System.out.println();
+        System.out.printf(
+                "Distinct namespace scopes: %s%n",
+                Elements.queryApi().elementStream(doc.documentElement())
+                        .map(Element::namespaceScope)
+                        .distinct()
+                        .toList()
         );
 
         System.out.println();

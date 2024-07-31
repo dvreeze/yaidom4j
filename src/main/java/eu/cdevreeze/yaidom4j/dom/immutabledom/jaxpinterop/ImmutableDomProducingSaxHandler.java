@@ -60,8 +60,6 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     @Override
     public void startElement(String uri, String localName, String qname, Attributes attrs) {
-        // TODO Pick up namespace declarations (from startPrefix, or from "attributes")
-
         QName name =
                 new QName(
                         Objects.requireNonNull(uri),
@@ -83,7 +81,13 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
         NamespaceScope parentScope = currentElement == null ? NamespaceScope.empty() : currentElement.namespaceScope();
 
-        NamespaceScope newScope = resolve(parentScope, extraScope);
+        ImmutableMap<String, String> nsDecls = Collections.list(namespaceSupport.getDeclaredPrefixes())
+                .stream()
+                .map(pref -> Map.entry(pref, namespaceSupport.getURI(pref)))
+                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        NamespaceScope newScope =
+                resolve(resolve(parentScope, nsDecls), extraScope);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),
