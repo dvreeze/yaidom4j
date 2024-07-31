@@ -55,6 +55,8 @@ public class ShowElementCountsExample {
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
         docBuilderFactory.setNamespaceAware(true); // Important!
+        docBuilderFactory.setValidating(false);
+        docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
         var domDoc = docBuilder.parse(new InputSource(inputFile.toURL().openStream()));

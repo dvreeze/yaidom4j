@@ -55,6 +55,8 @@ public class ShowElementCountsExampleUsingSax {
 
         SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
         saxParserFactory.setNamespaceAware(true); // Important!
+        saxParserFactory.setValidating(false);
+        saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         SAXParser parser = saxParserFactory.newSAXParser();
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
