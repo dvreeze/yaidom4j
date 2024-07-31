@@ -54,7 +54,7 @@ public class ShowElementCountsExampleUsingSax {
         logTime("Going to parse document ...");
 
         SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-        saxParserFactory.setNamespaceAware(true); // Important (although it seems to be the default)!
+        saxParserFactory.setNamespaceAware(true); // Important!
         SAXParser parser = saxParserFactory.newSAXParser();
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
