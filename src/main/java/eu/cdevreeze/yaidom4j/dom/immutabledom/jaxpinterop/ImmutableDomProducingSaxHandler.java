@@ -81,7 +81,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
         NamespaceScope parentScope = currentElement == null ? NamespaceScope.empty() : currentElement.namespaceScope();
 
-        ImmutableMap<String, String> nsDecls = Collections.list(namespaceSupport.getDeclaredPrefixes())
+        ImmutableMap<String, String> nsDecls = Collections.list(namespaceSupport.getPrefixes())
                 .stream()
                 .map(pref -> Map.entry(pref, namespaceSupport.getURI(pref)))
                 .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
