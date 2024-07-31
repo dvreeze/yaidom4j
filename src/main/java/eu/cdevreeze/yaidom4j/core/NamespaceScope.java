@@ -30,7 +30,7 @@ import java.util.Optional;
  * The empty namespace prefix is used to represent the default namespace. The namespace strings themselves
  * must not be empty strings.
  * <p>
- * This class does not implement interface NamespaceContext, because this class does not consider
+ * This class does not implement interface NamespaceContext, because class NamespaceScope does not consider
  * "namespace declaration attributes" to be attributes.
  *
  * @author Chris de Vreeze
