@@ -19,7 +19,6 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import org.w3c.dom.Attr;
@@ -33,7 +32,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -90,9 +88,7 @@ public class JaxpDomToImmutableDomConverter {
 
         ImmutableMap<QName, String> attrs = extractAttributes(elem.getAttributes());
 
-        NamespaceScope scopeTakingNsDeclsIntoAccount = resolve(parentNamespaceScope, extractNamespaceDeclarations(elem.getAttributes()));
-        Set<QName> qnames = ImmutableSet.<QName>builder().addAll(attrs.keySet()).add(name).build();
-        NamespaceScope newScope = resolve(scopeTakingNsDeclsIntoAccount, extractNamespaceDeclarations(qnames));
+        NamespaceScope newScope = resolve(parentNamespaceScope, extractNamespaceDeclarations(elem.getAttributes()));
 
         ImmutableList<Node> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
@@ -202,13 +198,6 @@ public class JaxpDomToImmutableDomConverter {
                         return Stream.empty();
                     }
                 })
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private static ImmutableMap<String, String> extractNamespaceDeclarations(Set<QName> qnames) {
-        return qnames.stream()
-                .map(qn -> Map.entry(qn.getPrefix(), qn.getNamespaceURI()))
-                .distinct()
                 .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

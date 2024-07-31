@@ -45,4 +45,8 @@ public record Document(
     public Element documentElement() {
         return children.stream().filter(n -> n instanceof Element).map(n -> (Element) n).findFirst().orElseThrow();
     }
+
+    public Document withUri(URI uri) {
+        return new Document(Optional.of(uri), children);
+    }
 }

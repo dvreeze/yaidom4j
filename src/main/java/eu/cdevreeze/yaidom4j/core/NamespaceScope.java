@@ -80,6 +80,14 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         }
     }
 
+    public NamespaceScope withoutPrefix(String prefix) {
+        return new NamespaceScope(
+                this.inScopeNamespaces.entrySet().stream()
+                        .filter(kv -> !prefix.equals(kv.getKey()))
+                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
+    }
+
     /**
      * Returns the result of applying the overloaded "resolve" function for all prefix-namespace pairs
      * in the parameter prefix-namespace map.
