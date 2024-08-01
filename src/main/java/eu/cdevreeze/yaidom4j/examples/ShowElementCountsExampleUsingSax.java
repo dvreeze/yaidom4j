@@ -16,9 +16,15 @@
 
 package eu.cdevreeze.yaidom4j.examples;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Elements;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -27,7 +33,14 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -47,7 +60,7 @@ public class ShowElementCountsExampleUsingSax {
     public record ElementNameCount(QName name, long count) {
     }
 
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, URISyntaxException {
+    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, URISyntaxException, TransformerConfigurationException {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
@@ -103,10 +116,67 @@ public class ShowElementCountsExampleUsingSax {
         );
 
         System.out.println();
+        String xmlOutput = printElement(convertElementCountsToXml(elementCounts));
+        System.out.println(xmlOutput);
+
+        System.out.println();
         logTime("Ready");
     }
 
     private static void logTime(String message) {
         System.out.printf("[%s] %s%n", Instant.now(), message);
+    }
+
+    private static Element convertElementCountsToXml(List<ElementNameCount> elementNameCounts) {
+        var ns = "http://yaidom4j/showElementCounts";
+        var scope = NamespaceScope.from(ImmutableMap.of("", ns));
+
+        return new Element(
+                new QName(ns, "elementNameCounts"),
+                ImmutableMap.of(),
+                scope,
+                elementNameCounts.stream()
+                        .map(nameCount -> new Element(
+                                new QName(ns, "elementNameCount"),
+                                ImmutableMap.of(),
+                                scope,
+                                ImmutableList.of(
+                                        new Element(
+                                                new QName(ns, "elementName"),
+                                                ImmutableMap.of(),
+                                                scope,
+                                                ImmutableList.of(new Text(nameCount.name().toString(), false))
+                                        ),
+                                        new Element(
+                                                new QName(ns, "count"),
+                                                ImmutableMap.of(),
+                                                scope,
+                                                ImmutableList.of(new Text(String.valueOf(nameCount.count()), false))
+                                        )
+                                )
+                        ))
+                        .collect(ImmutableList.toImmutableList())
+        );
+    }
+
+    private static String printElement(Element element) throws TransformerConfigurationException {
+        TransformerFactory tf = TransformerFactory.newDefaultInstance();
+        Preconditions.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
+        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+
+        var sw = new StringWriter();
+        var streamResult = new StreamResult(sw);
+
+        TransformerHandler th = stf.newTransformerHandler();
+        th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
+        th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        th.setResult(streamResult);
+
+        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+        saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+        return sw.toString();
     }
 }
