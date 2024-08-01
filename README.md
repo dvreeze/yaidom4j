@@ -62,6 +62,23 @@ As said above, yaidom4j does not try to implement the full XML InfoSet in its *i
 * It contains *no DTD information items*
 * It contains *no notation information items*
 
+Yaidom4j is more like the [XPath Data Model](https://www.w3.org/TR/xpath-datamodel-31/#Node) than the
+[XML Information Set](https://www.w3.org/TR/2004/REC-xml-infoset-20040204/). The XPath Data Model (only) contains
+the following kinds of nodes:
+* documents
+* elements
+* attributes
+* text
+* namespace
+* processing instruction
+* comment
+
+So, the XDM contains no entity references etc. The Saxon library seems to follow the XDM rather than the
+Info Set. Yaidom4j follows the XDM more loosely, in that documents, attributes and namespaces are not treated
+as nodes in yaidom4j. Yet all kinds of nodes in XDM are first-class citizens in yaidom4j, whether as nodes or
+not. Unlike XDM (and Saxon), yaidom4j native node implementations do leave out many properties of the nodes in XDM.
+Again, yaidom4j is not about implementing XML standards, but about easy processing of (most) XML.
+
 In a way, yaidom4j is more *type-safe* than a "direct" representation of the XML InfoSet, in that the compiler does not allow
 text nodes as child nodes of documents. Neither does the compiler allow for element children to be any other node than
 element nodes, text nodes, comment nodes or processing instructions.
