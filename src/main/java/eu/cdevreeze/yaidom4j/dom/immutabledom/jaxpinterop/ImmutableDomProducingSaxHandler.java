@@ -87,7 +87,8 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
                 .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
 
         NamespaceScope newScope =
-                resolve(resolve(parentScope, nsDecls), extraScope);
+                parentScope.resolve(NamespaceScope.withoutPrefixedNamespaceUndeclarations(nsDecls))
+                        .resolve(extraScope);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),
@@ -242,21 +243,6 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
                     }
                 })
                 .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private static NamespaceScope resolve(NamespaceScope scope, ImmutableMap<String, String> decls) {
-        NamespaceScope currScope = scope;
-
-        if (decls.entrySet().stream().anyMatch(kv -> kv.getValue().isBlank() && kv.getKey().isBlank())) {
-            // XML 1.0 only allows namespace un-declarations for the default namespace (we ignore the other ones, if any)
-            currScope = currScope.withoutDefaultNamespace();
-        }
-
-        ImmutableMap<String, String> realDecls = decls.entrySet().stream()
-                .filter(kv -> !kv.getValue().isBlank())
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return currScope.resolve(realDecls);
     }
 
     private static boolean isNamespaceDeclaration(String attrName) {

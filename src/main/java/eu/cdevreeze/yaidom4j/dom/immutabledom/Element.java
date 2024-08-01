@@ -44,7 +44,7 @@ public record Element(
         Objects.requireNonNull(children);
 
         Preconditions.checkArgument(
-                name.getPrefix().isBlank() ||
+                name.getPrefix().isEmpty() ||
                         name.getPrefix().equals(XMLConstants.XML_NS_PREFIX) ||
                         namespaceScope.inScopeNamespaces().containsKey(name.getPrefix())
         );
@@ -52,7 +52,7 @@ public record Element(
         Preconditions.checkArgument(
                 attributes.keySet().stream()
                         .allMatch(attrName ->
-                                attrName.getPrefix().isBlank() ||
+                                attrName.getPrefix().isEmpty() ||
                                         attrName.getPrefix().equals(XMLConstants.XML_NS_PREFIX) ||
                                         namespaceScope.inScopeNamespaces().containsKey(attrName.getPrefix())));
 

@@ -88,7 +88,9 @@ public class JaxpDomToImmutableDomConverter {
 
         ImmutableMap<QName, String> attrs = extractAttributes(elem.getAttributes());
 
-        NamespaceScope newScope = resolve(parentNamespaceScope, extractNamespaceDeclarations(elem.getAttributes()));
+        NamespaceScope newScope =
+                parentNamespaceScope.resolve(
+                        NamespaceScope.withoutPrefixedNamespaceUndeclarations(extractNamespaceDeclarations(elem.getAttributes())));
 
         ImmutableList<Node> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
@@ -199,20 +201,5 @@ public class JaxpDomToImmutableDomConverter {
                     }
                 })
                 .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private static NamespaceScope resolve(NamespaceScope scope, ImmutableMap<String, String> decls) {
-        NamespaceScope currScope = scope;
-
-        if (decls.entrySet().stream().anyMatch(kv -> kv.getValue().isBlank() && kv.getKey().isBlank())) {
-            // XML 1.0 only allows namespace un-declarations for the default namespace (we ignore the other ones, if any)
-            currScope = currScope.withoutDefaultNamespace();
-        }
-
-        ImmutableMap<String, String> realDecls = decls.entrySet().stream()
-                .filter(kv -> !kv.getValue().isBlank())
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return currScope.resolve(realDecls);
     }
 }
