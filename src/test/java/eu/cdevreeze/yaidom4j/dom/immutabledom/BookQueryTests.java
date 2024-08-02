@@ -16,6 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -207,6 +209,61 @@ class BookQueryTests {
                         "Jennifer's Economical Database Hints"
                 ),
                 bookTitlesCoauthoredByJenniferWidom
+        );
+    }
+
+    @Test
+    void testQueryAuthorNames() {
+        Function<Element, String> getAuthorName = authorElem -> {
+            Preconditions.checkArgument(hasName(NS, "Author").test(authorElem));
+
+            String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
+                    .findFirst()
+                    .map(Element::text)
+                    .orElse("");
+
+            String lastName = authorElem.childElementStream(hasName(NS, "Last_Name"))
+                    .findFirst()
+                    .map(Element::text)
+                    .orElse("");
+
+            return String.format("%s %s", firstName, lastName);
+        };
+
+        Set<String> authorNames = doc.documentElement()
+                .descendantElementStream(hasName(NS, "Author"))
+                .map(getAuthorName)
+                .collect(Collectors.toSet());
+
+        assertEquals(
+                Set.of("Jeffrey Ullman", "Jennifer Widom", "Hector Garcia-Molina"),
+                authorNames
+        );
+    }
+
+    @Test
+    void testQueryBookIsbnsCoauthoredByJenniferWidom() {
+        Predicate<Element> authorIsJenniferWidom = authorElem ->
+                hasName(NS, "Author").test(authorElem) &&
+                        authorElem.childElementStream(hasName(NS, "First_Name"))
+                                .anyMatch(e -> e.text().equals("Jennifer")) &&
+                        authorElem.childElementStream(hasName(NS, "Last_Name"))
+                                .anyMatch(e -> e.text().equals("Widom"));
+
+        Predicate<Element> bookCowrittenByJenniferWidom = bookElem ->
+                hasName(NS, "Book").test(bookElem) &&
+                        bookElem.descendantElementStream(hasName(NS, "Author"))
+                                .anyMatch(authorIsJenniferWidom);
+
+        Set<String> bookIsbnsCoauthoredByJenniferWidom =
+                doc.documentElement().childElementStream(hasName(NS, "Book"))
+                        .filter(bookCowrittenByJenniferWidom)
+                        .map(e -> e.attribute(new QName("ISBN")))
+                        .collect(Collectors.toSet());
+
+        assertEquals(
+                Set.of("ISBN-0-13-713526-2", "ISBN-0-13-815504-6", "ISBN-9-88-777777-6"),
+                bookIsbnsCoauthoredByJenniferWidom
         );
     }
 }
