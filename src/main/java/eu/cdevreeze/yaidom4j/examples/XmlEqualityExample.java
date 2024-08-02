@@ -71,18 +71,18 @@ public class XmlEqualityExample {
 
         System.out.printf("Both documents are equal: %b%n", areEqual);
 
-        List<Element> allElems1 = Elements.queryApi().elementStream(doc1.documentElement()).toList();
-        List<Element> allElems2 = Elements.queryApi().elementStream(doc2.documentElement()).toList();
+        List<Element> allElems1 = doc1.documentElement().elementStream().toList();
+        List<Element> allElems2 = doc2.documentElement().elementStream().toList();
 
         areEqual = allElems1.size() == allElems2.size() &&
                 IntStream.range(0, allElems1.size()).allMatch(i -> areEqual(allElems1.get(i), allElems2.get(i)));
 
         System.out.printf("Both documents are equal (by comparing element streams): %b%n", areEqual);
 
-        Set<QName> elementNames1 = Elements.queryApi().elementStream(doc1.documentElement())
+        Set<QName> elementNames1 = doc1.documentElement().elementStream()
                 .map(Element::name)
                 .collect(Collectors.toSet());
-        Set<QName> elementNames2 = Elements.queryApi().elementStream(doc2.documentElement())
+        Set<QName> elementNames2 = doc2.documentElement().elementStream()
                 .map(Element::name)
                 .collect(Collectors.toSet());
 

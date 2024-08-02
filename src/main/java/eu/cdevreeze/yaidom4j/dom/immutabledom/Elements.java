@@ -18,125 +18,19 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.queryapi.ElementQueryApi;
 
-import javax.xml.namespace.QName;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
- * Several element utilities, such as an element query API.
+ * Several element utilities.
  *
  * @author Chris de Vreeze
  */
 public class Elements {
 
     private Elements() {
-    }
-
-    private static final QueryApi queryApi = new QueryApi();
-
-    public static QueryApi queryApi() {
-        return queryApi;
-    }
-
-    public static final class QueryApi implements ElementQueryApi<Element> {
-
-        @Override
-        public QName elementName(Element element) {
-            Objects.requireNonNull(element);
-
-            return element.name();
-        }
-
-        @Override
-        public ImmutableMap<QName, String> attributes(Element element) {
-            Objects.requireNonNull(element);
-
-            return element.attributes();
-        }
-
-        @Override
-        public Stream<Node> childNodeStream(Element element) {
-            Objects.requireNonNull(element);
-
-            return element.children().stream();
-        }
-
-        @Override
-        public Stream<Element> childElementStream(Element element) {
-            Objects.requireNonNull(element);
-
-            return childNodeStream(element).filter(Node::isElement).map(n -> (Element) n);
-        }
-
-        @Override
-        public Stream<Element> childElementStream(Element element, Predicate<Element> predicate) {
-            Objects.requireNonNull(element);
-            Objects.requireNonNull(predicate);
-
-            return childElementStream(element).filter(predicate);
-        }
-
-        @Override
-        public Stream<Element> descendantElementOrSelfStream(Element element) {
-            Objects.requireNonNull(element);
-
-            Stream<Element> selfStream = Stream.of(element);
-            // Recursion
-            Stream<Element> descendantElemStream =
-                    childElementStream(element).flatMap(this::descendantElementOrSelfStream);
-            return Stream.concat(selfStream, descendantElemStream);
-        }
-
-        @Override
-        public Stream<Element> descendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-            Objects.requireNonNull(element);
-            Objects.requireNonNull(predicate);
-
-            return descendantElementOrSelfStream(element).filter(predicate);
-        }
-
-        @Override
-        public Stream<Element> descendantElementStream(Element element) {
-            Objects.requireNonNull(element);
-
-            return childElementStream(element).flatMap(this::descendantElementOrSelfStream);
-        }
-
-        @Override
-        public Stream<Element> descendantElementStream(Element element, Predicate<Element> predicate) {
-            Objects.requireNonNull(element);
-            Objects.requireNonNull(predicate);
-
-            return descendantElementStream(element).filter(predicate);
-        }
-
-        @Override
-        public Stream<Element> topmostDescendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-            Objects.requireNonNull(element);
-            Objects.requireNonNull(predicate);
-
-            if (predicate.test(element)) {
-                return Stream.of(element);
-            } else {
-                // Recursion
-                return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
-            }
-        }
-
-        @Override
-        public Stream<Element> topmostDescendantElementStream(Element element, Predicate<Element> predicate) {
-            Objects.requireNonNull(element);
-            Objects.requireNonNull(predicate);
-
-            return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
-        }
     }
 
     /**

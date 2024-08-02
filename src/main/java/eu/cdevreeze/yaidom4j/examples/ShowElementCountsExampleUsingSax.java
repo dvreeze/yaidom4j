@@ -20,7 +20,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import org.xml.sax.InputSource;
@@ -78,13 +81,13 @@ public class ShowElementCountsExampleUsingSax {
         System.out.println();
         System.out.printf(
                 "Number of elements: %d%n",
-                Elements.queryApi().elementStream(doc.documentElement()).count());
+                doc.documentElement().elementStream().count());
 
         System.out.println();
         logTime("Retrieving element counts ...");
 
         List<ElementNameCount> elementCounts =
-                Elements.queryApi().elementStream(doc.documentElement())
+                doc.documentElement().elementStream()
                         .map(Element::name)
                         .collect(Collectors.groupingBy(
                                 Function.identity(),
@@ -106,7 +109,7 @@ public class ShowElementCountsExampleUsingSax {
         System.out.println();
         System.out.printf(
                 "Distinct namespace scopes: %s%n",
-                Elements.queryApi().elementStream(doc.documentElement())
+                doc.documentElement().elementStream()
                         .map(Element::namespaceScope)
                         .distinct()
                         .toList()
