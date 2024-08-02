@@ -142,18 +142,11 @@ public class JaxpDomToImmutableDomConverter {
         return IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).toList();
     }
 
-    private static QName extractName(org.w3c.dom.Element elem) {
+    private static QName extractName(org.w3c.dom.Node node) {
         return new QName(
-                Optional.ofNullable(elem.getNamespaceURI()).orElse(XMLConstants.NULL_NS_URI),
-                elem.getLocalName(),
-                Optional.ofNullable(elem.getPrefix()).orElse(XMLConstants.DEFAULT_NS_PREFIX));
-    }
-
-    private static QName extractName(org.w3c.dom.Attr attr) {
-        return new QName(
-                Optional.ofNullable(attr.getNamespaceURI()).orElse(XMLConstants.NULL_NS_URI),
-                attr.getLocalName(),
-                Optional.ofNullable(attr.getPrefix()).orElse(XMLConstants.DEFAULT_NS_PREFIX));
+                Optional.ofNullable(node.getNamespaceURI()).orElse(XMLConstants.NULL_NS_URI),
+                node.getLocalName(),
+                Optional.ofNullable(node.getPrefix()).orElse(XMLConstants.DEFAULT_NS_PREFIX));
     }
 
     private static boolean isNamespaceDeclaration(org.w3c.dom.Attr attr) {

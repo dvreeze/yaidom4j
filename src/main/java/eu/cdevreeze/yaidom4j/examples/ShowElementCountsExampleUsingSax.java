@@ -20,10 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Elements;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import org.xml.sax.InputSource;
@@ -74,7 +71,7 @@ public class ShowElementCountsExampleUsingSax {
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
         parser.parse(new InputSource(inputFile.toURL().openStream()), saxHandler);
-        Document doc = saxHandler.resultingDocument().withUri(inputFile);
+        Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument().withUri(inputFile));
 
         logTime("Parsed \"immutable DOM\" document " + doc.uriOption().map(Object::toString).orElse(""));
 
@@ -169,7 +166,7 @@ public class ShowElementCountsExampleUsingSax {
 
         TransformerHandler th = stf.newTransformerHandler();
         th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-        th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        th.getTransformer().setOutputProperty(OutputKeys.STANDALONE, "yes");
         th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         th.setResult(streamResult);
 

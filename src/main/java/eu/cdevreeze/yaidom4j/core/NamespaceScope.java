@@ -47,6 +47,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         Preconditions.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XMLNS_ATTRIBUTE));
     }
 
+    public Optional<String> defaultNamespaceOption() {
+        return Optional.ofNullable(inScopeNamespaces.get(XMLConstants.DEFAULT_NS_PREFIX));
+    }
+
     public NamespaceScope withoutDefaultNamespace() {
         if (inScopeNamespaces.containsKey(XMLConstants.DEFAULT_NS_PREFIX)) {
             return withoutPrefix(XMLConstants.DEFAULT_NS_PREFIX);
@@ -145,6 +149,12 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
                 .build();
     }
 
+    public boolean subScopeOf(NamespaceScope other) {
+        return other.inScopeNamespaces.keySet().containsAll(inScopeNamespaces.keySet()) &&
+                inScopeNamespaces.keySet().stream().allMatch(pref ->
+                        Objects.equals(inScopeNamespaces.get(pref), other.inScopeNamespaces.get(pref)));
+    }
+
     // TODO Other functional update methods and query methods
 
     /**
@@ -152,7 +162,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * namespace can be un-declared. Hence, this method makes the namespace (un-)declarations valid in XML 1.0.
      */
     public static ImmutableMap<String, String> withoutPrefixedNamespaceUndeclarations(
-            ImmutableMap<String, String> prefixNamespaceMap) {
+            ImmutableMap<String, String> prefixNamespaceMap
+    ) {
         if (prefixNamespaceMap.entrySet().stream().anyMatch(kv -> kv.getValue().isEmpty())) {
             return prefixNamespaceMap.entrySet().stream()
                     .filter(kv -> !kv.getValue().isEmpty() || kv.getKey().equals(XMLConstants.DEFAULT_NS_PREFIX))
