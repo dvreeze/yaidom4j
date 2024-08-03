@@ -22,9 +22,10 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
- * Several element utilities.
+ * Several element utilities, mainly for functionally transforming elements.
  *
  * @author Chris de Vreeze
  */
@@ -33,15 +34,35 @@ public class Elements {
     private Elements() {
     }
 
+    // General element/node transformations
+
     /**
-     * Returns an adapted copy of the parameter element where the children are replaced by the results of applying
-     * the given function.
+     * Functionally updates the list of children of the given element.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
      */
-    public static Element transformChildren(Element element, Function<Node, List<Node>> f) {
+    public static Element withChildren(Element element, ImmutableList<Node> newChildren) {
         return new Element(
                 element.name(),
                 element.attributes(),
                 element.namespaceScope(),
+                newChildren
+        );
+    }
+
+    /**
+     * Returns an adapted copy of the parameter element where the children are replaced by the results of applying
+     * the given function.
+     * <p>
+     * Often this method is useful in combination with a recursive top-down transformation.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
+     */
+    public static Element transformChildrenToNodeLists(Element element, Function<Node, List<Node>> f) {
+        return withChildren(
+                element,
                 element.children().stream()
                         .flatMap(ch -> f.apply(ch).stream())
                         .collect(ImmutableList.toImmutableList())
@@ -51,9 +72,14 @@ public class Elements {
     /**
      * Returns an adapted copy of the parameter element where the child elements are replaced by the results of applying
      * the given function, and the non-element children are left as-is.
+     * <p>
+     * Often this method is useful in combination with a recursive top-down transformation.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
      */
-    public static Element transformChildElements(Element element, Function<Element, List<Node>> f) {
-        return transformChildren(
+    public static Element transformChildElementsToNodeLists(Element element, Function<Element, List<Node>> f) {
+        return transformChildrenToNodeLists(
                 element,
                 ch -> {
                     if (ch instanceof Element e) {
@@ -64,6 +90,48 @@ public class Elements {
                 }
         );
     }
+
+    /**
+     * Like "transformChildElementsToNodeLists", but mapping each element to just one element instead
+     * of a node list. Hence, this method leaves the number of child nodes the same, and child nodes other
+     * than element nodes also stay the same.
+     * <p>
+     * Often this method is useful in combination with a recursive top-down transformation.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
+     */
+    public static Element transformChildElements(Element element, UnaryOperator<Element> f) {
+        return transformChildElementsToNodeLists(element, e -> List.of(f.apply(e)));
+    }
+
+    /**
+     * Bottom-up transformation of all descendant-or-self elements.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
+     */
+    public static Element transformDescendantElementsOrSelf(Element element, UnaryOperator<Element> f) {
+        // Recursion
+        Element descendantResult = transformChildElements(
+                element,
+                che -> transformDescendantElementsOrSelf(che, f));
+        return f.apply(descendantResult);
+    }
+
+    /**
+     * Bottom-up transformation of all descendant elements.
+     * <p>
+     * Consider using method "notUndeclaringPrefixes" afterward, to prevent prefixed namespace
+     * un-declarations from occurring.
+     */
+    public static Element transformDescendantElements(Element element, UnaryOperator<Element> f) {
+        return transformChildElements(
+                element,
+                che -> transformDescendantElementsOrSelf(che, f));
+    }
+
+    // Custom element transformations
 
     /**
      * Returns the "same element", except that there are no prefixed namespace un-declarations
@@ -85,7 +153,7 @@ public class Elements {
                         newScope,
                         element.children()
                 ),
-                e -> List.of(notUndeclaringPrefixes(e, newScope))
+                e -> notUndeclaringPrefixes(e, newScope)
         );
     }
 
@@ -113,10 +181,8 @@ public class Elements {
                         children.stream().filter(ch -> !(ch instanceof Text)).toList() :
                         children;
 
-        return new Element(
-                element.name(),
-                element.attributes(),
-                element.namespaceScope(),
+        return withChildren(
+                element,
                 filteredChildren.stream()
                         .map(ch -> {
                             if (ch instanceof Element che) {
