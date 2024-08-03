@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookQueryTests {
 
-    private static String NS = "http://bookstore";
+    private static final String NS = "http://bookstore";
 
     private Document doc;
 
