@@ -146,6 +146,18 @@ class NodeEqualityTests {
     }
 
     @Test
+    void testDifferentNamespaceScopes() {
+        assertNotEquals(
+                doc1.documentElement().elementStream().map(Element::namespaceScope).toList(),
+                doc2.documentElement().elementStream().map(Element::namespaceScope).toList()
+        );
+        assertNotEquals(
+                doc2.documentElement().elementStream().map(Element::namespaceScope).toList(),
+                doc3.documentElement().elementStream().map(Element::namespaceScope).toList()
+        );
+    }
+
+    @Test
     void testEqualDocumentElements() {
         var nodeComparison = new NodeComparisons.DefaultEqualityComparison();
         assertTrue(nodeComparison.areEqual(doc1.documentElement(), doc2.documentElement()));
