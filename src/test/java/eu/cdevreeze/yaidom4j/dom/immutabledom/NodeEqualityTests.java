@@ -39,6 +39,8 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Node equality tests against sample XML files from
  * <a href="https://www.lenzconsulting.com/namespaces/">Understanding XML Namespaces</a>.
+ * These files are equal, except that they use different namespace prefixes and have the namespace
+ * declarations in different elements.
  *
  * @author Chris de Vreeze
  */
