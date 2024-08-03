@@ -37,7 +37,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -129,17 +129,20 @@ class BookQueryTests {
     void testQueryChildElementNames() {
         Map<QName, Long> childElemCounts =
                 doc.documentElement().childElementStream()
-                        .collect(
-                                Collectors.groupingBy(
-                                        Element::name,
-                                        Collectors.counting()
-                                )
-                        );
+                        .collect(Collectors.groupingBy(Element::name, Collectors.counting()));
 
         assertEquals(
                 Map.of(new QName(NS, "Book"), 4L, new QName(NS, "Magazine"), 4L),
                 childElemCounts
         );
+
+        Map<QName, Long> childElemCounts2 =
+                doc.documentElement().topmostDescendantElementOrSelfStream(e ->
+                                hasName(NS, "Book").test(e) || hasName(NS, "Magazine").test(e)
+                        )
+                        .collect(Collectors.groupingBy(Element::name, Collectors.counting()));
+
+        assertEquals(childElemCounts, childElemCounts2);
     }
 
     @Test
@@ -153,6 +156,13 @@ class BookQueryTests {
                 List.of("January", "February", "February", "March"),
                 magazineMonths
         );
+
+        List<String> magazineMonths2 = doc.documentElement()
+                .descendantElementOrSelfStream(hasName(NS, "Magazine"))
+                .flatMap(e -> e.attributeOption(new QName("Month")).stream())
+                .toList();
+
+        assertEquals(magazineMonths, magazineMonths2);
     }
 
     @Test
@@ -186,9 +196,9 @@ class BookQueryTests {
         Predicate<Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(e -> e.text().equals("Jennifer")) &&
+                                .anyMatch(hasOnlyText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(e -> e.text().equals("Widom"));
+                                .anyMatch(hasOnlyText("Widom"));
 
         Predicate<Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
@@ -210,6 +220,15 @@ class BookQueryTests {
                 ),
                 bookTitlesCoauthoredByJenniferWidom
         );
+
+        Set<String> bookTitlesCoauthoredByJenniferWidom2 =
+                doc.documentElement().descendantElementOrSelfStream(hasName(NS, "Book"))
+                        .filter(bookCowrittenByJenniferWidom)
+                        .flatMap(e -> e.descendantElementOrSelfStream(hasName(NS, "Title")))
+                        .map(Element::text)
+                        .collect(Collectors.toSet());
+
+        assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom2);
     }
 
     @Test
@@ -227,7 +246,7 @@ class BookQueryTests {
                     .map(Element::text)
                     .orElse("");
 
-            return String.format("%s %s", firstName, lastName);
+            return String.format("%s %s", firstName, lastName).strip();
         };
 
         Set<String> authorNames = doc.documentElement()
@@ -239,6 +258,13 @@ class BookQueryTests {
                 Set.of("Jeffrey Ullman", "Jennifer Widom", "Hector Garcia-Molina"),
                 authorNames
         );
+
+        Set<String> authorNames2 = doc.documentElement()
+                .topmostElementStream(hasName(NS, "Author"))
+                .map(getAuthorName)
+                .collect(Collectors.toSet());
+
+        assertEquals(authorNames, authorNames2);
     }
 
     @Test
@@ -246,9 +272,9 @@ class BookQueryTests {
         Predicate<Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(e -> e.text().equals("Jennifer")) &&
+                                .anyMatch(hasOnlyStrippedText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(e -> e.text().equals("Widom"));
+                                .anyMatch(hasOnlyStrippedText("Widom"));
 
         Predicate<Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
@@ -265,5 +291,37 @@ class BookQueryTests {
                 Set.of("ISBN-0-13-713526-2", "ISBN-0-13-815504-6", "ISBN-9-88-777777-6"),
                 bookIsbnsCoauthoredByJenniferWidom
         );
+
+        Set<String> bookIsbnsCoauthoredByJenniferWidom2 =
+                doc.documentElement().topmostElementStream(hasName(NS, "Book"))
+                        .filter(bookCowrittenByJenniferWidom)
+                        .map(e -> e.attribute(new QName("ISBN")))
+                        .collect(Collectors.toSet());
+
+        assertEquals(bookIsbnsCoauthoredByJenniferWidom, bookIsbnsCoauthoredByJenniferWidom2);
+    }
+
+    @Test
+    void testQueryFebruaryMagazines() {
+        List<String> februaryMagazineTitles = doc.documentElement()
+                .childElementStream(hasName(NS, "Magazine"))
+                .filter(hasAttribute("Month", "February"))
+                .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
+                .map(Element::text)
+                .toList();
+
+        assertEquals(
+                List.of("National Geographic", "Newsweek"),
+                februaryMagazineTitles
+        );
+
+        List<String> februaryMagazineTitles2 = doc.documentElement()
+                .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
+                .filter(hasAttribute("Month", "February"))
+                .flatMap(e -> e.elementStream(hasName(NS, "Title")))
+                .map(Element::text)
+                .toList();
+
+        assertEquals(februaryMagazineTitles, februaryMagazineTitles2);
     }
 }
