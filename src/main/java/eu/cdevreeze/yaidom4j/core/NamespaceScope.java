@@ -21,10 +21,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -147,6 +149,29 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
                 .putAll(updatedNamespaceDeclarations)
                 .putAll(newNamespaceDeclarations)
                 .build();
+    }
+
+    /**
+     * Resolves the given syntactic QName, given this namespace scope.
+     * <p>
+     * Do not use this method to resolve syntactic attribute names if this namespace scope has a
+     * default namespace. It can be used to resolve syntactic element names, though, if needed.
+     * This method is mostly needed for resolving element text and attribute values as QNames,
+     * though, if applicable.
+     */
+    public QName resolveSyntacticQName(String syntacticQName) {
+        String[] parts = syntacticQName.split(Pattern.quote(":"));
+        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+
+        if (parts.length == 1) {
+            return defaultNamespaceOption().map(ns -> new QName(ns, parts[0])).orElse(new QName(parts[0]));
+        } else if (parts[0].equals(XMLConstants.XML_NS_PREFIX)) {
+            return new QName(XMLConstants.XML_NS_URI, parts[1]);
+        } else {
+            Preconditions.checkArgument(inScopeNamespaces.containsKey(parts[0]));
+            String ns = inScopeNamespaces.get(parts[0]);
+            return new QName(ns, parts[1]);
+        }
     }
 
     public boolean subScopeOf(NamespaceScope other) {
