@@ -34,8 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * XBRL instance transformation tests.
@@ -145,6 +144,9 @@ public class XbrlInstanceTransformationTests {
                         }
                 )
         );
+
+        assertFalse(nodeComparison.areEqual(newInstance.element(), newInstance3.element()));
+        assertFalse(nodeComparison.areEqual(newInstance2.element(), newInstance3.element()));
 
         assertTrue(nodeComparison.areEqual(instance.element(), newInstance3.element()));
     }
