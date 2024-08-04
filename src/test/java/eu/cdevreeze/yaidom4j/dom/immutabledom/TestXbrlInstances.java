@@ -329,8 +329,8 @@ public class TestXbrlInstances {
             return element.attributeOption(new QName("decimals"));
         }
 
-        public String factValue() {
-            return element.text().strip();
+        public String rawFactValue() {
+            return element.text();
         }
     }
 
@@ -368,6 +368,13 @@ public class TestXbrlInstances {
             return element
                     .childElementStream(hasName(nm -> !Set.of(XBRLI_NS, LINK_NS).contains(nm.getNamespaceURI())))
                     .map(ItemFact::new)
+                    .collect(ImmutableList.toImmutableList());
+        }
+
+        public ImmutableList<ItemFact> topLevelItemFacts(QName factName) {
+            return topLevelItemFacts()
+                    .stream()
+                    .filter(f -> f.factName().equals(factName))
                     .collect(ImmutableList.toImmutableList());
         }
 

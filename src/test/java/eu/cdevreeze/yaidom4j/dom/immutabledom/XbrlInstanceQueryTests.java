@@ -16,6 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,10 +31,12 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * XBRL instance query tests.
@@ -47,6 +50,8 @@ public class XbrlInstanceQueryTests {
     private static final String XBRLDI_NS = "http://xbrl.org/2006/xbrldi";
     private static final String LINK_NS = "http://www.xbrl.org/2003/linkbase";
     private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
+
+    private static final String ISO4217_NS = "http://www.xbrl.org/2003/iso4217";
 
     private static final String GAAP_NS = "http://xasb.org/gaap";
 
@@ -87,5 +92,92 @@ public class XbrlInstanceQueryTests {
         );
 
         assertEquals(expectedDimensionMembers, dimensionMembers);
+    }
+
+    @Test
+    void testQueryItemFactContext() {
+        ImmutableList<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
+
+        assertEquals(3, landFacts.size());
+
+        ImmutableList<TestXbrlInstances.ItemFact> landFacts2005 = landFacts
+                .stream()
+                .filter(f -> f.contextRef().equals("I-2005"))
+                .collect(ImmutableList.toImmutableList());
+
+        assertEquals(1, landFacts2005.size());
+
+        TestXbrlInstances.ItemFact landFact2005 = landFacts2005.get(0);
+
+        TestXbrlInstances.Context context = instance.contexts().get(landFact2005.contextRef());
+
+        assertNotNull(context);
+
+        ImmutableMap<QName, QName> dimensionMembers =
+                context.entity().segmentOption().orElseThrow()
+                        .explicitMembers()
+                        .stream()
+                        .map(e -> Map.entry(e.dimension(), e.member()))
+                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        ImmutableMap<QName, QName> expectedDimensionMembers = ImmutableMap.of(
+                new QName(GAAP_NS, "EntityAxis"), new QName(GAAP_NS, "ABCCompanyDomain"),
+                new QName(GAAP_NS, "BusinessSegmentAxis"), new QName(GAAP_NS, "ConsolidatedGroupDomain"),
+                new QName(GAAP_NS, "VerificationAxis"), new QName(GAAP_NS, "UnqualifiedOpinionMember"),
+                new QName(GAAP_NS, "PremiseAxis"), new QName(GAAP_NS, "ActualMember"),
+                new QName(GAAP_NS, "ReportDateAxis"), new QName(GAAP_NS, "ReportedAsOfMarch182008Member")
+        );
+
+        assertEquals(expectedDimensionMembers, dimensionMembers);
+    }
+
+    @Test
+    void testQueryItemFactUnit() {
+        ImmutableList<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
+
+        assertEquals(3, landFacts.size());
+
+        ImmutableList<TestXbrlInstances.ItemFact> landFacts2007 = landFacts
+                .stream()
+                .filter(f -> f.contextRef().equals("I-2007"))
+                .collect(ImmutableList.toImmutableList());
+
+        assertEquals(1, landFacts2007.size());
+
+        TestXbrlInstances.ItemFact landFact2007 = landFacts2007.get(0);
+
+        TestXbrlInstances.Unit unit = instance.units().get(landFact2007.unitRefOption().orElse(""));
+
+        assertNotNull(unit);
+
+        String unitRef = landFact2007.unitRefOption().orElse("");
+
+        List<QName> measures = Objects.requireNonNull(instance.units().get(unitRef))
+                .measures()
+                .stream()
+                .map(TestXbrlInstances.Measure::measure)
+                .toList();
+
+        ImmutableList<QName> expectedMeasures = ImmutableList.of(new QName(ISO4217_NS, "USD"));
+
+        assertEquals(expectedMeasures, measures);
+    }
+
+    @Test
+    void testQueryItemFactValue() {
+        ImmutableList<TestXbrlInstances.ItemFact> preferredStockAmountFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "PreferredStockAmount"));
+
+        assertEquals(6, preferredStockAmountFacts.size());
+
+        ImmutableList<TestXbrlInstances.ItemFact> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
+                .stream()
+                .filter(f -> f.contextRef().equals("I-2007-PS-All"))
+                .collect(ImmutableList.toImmutableList());
+
+        assertEquals(1, preferredStockAmountFacts2007PsAll.size());
+
+        TestXbrlInstances.ItemFact preferredStockAmountFact2007PsAll = preferredStockAmountFacts2007PsAll.get(0);
+
+        assertEquals(String.valueOf(2000), preferredStockAmountFact2007PsAll.rawFactValue().strip());
     }
 }
