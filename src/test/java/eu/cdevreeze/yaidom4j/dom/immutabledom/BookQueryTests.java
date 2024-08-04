@@ -42,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Immutable DOM query tests against books.xml file.
+ * <p>
+ * This is not a regular unit test, in that it assumes parsing etc. to work correctly.
  *
  * @author Chris de Vreeze
  */

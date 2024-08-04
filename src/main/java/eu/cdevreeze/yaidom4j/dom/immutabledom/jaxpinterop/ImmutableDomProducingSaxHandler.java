@@ -69,15 +69,20 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
         ImmutableMap<QName, String> attributes = extractAttributes(attrs);
 
-        ImmutableMap<String, String> extraScope = ImmutableMap.<String, String>builder()
+        ImmutableMap.Builder<String, String> extraScopeBuilder = ImmutableMap.<String, String>builder()
                 .putAll(
                         attributes.keySet().stream()
+                                .filter(qn -> !qn.getNamespaceURI().isEmpty())
                                 .map(qn -> Map.entry(qn.getPrefix(), qn.getNamespaceURI()))
                                 .distinct()
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                )
-                .put(name.getPrefix(), name.getNamespaceURI())
-                .buildKeepingLast();
+                );
+
+        if (!name.getNamespaceURI().isEmpty()) {
+            extraScopeBuilder.put(name.getPrefix(), name.getNamespaceURI());
+        }
+
+        ImmutableMap<String, String> extraScope = extraScopeBuilder.buildKeepingLast();
 
         NamespaceScope parentScope = currentElement == null ? NamespaceScope.empty() : currentElement.namespaceScope();
 
@@ -89,6 +94,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         NamespaceScope newScope =
                 parentScope.resolve(NamespaceScope.withoutPrefixedNamespaceUndeclarations(nsDecls))
                         .resolve(extraScope);
+        Preconditions.checkArgument(parentScope.withoutDefaultNamespace().subScopeOf(newScope.withoutDefaultNamespace()));
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),

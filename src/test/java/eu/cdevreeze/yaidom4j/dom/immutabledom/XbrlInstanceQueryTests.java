@@ -40,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * XBRL instance query tests.
+ * <p>
+ * This is not a regular unit test, in that it assumes parsing etc. to work correctly.
  *
  * @author Chris de Vreeze
  */
@@ -55,7 +57,6 @@ public class XbrlInstanceQueryTests {
 
     private static final String GAAP_NS = "http://xasb.org/gaap";
 
-    private Document doc;
     private TestXbrlInstances.XbrlInstance instance;
 
     @BeforeAll
@@ -69,7 +70,7 @@ public class XbrlInstanceQueryTests {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
         parser.parse(new InputSource(inputStream), saxHandler);
-        doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
         instance = TestXbrlInstances.XbrlInstance.from(doc.documentElement());
     }
 

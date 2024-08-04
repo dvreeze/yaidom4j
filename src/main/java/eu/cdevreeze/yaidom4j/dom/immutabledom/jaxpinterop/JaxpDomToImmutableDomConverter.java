@@ -91,6 +91,7 @@ public class JaxpDomToImmutableDomConverter {
         NamespaceScope newScope =
                 parentNamespaceScope.resolve(
                         NamespaceScope.withoutPrefixedNamespaceUndeclarations(extractNamespaceDeclarations(elem.getAttributes())));
+        Preconditions.checkArgument(parentNamespaceScope.withoutDefaultNamespace().subScopeOf(newScope.withoutDefaultNamespace()));
 
         ImmutableList<Node> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
