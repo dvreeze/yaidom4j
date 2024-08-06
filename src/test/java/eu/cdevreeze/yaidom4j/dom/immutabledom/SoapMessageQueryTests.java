@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Chris de Vreeze
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SoapMessageQueryTests {
+class SoapMessageQueryTests {
 
     private static final String ENV_NS = "http://www.w3.org/2003/05/soap-envelope";
 

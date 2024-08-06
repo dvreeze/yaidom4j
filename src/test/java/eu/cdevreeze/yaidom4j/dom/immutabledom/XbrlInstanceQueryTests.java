@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author Chris de Vreeze
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class XbrlInstanceQueryTests {
+class XbrlInstanceQueryTests {
 
     private static final String XBRLI_NS = "http://www.xbrl.org/2003/instance";
     private static final String XBRLDI_NS = "http://xbrl.org/2006/xbrldi";
