@@ -128,7 +128,7 @@ class XbrlInstanceTransformationTests {
 
         assertEquals(instance.element().elementStream().count() + 1, newInstance.element().elementStream().count());
 
-        var nodeComparison = new NodeComparisons.DefaultEqualityComparison();
+        var nodeComparison = NodeComparisons.defaultEquality();
 
         assertTrue(nodeComparison.areEqual(newInstance.element(), newInstance2.element()));
 

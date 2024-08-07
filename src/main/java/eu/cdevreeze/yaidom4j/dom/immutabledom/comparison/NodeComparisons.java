@@ -42,6 +42,10 @@ public class NodeComparisons {
         boolean areEqual(Node node1, Node node2);
     }
 
+    public static DefaultEqualityComparison defaultEquality() {
+        return new DefaultEqualityComparison();
+    }
+
     /**
      * Node equality comparison ignoring namespace prefixes (and namespace scopes) of element nodes.
      */

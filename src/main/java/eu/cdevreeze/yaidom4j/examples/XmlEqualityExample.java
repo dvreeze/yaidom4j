@@ -47,7 +47,7 @@ public class XmlEqualityExample {
         Document doc1 = Objects.requireNonNull(getDocument1());
         Document doc2 = Objects.requireNonNull(getDocument2());
 
-        NodeComparisons.NodeEqualityComparison nodeComparison = new NodeComparisons.DefaultEqualityComparison();
+        var nodeComparison = NodeComparisons.defaultEquality();
         boolean areEqual = nodeComparison.areEqual(doc1.documentElement(), doc2.documentElement());
 
         System.out.printf("Both documents are equal: %b%n", areEqual);

@@ -161,7 +161,7 @@ class NodeEqualityTests {
 
     @Test
     void testEqualDocumentElements() {
-        var nodeComparison = new NodeComparisons.DefaultEqualityComparison();
+        var nodeComparison = NodeComparisons.defaultEquality();
         assertTrue(nodeComparison.areEqual(doc1.documentElement(), doc2.documentElement()));
         assertTrue(nodeComparison.areEqual(doc1.documentElement(), doc3.documentElement()));
         assertTrue(nodeComparison.areEqual(doc2.documentElement(), doc3.documentElement()));
@@ -184,7 +184,7 @@ class NodeEqualityTests {
         assertEquals(elements1.size(), elements2.size());
         assertEquals(elements1.size(), elements3.size());
 
-        var nodeComparison = new NodeComparisons.DefaultEqualityComparison();
+        var nodeComparison = NodeComparisons.defaultEquality();
         assertTrue(
                 IntStream.range(0, elements1.size())
                         .allMatch(i -> nodeComparison.areEqual(elements1.get(i), elements2.get(i)))

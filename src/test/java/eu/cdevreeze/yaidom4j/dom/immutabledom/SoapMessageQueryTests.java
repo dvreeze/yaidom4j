@@ -153,7 +153,7 @@ class SoapMessageQueryTests {
                         .distinct()
                         .count());
 
-        var nodeComparison = new NodeComparisons.DefaultEqualityComparison();
+        var nodeComparison = NodeComparisons.defaultEquality();
         assertTrue(nodeComparison.areEqual(soapMessage.documentElement(), editedSoapMessage));
     }
 }
