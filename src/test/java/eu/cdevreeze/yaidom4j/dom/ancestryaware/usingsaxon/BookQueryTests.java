@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware;
+package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
@@ -48,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Chris de Vreeze
  */
-class BookQueryTestsUsingSaxonBootstrapping extends AbstractBookQueryTests<Element> {
+class BookQueryTests extends AbstractBookQueryTests<Element> {
 
     private static final String NS = "http://bookstore";
 
@@ -59,7 +61,7 @@ class BookQueryTestsUsingSaxonBootstrapping extends AbstractBookQueryTests<Eleme
         Processor processor = new Processor(false);
         DocumentBuilder docBuilder = processor.newDocumentBuilder();
 
-        InputStream inputStream = BookQueryTestsUsingSaxonBootstrapping.class.getResourceAsStream("/books.xml");
+        InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         XdmNode xdmDoc = docBuilder.build(new StreamSource(inputStream));
 
         TransformerFactory tff = new BasicTransformerFactory(processor.getUnderlyingConfiguration());
