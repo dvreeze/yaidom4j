@@ -78,17 +78,17 @@ public record Element(
         return name();
     }
 
+    @Override
     public Optional<String> attributeOption(QName attrName) {
         return Optional.ofNullable(attributes().get(attrName));
     }
 
+    @Override
     public String attribute(QName attrName) {
         return attributeOption(attrName).orElseThrow();
     }
 
-    /**
-     * Returns the concatenated text of the text children (ignoring other child nodes than text nodes)
-     */
+    @Override
     public String text() {
         return children().stream()
                 .filter(n -> n instanceof Text)

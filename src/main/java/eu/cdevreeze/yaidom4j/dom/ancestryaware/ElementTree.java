@@ -191,17 +191,17 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
             return underlyingElement().name();
         }
 
+        @Override
         public Optional<String> attributeOption(QName attrName) {
             return underlyingElement().attributeOption(attrName);
         }
 
+        @Override
         public String attribute(QName attrName) {
             return underlyingElement().attribute(attrName);
         }
 
-        /**
-         * Returns the concatenated text of the text children (ignoring other child nodes than text nodes)
-         */
+        @Override
         public String text() {
             return underlyingElement().text();
         }
