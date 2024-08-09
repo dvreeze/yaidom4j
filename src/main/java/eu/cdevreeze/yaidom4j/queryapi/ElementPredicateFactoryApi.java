@@ -49,9 +49,24 @@ public interface ElementPredicateFactoryApi<E> {
 
     Predicate<E> hasAttribute(String attrNoNamespaceName, String attrValue);
 
+    /**
+     * Returns an element predicate which returns true if and only if the element has only text
+     * nodes as children and the concatenated text of those child text nodes matches the given
+     * text predicate.
+     */
     Predicate<E> hasOnlyText(Predicate<String> textPredicate);
 
+    /**
+     * Returns an element predicate which returns true if and only if the element has only text
+     * nodes as children and the concatenated text of those child text nodes equals the given
+     * text parameter.
+     */
     Predicate<E> hasOnlyText(String text);
 
+    /**
+     * Returns the same as method "hasText" (taking a String parameter), except that the
+     * concatenated text of the child text nodes is stripped before comparing it with the
+     * parameter text.
+     */
     Predicate<E> hasOnlyStrippedText(String text);
 }

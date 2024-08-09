@@ -148,32 +148,17 @@ public class ElementPredicates {
             return hasAttribute(new QName(attrNoNamespaceName), attrValue);
         }
 
-        /**
-         * Returns an element predicate which returns true if and only if the element has only text
-         * nodes as children and the concatenated text of those child text nodes matches the given
-         * text predicate.
-         */
         @Override
         public Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
             return e -> e.children().stream().allMatch(ch -> ch instanceof Text) &&
                     textPredicate.test(e.text());
         }
 
-        /**
-         * Returns an element predicate which returns true if and only if the element has only text
-         * nodes as children and the concatenated text of those child text nodes equals the given
-         * text parameter.
-         */
         @Override
         public Predicate<Element> hasOnlyText(String text) {
             return hasOnlyText(s -> s.equals(text));
         }
 
-        /**
-         * Returns the same as method "hasText" (taking a String parameter), except that the
-         * concatenated text of the child text nodes is stripped before comparing it with the
-         * parameter text.
-         */
         @Override
         public Predicate<Element> hasOnlyStrippedText(String text) {
             return hasOnlyText(s -> s.strip().equals(text));
