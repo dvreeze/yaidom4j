@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 /**
  * Simple API contract for querying XML element nodes, where the element node type is type parameter "E".
  * <p>
- * Most method return a Java Stream. These methods are inspired by XPath axes such as descendant-or-self
+ * Most methods return a Java Stream. These methods are inspired by XPath axes such as descendant-or-self
  * and children, except that only element nodes are returned. The only exception to the latter is method
  * "childNodeStream", which returns a Java Stream of all child nodes, including text nodes, comments etc.
  * <p>
