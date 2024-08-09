@@ -16,7 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import javax.xml.XMLConstants;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
+import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
+
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -31,60 +33,137 @@ public class ElementPredicates {
     private ElementPredicates() {
     }
 
-    public static Predicate<ElementTree.Element> hasName(Predicate<QName> namePredicate) {
-        return e -> namePredicate.test(e.name());
+    private static final Factory factory = new Factory();
+
+    public static Predicate<Element> hasName(Predicate<QName> namePredicate) {
+        return factory.hasName(namePredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasName(QName name) {
-        return hasName(nm -> nm.equals(name));
+    public static Predicate<Element> hasName(QName name) {
+        return factory.hasName(name);
     }
 
-    public static Predicate<ElementTree.Element> hasName(String namespace, String localName) {
-        return hasName(nm -> nm.getNamespaceURI().equals(namespace) && nm.getLocalPart().equals(localName));
+    public static Predicate<Element> hasName(String namespace, String localName) {
+        return factory.hasName(namespace, localName);
     }
 
-    public static Predicate<ElementTree.Element> hasName(String noNamespaceName) {
-        return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+    public static Predicate<Element> hasName(String noNamespaceName) {
+        return factory.hasName(noNamespaceName);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate) {
-        return e -> e.attributes().entrySet().stream().anyMatch(attrPredicate);
+    public static Predicate<Element> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate) {
+        return factory.hasAttribute(attrPredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
-        return hasAttribute(kv -> kv.getKey().equals(attrName) && attrValuePredicate.test(kv.getValue()));
+    public static Predicate<Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttribute(attrName, attrValuePredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
-        return hasAttribute(new QName(attrNamespace, attrLocalName), attrValuePredicate);
+    public static Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttribute(attrNamespace, attrLocalName, attrValuePredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
-        return hasAttribute(new QName(attrNoNamespaceName), attrValuePredicate);
+    public static Predicate<Element> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttribute(attrNoNamespaceName, attrValuePredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(QName attrName, String attrValue) {
-        return hasAttribute(attrName, s -> s.equals(attrValue));
+    public static Predicate<Element> hasAttribute(QName attrName, String attrValue) {
+        return factory.hasAttribute(attrName, attrValue);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(String attrNamespace, String attrLocalName, String attrValue) {
-        return hasAttribute(new QName(attrNamespace, attrLocalName), attrValue);
+    public static Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, String attrValue) {
+        return factory.hasAttribute(attrNamespace, attrLocalName, attrValue);
     }
 
-    public static Predicate<ElementTree.Element> hasAttribute(String attrNoNamespaceName, String attrValue) {
-        return hasAttribute(new QName(attrNoNamespaceName), attrValue);
+    public static Predicate<Element> hasAttribute(String attrNoNamespaceName, String attrValue) {
+        return factory.hasAttribute(attrNoNamespaceName, attrValue);
     }
 
-    public static Predicate<ElementTree.Element> hasOnlyText(Predicate<String> textPredicate) {
-        return e -> e.childNodeStream().allMatch(ch -> ch instanceof Text) &&
-                textPredicate.test(e.text());
+    public static Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+        return factory.hasOnlyText(textPredicate);
     }
 
-    public static Predicate<ElementTree.Element> hasOnlyText(String text) {
-        return hasOnlyText(s -> s.equals(text));
+    public static Predicate<Element> hasOnlyText(String text) {
+        return factory.hasOnlyText(text);
     }
 
-    public static Predicate<ElementTree.Element> hasOnlyStrippedText(String text) {
-        return hasOnlyText(s -> s.strip().equals(text));
+    public static Predicate<Element> hasOnlyStrippedText(String text) {
+        return factory.hasOnlyStrippedText(text);
+    }
+
+    public static final class Factory implements ElementPredicateFactoryApi<Element> {
+
+        private final eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory underlyingFactory =
+                new eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory();
+
+        @Override
+        public Predicate<Element> hasName(Predicate<QName> namePredicate) {
+            return e -> underlyingFactory.hasName(namePredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasName(QName name) {
+            return e -> underlyingFactory.hasName(name).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasName(String namespace, String localName) {
+            return e -> underlyingFactory.hasName(namespace, localName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasName(String noNamespaceName) {
+            return e -> underlyingFactory.hasName(noNamespaceName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate) {
+            return e -> underlyingFactory.hasAttribute(attrPredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
+            return e -> underlyingFactory.hasAttribute(attrName, attrValuePredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+            return e -> underlyingFactory.hasAttribute(attrNamespace, attrLocalName, attrValuePredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+            return e -> underlyingFactory.hasAttribute(attrNoNamespaceName, attrValuePredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(QName attrName, String attrValue) {
+            return e -> underlyingFactory.hasAttribute(attrName, attrValue).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, String attrValue) {
+            return e -> underlyingFactory.hasAttribute(attrNamespace, attrLocalName, attrValue).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttribute(String attrNoNamespaceName, String attrValue) {
+            return e -> underlyingFactory.hasAttribute(attrNoNamespaceName, attrValue).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+            return e -> underlyingFactory.hasOnlyText(textPredicate).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasOnlyText(String text) {
+            return e -> underlyingFactory.hasOnlyText(text).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasOnlyStrippedText(String text) {
+            return e -> underlyingFactory.hasOnlyStrippedText(text).test(e.underlyingElement());
+        }
     }
 }
