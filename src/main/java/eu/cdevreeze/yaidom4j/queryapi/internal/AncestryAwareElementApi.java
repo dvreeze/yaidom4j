@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware;
+package eu.cdevreeze.yaidom4j.queryapi.internal;
 
-import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
- * XML processing instruction node.
+ * Object-oriented variant of the ancestry-aware element query API.
  *
+ * @param <E>
  * @author Chris de Vreeze
  */
-public record ProcessingInstruction(String target, String data) implements CanBeDocumentChild {
+public interface AncestryAwareElementApi<E extends AncestryAwareElementApi<E>> extends ElementApi<E> {
 
-    public ProcessingInstruction {
-        Objects.requireNonNull(target);
-        Objects.requireNonNull(data);
-    }
+    Optional<E> parentElementOption();
 
-    @Override
-    public eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction underlyingNode() {
-        return new eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction(target, data);
-    }
+    Stream<E> ancestorElementOrSelfStream();
 
-    @Override
-    public boolean isElement() {
-        return false;
-    }
+    Stream<E> ancestorElementOrSelfStream(Predicate<E> predicate);
+
+    Stream<E> ancestorElementStream();
+
+    Stream<E> ancestorElementStream(Predicate<E> predicate);
 }

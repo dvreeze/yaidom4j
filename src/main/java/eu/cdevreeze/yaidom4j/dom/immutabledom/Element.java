@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.ElementQueryApi;
+import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -40,7 +41,7 @@ public record Element(
         ImmutableMap<QName, String> attributes,
         NamespaceScope namespaceScope,
         ImmutableList<Node> children
-) implements CanBeDocumentChild {
+) implements CanBeDocumentChild, ElementApi<Element> {
 
     public Element {
         Objects.requireNonNull(name);
@@ -72,6 +73,11 @@ public record Element(
         return true;
     }
 
+    @Override
+    public QName elementName() {
+        return name();
+    }
+
     public Optional<String> attributeOption(QName attrName) {
         return Optional.ofNullable(attributes().get(attrName));
     }
@@ -99,50 +105,62 @@ public record Element(
 
     // Convenience methods delegating to the element query API
 
+    @Override
     public Stream<Node> childNodeStream() {
         return queryApi().childNodeStream(this);
     }
 
+    @Override
     public Stream<Element> elementStream() {
         return queryApi().elementStream(this);
     }
 
+    @Override
     public Stream<Element> elementStream(Predicate<Element> predicate) {
         return queryApi().elementStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
         return queryApi().topmostElementStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> childElementStream() {
         return queryApi().childElementStream(this);
     }
 
+    @Override
     public Stream<Element> childElementStream(Predicate<Element> predicate) {
         return queryApi().childElementStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> descendantElementOrSelfStream() {
         return queryApi().descendantElementOrSelfStream(this);
     }
 
+    @Override
     public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
         return queryApi().descendantElementOrSelfStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> descendantElementStream() {
         return queryApi().descendantElementStream(this);
     }
 
+    @Override
     public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
         return queryApi().descendantElementStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
         return queryApi().topmostDescendantElementOrSelfStream(this, predicate);
     }
 
+    @Override
     public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
         return queryApi().topmostDescendantElementStream(this, predicate);
     }

@@ -22,4 +22,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
  * @author Chris de Vreeze
  */
 public sealed interface CanBeDocumentChild extends Node permits ElementTree.Element, Comment, ProcessingInstruction {
+
+    @Override
+    eu.cdevreeze.yaidom4j.dom.immutabledom.CanBeDocumentChild underlyingNode();
 }

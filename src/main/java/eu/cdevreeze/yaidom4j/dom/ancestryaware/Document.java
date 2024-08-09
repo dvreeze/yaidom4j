@@ -49,4 +49,23 @@ public record Document(
     public Document withUri(URI uri) {
         return new Document(Optional.of(uri), children);
     }
+
+    public static Document from(eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument) {
+        return new Document(
+                underlyingDocument.uriOption(),
+                underlyingDocument.children().stream()
+                        .map(n -> {
+                            if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
+                                return ElementTree.create(e).rootElement();
+                            } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
+                                return new Comment(c.value());
+                            } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {
+                                return new ProcessingInstruction(pi.target(), pi.data());
+                            } else {
+                                throw new RuntimeException("Unsupported document child node");
+                            }
+                        })
+                        .collect(ImmutableList.toImmutableList())
+        );
+    }
 }

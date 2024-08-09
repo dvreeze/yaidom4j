@@ -29,6 +29,7 @@ public record Comment(String value) implements CanBeDocumentChild {
         Objects.requireNonNull(value);
     }
 
+    @Override
     public eu.cdevreeze.yaidom4j.dom.immutabledom.Comment underlyingNode() {
         return new eu.cdevreeze.yaidom4j.dom.immutabledom.Comment(value);
     }

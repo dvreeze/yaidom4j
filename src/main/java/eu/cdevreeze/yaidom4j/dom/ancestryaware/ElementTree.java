@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementQueryApi;
+import eu.cdevreeze.yaidom4j.queryapi.internal.AncestryAwareElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -156,7 +157,7 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
         return childElementStream(element).flatMap(e -> topmostDescendantElementOrSelfStream(e, predicate));
     }
 
-    public final class Element implements CanBeDocumentChild {
+    public final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
 
         private final ImmutableList<Integer> navigationPath;
 
@@ -166,6 +167,10 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
 
         public ImmutableList<Integer> navigationPath() {
             return navigationPath;
+        }
+
+        public ElementTree containingElementTree() {
+            return ElementTree.this;
         }
 
         @Override
@@ -217,78 +222,97 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
 
         // Convenience methods delegating to the element query API
 
-        public Stream<Element> elementStream() {
-            return ElementTree.this.elementStream(this);
-        }
-
-        public Stream<Element> elementStream(Predicate<Element> predicate) {
-            return ElementTree.this.elementStream(this, predicate);
-        }
-
-        public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.topmostElementStream(this, predicate);
-        }
-
-        public Optional<Element> parentElementOption() {
-            return ElementTree.this.parentElementOption(this);
-        }
-
-        public Stream<Element> ancestorElementOrSelfStream() {
-            return ElementTree.this.ancestorElementOrSelfStream(this);
-        }
-
-        public Stream<Element> ancestorElementOrSelfStream(Predicate<Element> predicate) {
-            return ElementTree.this.ancestorElementOrSelfStream(this, predicate);
-        }
-
-        public Stream<Element> ancestorElementStream() {
-            return ElementTree.this.ancestorElementStream(this);
-        }
-
-        public Stream<Element> ancestorElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.ancestorElementStream(this, predicate);
-        }
-
+        @Override
         public QName elementName() {
             return ElementTree.this.elementName(this);
         }
 
+        @Override
         public ImmutableMap<QName, String> attributes() {
             return ElementTree.this.attributes(this);
         }
 
+        @Override
+        public Stream<Element> elementStream() {
+            return ElementTree.this.elementStream(this);
+        }
+
+        @Override
+        public Stream<Element> elementStream(Predicate<Element> predicate) {
+            return ElementTree.this.elementStream(this, predicate);
+        }
+
+        @Override
+        public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
+            return ElementTree.this.topmostElementStream(this, predicate);
+        }
+
+        @Override
+        public Optional<Element> parentElementOption() {
+            return ElementTree.this.parentElementOption(this);
+        }
+
+        @Override
+        public Stream<Element> ancestorElementOrSelfStream() {
+            return ElementTree.this.ancestorElementOrSelfStream(this);
+        }
+
+        @Override
+        public Stream<Element> ancestorElementOrSelfStream(Predicate<Element> predicate) {
+            return ElementTree.this.ancestorElementOrSelfStream(this, predicate);
+        }
+
+        @Override
+        public Stream<Element> ancestorElementStream() {
+            return ElementTree.this.ancestorElementStream(this);
+        }
+
+        @Override
+        public Stream<Element> ancestorElementStream(Predicate<Element> predicate) {
+            return ElementTree.this.ancestorElementStream(this, predicate);
+        }
+
+        @Override
         public Stream<? super Element> childNodeStream() {
             return ElementTree.this.childNodeStream(this);
         }
 
+        @Override
         public Stream<Element> childElementStream() {
             return ElementTree.this.childElementStream(this);
         }
 
+        @Override
         public Stream<Element> childElementStream(Predicate<Element> predicate) {
             return ElementTree.this.childElementStream(this, predicate);
         }
 
+        @Override
         public Stream<Element> descendantElementOrSelfStream() {
             return ElementTree.this.descendantElementOrSelfStream(this);
         }
 
+        @Override
         public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
             return ElementTree.this.descendantElementOrSelfStream(this, predicate);
         }
 
+        @Override
         public Stream<Element> descendantElementStream() {
             return ElementTree.this.descendantElementStream(this);
         }
 
+        @Override
         public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
             return ElementTree.this.descendantElementStream(this, predicate);
         }
 
+        @Override
         public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
             return ElementTree.this.topmostDescendantElementOrSelfStream(this, predicate);
         }
 
+        @Override
         public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
             return ElementTree.this.topmostDescendantElementStream(this, predicate);
         }

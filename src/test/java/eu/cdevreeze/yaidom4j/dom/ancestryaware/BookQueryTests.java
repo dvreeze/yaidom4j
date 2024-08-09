@@ -17,7 +17,6 @@
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -72,8 +70,7 @@ class BookQueryTests {
         parser.parse(new InputSource(inputStream), saxHandler);
         var underlyingDoc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
 
-        var elementTree = ElementTree.create(underlyingDoc.documentElement());
-        doc = new Document(Optional.empty(), ImmutableList.of(elementTree.rootElement()));
+        doc = Document.from(underlyingDoc);
     }
 
     @Test

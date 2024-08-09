@@ -29,6 +29,7 @@ public record Text(String value, boolean isCData) implements Node {
         Objects.requireNonNull(value);
     }
 
+    @Override
     public eu.cdevreeze.yaidom4j.dom.immutabledom.Text underlyingNode() {
         return new eu.cdevreeze.yaidom4j.dom.immutabledom.Text(value, isCData);
     }
