@@ -15,7 +15,7 @@ One such implementation is backed by the above-mentioned immutable DOM elements.
 
 Yaidom4j is **not** any of the following:
 * An O-X mapper, such as JAXB
-* A schema validator, against an XSD or DTD (yaidom4j is completely unaware of any schema information)
+* A schema validator, against an XSD or DTD (yaidom4j itself is completely unaware of any schema information)
 * An XPath or XQuery processor
 * An HTML library
 
@@ -51,7 +51,7 @@ Comparisons to some other XML libraries are as follows:
 * Unlike JDOM, DOM4J, XOM, JAXP DOM, the native element implementations in yaidom4j are deeply immutable and thread-safe
 * Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
 * Unlike JAXP XPath (1.0) support, the element query API in yaidom4j is very easy to use without any involved bootstrapping
-* Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is element-node-centric
+* Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is *element-node-centric*
 * Also, *Saxon* defines the concept of a *Step*, which is a function from item to (Java) Stream of items (think: XPath axes), but yaidom4j does not do so
 
 As said above, yaidom4j does not try to implement the full XML InfoSet in its *immutable DOM* implementation. For example:

@@ -80,11 +80,15 @@ public record Element(
 
     @Override
     public Optional<String> attributeOption(QName attrName) {
+        Objects.requireNonNull(attrName);
+
         return Optional.ofNullable(attributes().get(attrName));
     }
 
     @Override
     public String attribute(QName attrName) {
+        Objects.requireNonNull(attrName);
+
         return attributeOption(attrName).orElseThrow();
     }
 
@@ -97,79 +101,91 @@ public record Element(
                 .collect(Collectors.joining());
     }
 
-    private static final QueryApi queryApi = new QueryApi();
-
-    public static QueryApi queryApi() {
-        return queryApi;
-    }
-
-    // Convenience methods delegating to the element query API
-
     @Override
     public Stream<Node> childNodeStream() {
-        return queryApi().childNodeStream(this);
+        return children().stream();
     }
 
     @Override
     public Stream<Element> elementStream() {
-        return queryApi().elementStream(this);
+        return descendantElementOrSelfStream();
     }
 
     @Override
     public Stream<Element> elementStream(Predicate<Element> predicate) {
-        return queryApi().elementStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return descendantElementOrSelfStream(predicate);
     }
 
     @Override
     public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
-        return queryApi().topmostElementStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return topmostDescendantElementOrSelfStream(predicate);
     }
 
     @Override
     public Stream<Element> childElementStream() {
-        return queryApi().childElementStream(this);
+        return childNodeStream().filter(Node::isElement).map(n -> (Element) n);
     }
 
     @Override
     public Stream<Element> childElementStream(Predicate<Element> predicate) {
-        return queryApi().childElementStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return childElementStream().filter(predicate);
     }
 
     @Override
     public Stream<Element> descendantElementOrSelfStream() {
-        return queryApi().descendantElementOrSelfStream(this);
+        Stream<Element> selfStream = Stream.of(this);
+        // Recursion
+        Stream<Element> descendantElemStream =
+                childElementStream().flatMap(Element::descendantElementOrSelfStream);
+        return Stream.concat(selfStream, descendantElemStream);
     }
 
     @Override
     public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
-        return queryApi().descendantElementOrSelfStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return descendantElementOrSelfStream().filter(predicate);
     }
 
     @Override
     public Stream<Element> descendantElementStream() {
-        return queryApi().descendantElementStream(this);
+        return childElementStream().flatMap(Element::descendantElementOrSelfStream);
     }
 
     @Override
     public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
-        return queryApi().descendantElementStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return descendantElementStream().filter(predicate);
     }
 
     @Override
     public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
-        return queryApi().topmostDescendantElementOrSelfStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        if (predicate.test(this)) {
+            return Stream.of(this);
+        } else {
+            // Recursion
+            return childElementStream().flatMap(che -> che.topmostDescendantElementOrSelfStream(predicate));
+        }
     }
 
     @Override
     public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
-        return queryApi().topmostDescendantElementStream(this, predicate);
+        Objects.requireNonNull(predicate);
+
+        return childElementStream().flatMap(che -> che.topmostDescendantElementOrSelfStream(predicate));
     }
 
     /**
      * Element query API implementation for immutable DOM elements.
-     * <p>
-     * Instead of using this API directly, consider using their friendly counterparts as Element
-     * instance methods (which delegate to this element query API class).
      */
     public static final class QueryApi implements ElementQueryApi<Element> {
 
@@ -177,7 +193,7 @@ public record Element(
         public QName elementName(Element element) {
             Objects.requireNonNull(element);
 
-            return element.name();
+            return element.elementName();
         }
 
         @Override
@@ -191,14 +207,14 @@ public record Element(
         public Stream<Node> childNodeStream(Element element) {
             Objects.requireNonNull(element);
 
-            return element.children().stream();
+            return element.childNodeStream();
         }
 
         @Override
         public Stream<Element> childElementStream(Element element) {
             Objects.requireNonNull(element);
 
-            return childNodeStream(element).filter(Node::isElement).map(n -> (Element) n);
+            return element.childElementStream();
         }
 
         @Override
@@ -206,18 +222,14 @@ public record Element(
             Objects.requireNonNull(element);
             Objects.requireNonNull(predicate);
 
-            return childElementStream(element).filter(predicate);
+            return element.childElementStream(predicate);
         }
 
         @Override
         public Stream<Element> descendantElementOrSelfStream(Element element) {
             Objects.requireNonNull(element);
 
-            Stream<Element> selfStream = Stream.of(element);
-            // Recursion
-            Stream<Element> descendantElemStream =
-                    childElementStream(element).flatMap(this::descendantElementOrSelfStream);
-            return Stream.concat(selfStream, descendantElemStream);
+            return element.descendantElementOrSelfStream();
         }
 
         @Override
@@ -225,14 +237,14 @@ public record Element(
             Objects.requireNonNull(element);
             Objects.requireNonNull(predicate);
 
-            return descendantElementOrSelfStream(element).filter(predicate);
+            return element.descendantElementOrSelfStream(predicate);
         }
 
         @Override
         public Stream<Element> descendantElementStream(Element element) {
             Objects.requireNonNull(element);
 
-            return childElementStream(element).flatMap(this::descendantElementOrSelfStream);
+            return element.descendantElementStream();
         }
 
         @Override
@@ -240,7 +252,7 @@ public record Element(
             Objects.requireNonNull(element);
             Objects.requireNonNull(predicate);
 
-            return descendantElementStream(element).filter(predicate);
+            return element.descendantElementStream(predicate);
         }
 
         @Override
@@ -248,12 +260,7 @@ public record Element(
             Objects.requireNonNull(element);
             Objects.requireNonNull(predicate);
 
-            if (predicate.test(element)) {
-                return Stream.of(element);
-            } else {
-                // Recursion
-                return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
-            }
+            return element.topmostDescendantElementOrSelfStream(predicate);
         }
 
         @Override
@@ -261,7 +268,7 @@ public record Element(
             Objects.requireNonNull(element);
             Objects.requireNonNull(predicate);
 
-            return childElementStream(element).flatMap(che -> topmostDescendantElementOrSelfStream(che, predicate));
+            return element.topmostDescendantElementStream(predicate);
         }
     }
 }

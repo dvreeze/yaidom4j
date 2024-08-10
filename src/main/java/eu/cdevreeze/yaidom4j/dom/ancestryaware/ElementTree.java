@@ -37,7 +37,7 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
     private final ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
     private ElementTree(ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap) {
-        this.elementMap = elementMap;
+        this.elementMap = Objects.requireNonNull(elementMap);
     }
 
     public Element rootElement() {
@@ -46,115 +46,121 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
 
     @Override
     public Optional<Element> parentElementOption(Element element) {
-        return parentPathOption(element.navigationPath()).map(Element::new);
+        Objects.requireNonNull(element);
+
+        return element.parentElementOption();
     }
 
     @Override
     public Stream<Element> ancestorElementOrSelfStream(Element element) {
-        // Recursive
-        return Stream.concat(
-                Stream.of(element),
-                parentElementOption(element).stream().flatMap(this::ancestorElementOrSelfStream)
-        );
+        Objects.requireNonNull(element);
+
+        return element.ancestorElementOrSelfStream();
     }
 
     @Override
     public Stream<Element> ancestorElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        return ancestorElementOrSelfStream(element).filter(predicate);
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.ancestorElementOrSelfStream(predicate);
     }
 
     @Override
     public Stream<Element> ancestorElementStream(Element element) {
-        return parentElementOption(element).stream().flatMap(this::ancestorElementOrSelfStream);
+        Objects.requireNonNull(element);
+
+        return element.ancestorElementStream();
     }
 
     @Override
     public Stream<Element> ancestorElementStream(Element element, Predicate<Element> predicate) {
-        return ancestorElementStream(element).filter(predicate);
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.ancestorElementStream(predicate);
     }
 
     @Override
     public QName elementName(Element element) {
-        return element.underlyingElement().name();
+        Objects.requireNonNull(element);
+
+        return element.elementName();
     }
 
     @Override
     public ImmutableMap<QName, String> attributes(Element element) {
-        return element.underlyingElement().attributes();
+        Objects.requireNonNull(element);
+
+        return element.attributes();
     }
 
     @Override
     public Stream<? super Element> childNodeStream(Element element) {
-        int elementIdx = 0;
-        List<Node> children = new ArrayList<>();
+        Objects.requireNonNull(element);
 
-        for (var underlyingChildNode : element.underlyingElement().children()) {
-            if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
-                children.add(new Element(addToPath(elementIdx, element.navigationPath)));
-                elementIdx += 1;
-            } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {
-                children.add(new Text(t.value(), t.isCData()));
-            } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
-                children.add(new Comment(c.value()));
-            } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {
-                children.add(new ProcessingInstruction(pi.target(), pi.data()));
-            }
-        }
-
-        return children.stream();
+        return element.childNodeStream();
     }
 
     @Override
     public Stream<Element> childElementStream(Element element) {
-        var navigationPath = element.navigationPath();
+        Objects.requireNonNull(element);
 
-        return IntStream.range(0, (int) element.underlyingElement().childElementStream().count())
-                .mapToObj(i -> addToPath(i, navigationPath))
-                .map(Element::new);
+        return element.childElementStream();
     }
 
     @Override
     public Stream<Element> childElementStream(Element element, Predicate<Element> predicate) {
-        return childElementStream(element).filter(predicate);
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.childElementStream(predicate);
     }
 
     @Override
     public Stream<Element> descendantElementOrSelfStream(Element element) {
-        // Recursive
-        return Stream.concat(
-                Stream.of(element),
-                childElementStream(element).flatMap(this::descendantElementOrSelfStream)
-        );
+        Objects.requireNonNull(element);
+
+        return element.descendantElementOrSelfStream();
     }
 
     @Override
     public Stream<Element> descendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        return descendantElementOrSelfStream(element).filter(predicate);
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.descendantElementOrSelfStream(predicate);
     }
 
     @Override
     public Stream<Element> descendantElementStream(Element element) {
-        return childElementStream(element).flatMap(this::descendantElementOrSelfStream);
+        Objects.requireNonNull(element);
+
+        return element.descendantElementStream();
     }
 
     @Override
     public Stream<Element> descendantElementStream(Element element, Predicate<Element> predicate) {
-        return descendantElementStream(element).filter(predicate);
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.descendantElementStream(predicate);
     }
 
     @Override
     public Stream<Element> topmostDescendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        // Recursive
-        if (predicate.test(element)) {
-            return Stream.of(element);
-        } else {
-            return childElementStream(element).flatMap(e -> topmostDescendantElementOrSelfStream(e, predicate));
-        }
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.topmostDescendantElementOrSelfStream(predicate);
     }
 
     @Override
     public Stream<Element> topmostDescendantElementStream(Element element, Predicate<Element> predicate) {
-        return childElementStream(element).flatMap(e -> topmostDescendantElementOrSelfStream(e, predicate));
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(predicate);
+
+        return element.topmostDescendantElementStream(predicate);
     }
 
     public final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
@@ -193,11 +199,15 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
 
         @Override
         public Optional<String> attributeOption(QName attrName) {
+            Objects.requireNonNull(attrName);
+
             return underlyingElement().attributeOption(attrName);
         }
 
         @Override
         public String attribute(QName attrName) {
+            Objects.requireNonNull(attrName);
+
             return underlyingElement().attribute(attrName);
         }
 
@@ -220,101 +230,150 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
             return navigationPath.hashCode();
         }
 
-        // Convenience methods delegating to the element query API
-
         @Override
         public QName elementName() {
-            return ElementTree.this.elementName(this);
+            return name();
         }
 
         @Override
         public ImmutableMap<QName, String> attributes() {
-            return ElementTree.this.attributes(this);
+            return underlyingElement().attributes();
         }
 
         @Override
         public Stream<Element> elementStream() {
-            return ElementTree.this.elementStream(this);
+            return descendantElementOrSelfStream();
         }
 
         @Override
         public Stream<Element> elementStream(Predicate<Element> predicate) {
-            return ElementTree.this.elementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return descendantElementOrSelfStream(predicate);
         }
 
         @Override
         public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.topmostElementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return topmostDescendantElementOrSelfStream(predicate);
         }
 
         @Override
         public Optional<Element> parentElementOption() {
-            return ElementTree.this.parentElementOption(this);
+            return parentPathOption(navigationPath()).map(Element::new);
         }
 
         @Override
         public Stream<Element> ancestorElementOrSelfStream() {
-            return ElementTree.this.ancestorElementOrSelfStream(this);
+            // Recursive
+            return Stream.concat(
+                    Stream.of(this),
+                    parentElementOption().stream().flatMap(Element::ancestorElementOrSelfStream)
+            );
         }
 
         @Override
         public Stream<Element> ancestorElementOrSelfStream(Predicate<Element> predicate) {
-            return ElementTree.this.ancestorElementOrSelfStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return ancestorElementOrSelfStream().filter(predicate);
         }
 
         @Override
         public Stream<Element> ancestorElementStream() {
-            return ElementTree.this.ancestorElementStream(this);
+            return parentElementOption().stream().flatMap(Element::ancestorElementOrSelfStream);
         }
 
         @Override
         public Stream<Element> ancestorElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.ancestorElementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return ancestorElementStream().filter(predicate);
         }
 
         @Override
         public Stream<? super Element> childNodeStream() {
-            return ElementTree.this.childNodeStream(this);
+            int elementIdx = 0;
+            List<Node> children = new ArrayList<>();
+
+            for (var underlyingChildNode : underlyingElement().children()) {
+                if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
+                    children.add(new Element(addToPath(elementIdx, navigationPath)));
+                    elementIdx += 1;
+                } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {
+                    children.add(new Text(t.value(), t.isCData()));
+                } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
+                    children.add(new Comment(c.value()));
+                } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {
+                    children.add(new ProcessingInstruction(pi.target(), pi.data()));
+                }
+            }
+
+            return children.stream();
         }
 
         @Override
         public Stream<Element> childElementStream() {
-            return ElementTree.this.childElementStream(this);
+            var navigationPath = navigationPath();
+
+            return IntStream.range(0, (int) underlyingElement().childElementStream().count())
+                    .mapToObj(i -> addToPath(i, navigationPath))
+                    .map(Element::new);
         }
 
         @Override
         public Stream<Element> childElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.childElementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return childElementStream().filter(predicate);
         }
 
         @Override
         public Stream<Element> descendantElementOrSelfStream() {
-            return ElementTree.this.descendantElementOrSelfStream(this);
+            // Recursive
+            return Stream.concat(
+                    Stream.of(this),
+                    childElementStream().flatMap(Element::descendantElementOrSelfStream)
+            );
         }
 
         @Override
         public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
-            return ElementTree.this.descendantElementOrSelfStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return descendantElementOrSelfStream().filter(predicate);
         }
 
         @Override
         public Stream<Element> descendantElementStream() {
-            return ElementTree.this.descendantElementStream(this);
+            return childElementStream().flatMap(Element::descendantElementOrSelfStream);
         }
 
         @Override
         public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.descendantElementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return descendantElementStream().filter(predicate);
         }
 
         @Override
         public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
-            return ElementTree.this.topmostDescendantElementOrSelfStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            // Recursive
+            if (predicate.test(this)) {
+                return Stream.of(this);
+            } else {
+                return childElementStream().flatMap(e -> e.topmostDescendantElementOrSelfStream(predicate));
+            }
         }
 
         @Override
         public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
-            return ElementTree.this.topmostDescendantElementStream(this, predicate);
+            Objects.requireNonNull(predicate);
+
+            return childElementStream().flatMap(e -> e.topmostDescendantElementOrSelfStream(predicate));
         }
     }
 

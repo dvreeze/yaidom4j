@@ -45,6 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Immutable DOM query tests against books.xml file. This test class uses Saxon bootstrapping.
+ * Using TrAX (Transformation API for XML), a Saxon XdmNode (as TrAX Source) is transformed to a SAX
+ * Result that creates an ancestry-aware immutable DOM tree. The latter is achieved using
+ * ImmutableDomProducingSaxHandler as SAX ContentHandler. Once the yaidom4j native document has been
+ * created, this test class uses it as input document for the tests.
  * <p>
  * This is not a regular unit test, in that it assumes parsing etc. to work correctly.
  *
