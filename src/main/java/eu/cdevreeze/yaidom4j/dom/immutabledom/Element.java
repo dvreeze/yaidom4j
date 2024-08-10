@@ -204,6 +204,29 @@ public record Element(
         }
 
         @Override
+        public Optional<String> attributeOption(Element element, QName attrName) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(attrName);
+
+            return element.attributeOption(attrName);
+        }
+
+        @Override
+        public String attribute(Element element, QName attrName) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(attrName);
+
+            return element.attribute(attrName);
+        }
+
+        @Override
+        public String text(Element element) {
+            Objects.requireNonNull(element);
+
+            return element.text();
+        }
+
+        @Override
         public Stream<Node> childNodeStream(Element element) {
             Objects.requireNonNull(element);
 

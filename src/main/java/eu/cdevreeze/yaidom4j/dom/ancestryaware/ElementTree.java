@@ -96,6 +96,29 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
     }
 
     @Override
+    public Optional<String> attributeOption(Element element, QName attrName) {
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(attrName);
+
+        return element.attributeOption(attrName);
+    }
+
+    @Override
+    public String attribute(Element element, QName attrName) {
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(attrName);
+
+        return element.attribute(attrName);
+    }
+
+    @Override
+    public String text(Element element) {
+        Objects.requireNonNull(element);
+
+        return element.text();
+    }
+
+    @Override
     public Stream<? super Element> childNodeStream(Element element) {
         Objects.requireNonNull(element);
 
@@ -168,7 +191,7 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
         private final ImmutableList<Integer> navigationPath;
 
         private Element(ImmutableList<Integer> navigationPath) {
-            this.navigationPath = navigationPath;
+            this.navigationPath = Objects.requireNonNull(navigationPath);
         }
 
         public ImmutableList<Integer> navigationPath() {
@@ -298,7 +321,7 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
             List<Node> children = new ArrayList<>();
 
             for (var underlyingChildNode : underlyingElement().children()) {
-                if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
+                if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element) {
                     children.add(new Element(addToPath(elementIdx, navigationPath)));
                     elementIdx += 1;
                 } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {

@@ -46,10 +46,19 @@ public interface ElementApi<E extends ElementApi<E>> {
 
     Stream<? super E> childNodeStream();
 
+    /**
+     * Alias of descendantElementOrSelfStream
+     */
     Stream<E> elementStream();
 
+    /**
+     * Alias of descendantElementOrSelfStream
+     */
     Stream<E> elementStream(Predicate<E> predicate);
 
+    /**
+     * Alias of topmostDescendantElementOrSelfStream
+     */
     Stream<E> topmostElementStream(Predicate<E> predicate);
 
     Stream<E> childElementStream();

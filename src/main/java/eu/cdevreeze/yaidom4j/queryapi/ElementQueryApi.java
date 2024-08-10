@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.queryapi;
 import com.google.common.collect.ImmutableMap;
 
 import javax.xml.namespace.QName;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -39,6 +40,15 @@ public interface ElementQueryApi<E> {
     QName elementName(E element);
 
     ImmutableMap<QName, String> attributes(E element);
+
+    Optional<String> attributeOption(E element, QName attrName);
+
+    String attribute(E element, QName attrName);
+
+    /**
+     * Returns the concatenated text of the text children (ignoring other child nodes than text nodes)
+     */
+    String text(E element);
 
     Stream<? super E> childNodeStream(E element);
 
