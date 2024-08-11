@@ -46,6 +46,13 @@ public record Document(
         return children.stream().filter(n -> n instanceof ElementTree.Element).map(n -> (ElementTree.Element) n).findFirst().orElseThrow();
     }
 
+    public eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument() {
+        return new eu.cdevreeze.yaidom4j.dom.immutabledom.Document(
+                uriOption,
+                children.stream().map(CanBeDocumentChild::underlyingNode).collect(ImmutableList.toImmutableList())
+        );
+    }
+
     public Document withUri(URI uri) {
         return new Document(Optional.of(uri), children);
     }
