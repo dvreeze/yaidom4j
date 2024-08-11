@@ -9,8 +9,29 @@
   <version>0.2.0</version>
 
   <name>yaidom4j</name>
-  <!-- FIXME change it to the project's website -->
-  <!-- <url>http://www.example.com</url> -->
+  <url>https://github.com/dvreeze/yaidom4j</url>
+  <description>Yaidom4j is an easy-to-use element-node-centric XML query API (with native immutable DOM implementations)</description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>Yaidom4j is licensed under Apache License, Version 2.0</comments>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:dvreeze/yaidom4j.git</connection>
+    <url>https://github.com/dvreeze/yaidom4j.git</url>
+    <developerConnection>scm:git:git@github.com:dvreeze/yaidom4j.git</developerConnection>
+  </scm>
+  <developers>
+    <developer>
+      <id>dvreeze</id>
+      <name>Chris de Vreeze</name>
+      <email>chris.de.vreeze@caiway.net</email>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -154,7 +175,7 @@
                   <goal>sign</goal>
                 </goals>
                 <configuration>
-                  <keyname>A089AE7E2E80C9AD13A4262296C11D0BDC606E1F</keyname>
+                  <keyname>1AF09C0C518250A8BB4AA6AB9FB31886D593CB2B</keyname>
                   <passphraseServerId>ossrh</passphraseServerId>
                   <gpgArguments>
                     <arg>--pinentry-mode</arg>
