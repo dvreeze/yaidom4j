@@ -51,6 +51,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.*;
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon.SaxonElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -86,7 +87,7 @@ class SaxonEquivalenceTests {
     }
 
     private static XdmNode convertToSaxon(Document doc, Processor processor) {
-        // Copied and adapted from similar code in yaidom
+        // Copied and adapted from similar code in yaidom. I could not possibly have come up with this myself.
 
         PipelineConfiguration pipe = processor.getUnderlyingConfiguration().makePipelineConfiguration();
 
@@ -133,7 +134,7 @@ class SaxonEquivalenceTests {
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var namespaces3 = xdmDoc
-                .select(Steps.descendantOrSelf().where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
+                .select(descendantOrSelfElements())
                 .map(n -> n.getNodeName().getNamespace())
                 .collect(Collectors.toSet());
 
@@ -170,7 +171,7 @@ class SaxonEquivalenceTests {
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var names3 = xdmDoc
-                .select(Steps.descendantOrSelf().where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
+                .select(descendantOrSelfElements())
                 .map(n -> n.getNodeName().getStructuredQName().toJaxpQName())
                 .distinct()
                 .toList();
@@ -188,7 +189,7 @@ class SaxonEquivalenceTests {
         assertEquals(
                 "books",
                 xdmDoc
-                        .select(Steps.descendantOrSelf().where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
+                        .select(descendantOrSelfElements())
                         .findFirst()
                         .orElseThrow()
                         .getNodeName()
@@ -209,10 +210,10 @@ class SaxonEquivalenceTests {
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var prefixes2 = xdmDoc
-                .select(Steps.descendantOrSelf().where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
+                .select(descendantOrSelfElements())
                 .findFirst()
                 .orElseThrow()
-                .select(Steps.descendant().where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
+                .select(descendantElements())
                 .map(n -> n.getNodeName().getStructuredQName().getPrefix())
                 .collect(Collectors.toSet());
 
@@ -243,18 +244,11 @@ class SaxonEquivalenceTests {
 
         Map<QName, Long> childElemCounts3 = xdmDoc
                 .select(
-                        Steps.descendantOrSelf()
-                                .where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT))
-                                .where(n -> n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Book")) ||
-                                        n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Magazine")))
-                )
-                .filter(elem ->
-                        elem.select(Steps.ancestor()
-                                        .where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT))
-                                )
-                                .noneMatch(n -> n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Book")) ||
-                                        n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Magazine"))
-                                )
+                        topmostDescendantOrSelfElements(n ->
+                                n.getNodeKind().equals(XdmNodeKind.ELEMENT) &&
+                                        (n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Book")) ||
+                                                n.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Magazine")))
+                        )
                 )
                 .collect(Collectors.groupingBy(
                         n -> n.getNodeName().getStructuredQName().toJaxpQName(),
@@ -286,10 +280,11 @@ class SaxonEquivalenceTests {
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineMonths3 = xdmDoc
-                .select(Steps.descendantOrSelf(NS, "Magazine").where(n -> n.getNodeKind().equals(XdmNodeKind.ELEMENT)))
-                .flatMap(n ->
-                        n.select(Steps.attribute("Month")).map(XdmItem::getStringValue)
+                .select(
+                        descendantOrSelfElements(NS, "Magazine")
+                                .then(Steps.attribute("Month"))
                 )
+                .map(XdmItem::getStringValue)
                 .toList();
 
         assertEquals(magazineMonths, magazineMonths3);
@@ -323,7 +318,19 @@ class SaxonEquivalenceTests {
         Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
-        // TODO Saxon query and assertion
+        List<String> magazineTitles3 = xdmDoc
+                .select(
+                        descendantOrSelfElements(NS, "Magazine")
+                                .then(descendantOrSelfElements(NS, "Title"))
+                )
+                .map(e -> e.select(
+                                Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                        ).map(XdmItem::getStringValue).collect(Collectors.joining())
+                )
+                .distinct()
+                .toList();
+
+        assertEquals(magazineTitles, magazineTitles3);
     }
 
     @Test
@@ -368,7 +375,41 @@ class SaxonEquivalenceTests {
         Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
-        // TODO Saxon query and assertion
+        Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
+                authorElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Author")) &&
+                        authorElem.select(childElements(NS, "First_Name"))
+                                .anyMatch(e -> {
+                                            var textValue = e.select(
+                                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                                            ).map(XdmItem::getStringValue).collect(Collectors.joining());
+                                            return textValue.equals("Jennifer");
+                                        }
+                                ) &&
+                        authorElem.select(childElements(NS, "Last_Name"))
+                                .anyMatch(e -> {
+                                            var textValue = e.select(
+                                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                                            ).map(XdmItem::getStringValue).collect(Collectors.joining());
+                                            return textValue.equals("Widom");
+                                        }
+                                );
+
+        Predicate<XdmNode> bookCowrittenByJenniferWidomInSaxon = bookElem ->
+                bookElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Book")) &&
+                        bookElem.select(descendantElements(NS, "Author"))
+                                .anyMatch(authorIsJenniferWidomInSaxon);
+
+        Set<String> bookTitlesCoauthoredByJenniferWidom3 = xdmDoc
+                .select(descendantOrSelfElements(NS, "Book"))
+                .filter(bookCowrittenByJenniferWidomInSaxon)
+                .flatMap(e -> e.select(descendantOrSelfElements(NS, "Title")))
+                .map(e -> e.select(
+                                Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                        ).map(XdmItem::getStringValue).collect(Collectors.joining())
+                )
+                .collect(Collectors.toSet());
+
+        assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom3);
     }
 
     @Test
@@ -409,7 +450,36 @@ class SaxonEquivalenceTests {
         Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
-        // TODO Saxon query and assertion
+        Function<XdmNode, String> getAuthorNameInSaxon = authorElem -> {
+            Preconditions.checkArgument(
+                    authorElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Author"))
+            );
+
+            String firstName = authorElem.select(childElements(NS, "First_Name"))
+                    .findFirst()
+                    .map(e -> e.select(
+                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                            ).map(XdmItem::getStringValue).collect(Collectors.joining())
+                    )
+                    .orElse("");
+
+            String lastName = authorElem.select(childElements(NS, "Last_Name"))
+                    .findFirst()
+                    .map(e -> e.select(
+                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                            ).map(XdmItem::getStringValue).collect(Collectors.joining())
+                    )
+                    .orElse("");
+
+            return String.format("%s %s", firstName, lastName).strip();
+        };
+
+        Set<String> authorNames3 = xdmDoc
+                .select(topmostDescendantElements(NS, "Author"))
+                .map(getAuthorNameInSaxon)
+                .collect(Collectors.toSet());
+
+        assertEquals(authorNames, authorNames3);
     }
 
     @Test
@@ -448,7 +518,37 @@ class SaxonEquivalenceTests {
         Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
-        // TODO Saxon query and assertion
+        Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
+                authorElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Author")) &&
+                        authorElem.select(childElements(NS, "First_Name"))
+                                .anyMatch(e -> {
+                                            var textValue = e.select(
+                                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                                            ).map(XdmItem::getStringValue).collect(Collectors.joining());
+                                            return textValue.equals("Jennifer");
+                                        }
+                                ) &&
+                        authorElem.select(childElements(NS, "Last_Name"))
+                                .anyMatch(e -> {
+                                            var textValue = e.select(
+                                                    Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                                            ).map(XdmItem::getStringValue).collect(Collectors.joining());
+                                            return textValue.equals("Widom");
+                                        }
+                                );
+
+        Predicate<XdmNode> bookCowrittenByJenniferWidomInSaxon = bookElem ->
+                bookElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Book")) &&
+                        bookElem.select(descendantElements(NS, "Author"))
+                                .anyMatch(authorIsJenniferWidomInSaxon);
+
+        Set<String> bookIsbnsCoauthoredByJenniferWidom3 = xdmDoc
+                .select(topmostDescendantElements(NS, "Book"))
+                .filter(bookCowrittenByJenniferWidomInSaxon)
+                .flatMap(e -> e.select(Steps.attribute("ISBN")).map(XdmNode::getStringValue))
+                .collect(Collectors.toSet());
+
+        assertEquals(bookIsbnsCoauthoredByJenniferWidom, bookIsbnsCoauthoredByJenniferWidom3);
     }
 
     @Test
@@ -477,6 +577,16 @@ class SaxonEquivalenceTests {
         Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
-        // TODO Saxon query and assertion
+        List<String> februaryMagazineTitles3 = xdmDoc
+                .select(topmostDescendantOrSelfElements(NS, "Magazine"))
+                .filter(e -> e.select(Steps.attribute("Month")).anyMatch(a -> "February".equals(a.getStringValue())))
+                .flatMap(e -> e.select(descendantOrSelfElements(NS, "Title")))
+                .map(e -> e.select(
+                                Steps.child(t -> t.getNodeKind().equals(XdmNodeKind.TEXT))
+                        ).map(XdmItem::getStringValue).collect(Collectors.joining())
+                )
+                .toList();
+
+        assertEquals(februaryMagazineTitles, februaryMagazineTitles3);
     }
 }
