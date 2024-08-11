@@ -6,7 +6,7 @@
 
   <groupId>eu.cdevreeze.yaidom4j</groupId>
   <artifactId>yaidom4j</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0-SNAPSHOT</version>
 
   <name>yaidom4j</name>
   <url>https://github.com/dvreeze/yaidom4j</url>
