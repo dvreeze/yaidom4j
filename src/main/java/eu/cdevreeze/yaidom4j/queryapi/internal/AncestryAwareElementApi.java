@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 /**
  * Object-oriented variant of the ancestry-aware element query API.
  *
- * @param <E>
+ * @param <E> The specific element type itself
  * @author Chris de Vreeze
  */
 public interface AncestryAwareElementApi<E extends AncestryAwareElementApi<E>> extends ElementApi<E> {

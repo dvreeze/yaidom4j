@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  * <p>
  * Each method below that returns a Java Stream should return a fresh new Stream on each call of that method.
  *
- * @param <E>
+ * @param <E> The element node type
  * @author Chris de Vreeze
  */
 public interface ElementQueryApi<E> {

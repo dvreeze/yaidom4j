@@ -21,9 +21,9 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Extension of ElementQueryApi<E> with methods to get streams of ancestor elements.
+ * Extension of ElementQueryApi with methods to get streams of ancestor elements.
  *
- * @param <E>
+ * @param <E> The element node type
  * @author Chris de Vreeze
  */
 public interface AncestryAwareElementQueryApi<E> extends ElementQueryApi<E> {

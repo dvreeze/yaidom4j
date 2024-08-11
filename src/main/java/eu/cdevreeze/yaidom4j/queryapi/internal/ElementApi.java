@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 /**
  * Object-oriented variant of the element query API.
  *
- * @param <E>
+ * @param <E> The specific element type itself
  * @author Chris de Vreeze
  */
 public interface ElementApi<E extends ElementApi<E>> {
