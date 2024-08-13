@@ -184,6 +184,41 @@ public record Element(
         return childElementStream().flatMap(che -> che.topmostDescendantElementOrSelfStream(predicate));
     }
 
+    // Functional updates
+
+    public Element withChildren(ImmutableList<Node> newChildren) {
+        return new Element(
+                name(),
+                attributes(),
+                namespaceScope(),
+                newChildren
+        );
+    }
+
+    public Element plusChild(Node newChild) {
+        return withChildren(
+                ImmutableList.<Node>builder().addAll(children).add(newChild).build()
+        );
+    }
+
+    public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
+        return new Element(
+                name(),
+                newAttributes,
+                namespaceScope(),
+                children()
+        );
+    }
+
+    public Element plusAttribute(QName attrName, String attrValue) {
+        return withAttributes(
+                ImmutableMap.<QName, String>builder()
+                        .putAll(attributes)
+                        .put(attrName, attrValue)
+                        .buildKeepingLast()
+        );
+    }
+
     /**
      * Element query API implementation for immutable DOM elements.
      */

@@ -48,9 +48,9 @@ class NamespaceScopeTests {
             Optional<QName> expected
     ) {
         if (expected.isEmpty()) {
-            assertThrows(RuntimeException.class, () -> scope.resolveSyntacticQName(syntacticQName));
+            assertThrows(RuntimeException.class, () -> scope.resolveSyntacticElementQName(syntacticQName));
         } else {
-            assertEquals(expected.orElseThrow(), scope.resolveSyntacticQName(syntacticQName));
+            assertEquals(expected.orElseThrow(), scope.resolveSyntacticElementQName(syntacticQName));
         }
     }
 

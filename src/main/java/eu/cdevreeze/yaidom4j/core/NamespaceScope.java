@@ -152,25 +152,41 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     /**
-     * Resolves the given syntactic QName, given this namespace scope.
+     * Resolves the given syntactic element QName, given this namespace scope.
      * <p>
-     * Do not use this method to resolve syntactic attribute names if this namespace scope has a
-     * default namespace. It can be used to resolve syntactic element names, though, if needed.
-     * This method is mostly needed for resolving element text and attribute values as QNames,
-     * though, if applicable.
+     * This method is often useful for resolving element text and attribute values as QNames,
+     * if applicable.
      */
-    public QName resolveSyntacticQName(String syntacticQName) {
+    public QName resolveSyntacticElementQName(String syntacticQName) {
         String[] parts = syntacticQName.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
 
         if (parts.length == 1) {
             return defaultNamespaceOption().map(ns -> new QName(ns, parts[0])).orElse(new QName(parts[0]));
         } else if (parts[0].equals(XMLConstants.XML_NS_PREFIX)) {
-            return new QName(XMLConstants.XML_NS_URI, parts[1]);
+            return new QName(XMLConstants.XML_NS_URI, parts[1], XMLConstants.XML_NS_PREFIX);
         } else {
             Preconditions.checkArgument(inScopeNamespaces.containsKey(parts[0]));
             String ns = inScopeNamespaces.get(parts[0]);
-            return new QName(ns, parts[1]);
+            return new QName(ns, parts[1], parts[0]);
+        }
+    }
+
+    /**
+     * Resolves the given syntactic attribute QName, given this namespace scope.
+     */
+    public QName resolveSyntacticAttributeQName(String syntacticQName) {
+        String[] parts = syntacticQName.split(Pattern.quote(":"));
+        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+
+        if (parts.length == 1) {
+            return new QName(parts[0]);
+        } else if (parts[0].equals(XMLConstants.XML_NS_PREFIX)) {
+            return new QName(XMLConstants.XML_NS_URI, parts[1], XMLConstants.XML_NS_PREFIX);
+        } else {
+            Preconditions.checkArgument(withoutDefaultNamespace().inScopeNamespaces.containsKey(parts[0]));
+            String ns = withoutDefaultNamespace().inScopeNamespaces.get(parts[0]);
+            return new QName(ns, parts[1], parts[0]);
         }
     }
 
