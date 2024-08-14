@@ -38,7 +38,7 @@ public class TransformerHandlers {
     private TransformerHandlers() {
     }
 
-    public static SAXTransformerFactory newTransformerFactory() {
+    public static SAXTransformerFactory newSaxTransformerFactory() {
         TransformerFactory tf = TransformerFactory.newDefaultInstance();
         Preconditions.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
         return (SAXTransformerFactory) tf;
@@ -57,6 +57,6 @@ public class TransformerHandlers {
     }
 
     public static TransformerHandler newTransformerHandler() {
-        return newTransformerHandler(newTransformerFactory());
+        return newTransformerHandler(newSaxTransformerFactory());
     }
 }
