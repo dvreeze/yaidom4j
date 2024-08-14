@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.examples;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
@@ -27,12 +26,9 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
 import eu.cdevreeze.yaidom4j.internal.DocumentBuilders;
+import eu.cdevreeze.yaidom4j.internal.TransformerHandlers;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
@@ -55,7 +51,7 @@ public class ShowElementCountsExample {
     public record ElementNameCount(QName name, long count) {
     }
 
-    public static void main(String[] args) throws URISyntaxException, TransformerConfigurationException {
+    public static void main(String[] args) throws URISyntaxException {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
@@ -151,18 +147,11 @@ public class ShowElementCountsExample {
         );
     }
 
-    private static String printElement(Element element) throws TransformerConfigurationException {
-        TransformerFactory tf = TransformerFactory.newDefaultInstance();
-        Preconditions.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
-        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-
+    private static String printElement(Element element) {
         var sw = new StringWriter();
         var streamResult = new StreamResult(sw);
 
-        TransformerHandler th = stf.newTransformerHandler();
-        th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-        th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        TransformerHandler th = TransformerHandlers.newTransformerHandler();
         th.setResult(streamResult);
 
         var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
