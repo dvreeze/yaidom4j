@@ -49,7 +49,7 @@ public class TransformerHandlers {
             TransformerHandler th = stf.newTransformerHandler();
             th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
             th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             return th;
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
