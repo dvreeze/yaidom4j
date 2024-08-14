@@ -26,13 +26,10 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
+import eu.cdevreeze.yaidom4j.internal.DocumentBuilders;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -60,19 +57,13 @@ public class ShowElementCountsExample {
     public record ElementNameCount(QName name, long count) {
     }
 
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, URISyntaxException, TransformerConfigurationException {
+    public static void main(String[] args) throws IOException, URISyntaxException, TransformerConfigurationException {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
         logTime("Going to parse document ...");
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
-        docBuilderFactory.setNamespaceAware(true); // Important!
-        docBuilderFactory.setValidating(false);
-        docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-
-        var domDoc = docBuilder.parse(new InputSource(inputFile.toURL().openStream()));
+        var domDoc = DocumentBuilders.parse(new InputSource(inputFile.toURL().openStream()));
         domDoc.setDocumentURI(inputFile.toString());
 
         logTime("Parsed document " + domDoc.getDocumentURI());
