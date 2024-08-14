@@ -18,17 +18,13 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
@@ -54,22 +50,17 @@ class NodeEqualityTests {
     private Document doc3;
 
     @BeforeAll
-    void parseDocuments() throws SAXException, ParserConfigurationException, IOException {
+    void parseDocuments() {
         doc1 = parseDocument("/feed1.xml");
         doc2 = parseDocument("/feed2.xml");
         doc3 = parseDocument("/feed3.xml");
     }
 
-    private Document parseDocument(String xmlClasspathResource) throws SAXException, ParserConfigurationException, IOException {
-        SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-        saxParserFactory.setNamespaceAware(true); // Important!
-        saxParserFactory.setValidating(false);
-        saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        SAXParser parser = saxParserFactory.newSAXParser();
+    private Document parseDocument(String xmlClasspathResource) {
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
         InputStream inputStream = NodeEqualityTests.class.getResourceAsStream(xmlClasspathResource);
-        parser.parse(new InputSource(inputStream), saxHandler);
+        SaxParsers.parse(new InputSource(inputStream), saxHandler);
         return Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
     }
 

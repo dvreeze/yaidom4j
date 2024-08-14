@@ -26,20 +26,15 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,20 +55,16 @@ public class ShowElementCountsExampleUsingSax {
     public record ElementNameCount(QName name, long count) {
     }
 
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, URISyntaxException, TransformerConfigurationException {
+    public static void main(String[] args) throws URISyntaxException, TransformerConfigurationException {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
         logTime("Going to parse document ...");
 
-        SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-        saxParserFactory.setNamespaceAware(true); // Important!
-        saxParserFactory.setValidating(false);
-        saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        SAXParser parser = saxParserFactory.newSAXParser();
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
-        parser.parse(new InputSource(inputFile.toURL().openStream()), saxHandler);
+        SaxParsers.parse(inputFile, saxHandler);
+
         Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument().withUri(inputFile));
 
         logTime("Parsed \"immutable DOM\" document " + doc.uriOption().map(Object::toString).orElse(""));

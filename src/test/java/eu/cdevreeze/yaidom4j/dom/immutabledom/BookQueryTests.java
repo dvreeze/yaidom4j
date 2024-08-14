@@ -18,14 +18,10 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Predicate;
 
@@ -43,16 +39,11 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     private static Element rootElement;
 
     @BeforeAll
-    protected static void parseRootElement() throws SAXException, ParserConfigurationException, IOException {
-        SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-        saxParserFactory.setNamespaceAware(true); // Important!
-        saxParserFactory.setValidating(false);
-        saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        SAXParser parser = saxParserFactory.newSAXParser();
+    protected static void parseRootElement() {
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
-        parser.parse(new InputSource(inputStream), saxHandler);
+        SaxParsers.parse(new InputSource(inputStream), saxHandler);
         rootElement = Documents.removeInterElementWhitespace(saxHandler.resultingDocument())
                 .documentElement();
     }

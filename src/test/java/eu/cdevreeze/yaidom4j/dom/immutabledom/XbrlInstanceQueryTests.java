@@ -19,17 +19,13 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -60,16 +56,11 @@ class XbrlInstanceQueryTests {
     private TestXbrlInstances.XbrlInstance instance;
 
     @BeforeAll
-    void parseDocument() throws SAXException, ParserConfigurationException, IOException {
-        SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-        saxParserFactory.setNamespaceAware(true); // Important!
-        saxParserFactory.setValidating(false);
-        saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        SAXParser parser = saxParserFactory.newSAXParser();
+    void parseDocument() {
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
-        parser.parse(new InputSource(inputStream), saxHandler);
+        SaxParsers.parse(new InputSource(inputStream), saxHandler);
         Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
         instance = TestXbrlInstances.XbrlInstance.from(doc.documentElement());
     }
