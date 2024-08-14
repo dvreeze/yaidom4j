@@ -153,9 +153,6 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
 
     /**
      * Resolves the given syntactic element QName, given this namespace scope.
-     * <p>
-     * This method is often useful for resolving element text and attribute values as QNames,
-     * if applicable.
      */
     public QName resolveSyntacticElementQName(String syntacticQName) {
         String[] parts = syntacticQName.split(Pattern.quote(":"));
@@ -188,6 +185,18 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
             String ns = withoutDefaultNamespace().inScopeNamespaces.get(parts[0]);
             return new QName(ns, parts[1], parts[0]);
         }
+    }
+
+    /**
+     * Resolves the given syntactic QName when used in "text content", given this namespace scope.
+     * <p>
+     * With "text content" attribute values and element content text is meant. Usually an XML Schema
+     * is used to recognize and make sense of such content.
+     * <p>
+     * This method delegates to "resolveSyntacticElementQName".
+     */
+    public QName resolveSyntacticQNameInContent(String syntacticQName) {
+        return resolveSyntacticElementQName(syntacticQName);
     }
 
     public boolean subScopeOf(NamespaceScope other) {

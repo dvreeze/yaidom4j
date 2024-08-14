@@ -24,7 +24,13 @@ import javax.xml.namespace.QName;
 import java.util.Map;
 
 /**
- * XML node builder, retaining a NamespaceScope.
+ * XML node builder, retaining a NamespaceScope. There are 2 variants of this API, one of them the
+ * concise API that works with syntactic qualified names (as Strings) instead of Java QName instances.
+ * <p>
+ * The user of the node builder API(s) must take care to manage in-scope namespaces appropriately.
+ * For example, all used prefixes (in element names and attribute names) must be in scope, and
+ * the resulting element tree must have no prefixed namespace undeclarations (which are not allowed in
+ * XML 1.0).
  *
  * @author Chris de Vreeze
  */

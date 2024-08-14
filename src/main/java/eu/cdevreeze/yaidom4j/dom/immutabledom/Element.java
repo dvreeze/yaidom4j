@@ -186,6 +186,13 @@ public record Element(
 
     // Functional updates
 
+    /**
+     * Functionally updates this element by replacing the collection of child nodes.
+     * <p>
+     * When calling this function, take care to align the in-scope namespaces in order to
+     * prevent invalid XML 1.0 from being created. After all, prefixed namespace undeclarations
+     * are not allowed in XML 1.0.
+     */
     public Element withChildren(ImmutableList<Node> newChildren) {
         return new Element(
                 name(),
@@ -195,12 +202,20 @@ public record Element(
         );
     }
 
+    /**
+     * Calls method "withChildren" to functionally add one child node at the end
+     */
     public Element plusChild(Node newChild) {
         return withChildren(
                 ImmutableList.<Node>builder().addAll(children).add(newChild).build()
         );
     }
 
+    /**
+     * Functionally updates this element by replacing the collection of attributes.
+     * <p>
+     * For prefixed attributes, take care to use only prefixes that are in scope.
+     */
     public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
         return new Element(
                 name(),
@@ -210,6 +225,9 @@ public record Element(
         );
     }
 
+    /**
+     * Calls method "withAttributes" to functionally add or update one attribute
+     */
     public Element plusAttribute(QName attrName, String attrValue) {
         return withAttributes(
                 ImmutableMap.<QName, String>builder()
