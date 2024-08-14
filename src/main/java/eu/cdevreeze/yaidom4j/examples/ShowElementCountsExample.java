@@ -27,7 +27,6 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
 import eu.cdevreeze.yaidom4j.internal.DocumentBuilders;
-import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
@@ -36,7 +35,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,13 +55,13 @@ public class ShowElementCountsExample {
     public record ElementNameCount(QName name, long count) {
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException, TransformerConfigurationException {
+    public static void main(String[] args) throws URISyntaxException, TransformerConfigurationException {
         Objects.checkIndex(0, args.length);
         URI inputFile = new URI(args[0]);
 
         logTime("Going to parse document ...");
 
-        var domDoc = DocumentBuilders.parse(new InputSource(inputFile.toURL().openStream()));
+        var domDoc = DocumentBuilders.parse(inputFile);
         domDoc.setDocumentURI(inputFile.toString());
 
         logTime("Parsed document " + domDoc.getDocumentURI());
