@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.ElementQueryApi;
 import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
 
@@ -71,6 +72,15 @@ public record Element(
     @Override
     public boolean isElement() {
         return true;
+    }
+
+    @Override
+    public ClarkNodes.Element toClarkNode() {
+        return new ClarkNodes.Element(
+                name(),
+                attributes(),
+                children.stream().map(Node::toClarkNode).collect(ImmutableList.toImmutableList())
+        );
     }
 
     @Override

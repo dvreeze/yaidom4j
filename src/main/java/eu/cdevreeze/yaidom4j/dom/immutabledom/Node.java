@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+
 /**
  * Any XML node, whether an element, text node, comment or processing instruction.
  *
@@ -24,4 +26,6 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 public sealed interface Node permits CanBeDocumentChild, Text {
 
     boolean isElement();
+
+    ClarkNodes.Node toClarkNode();
 }

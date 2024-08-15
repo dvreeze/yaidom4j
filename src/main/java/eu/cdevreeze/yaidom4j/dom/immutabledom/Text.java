@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+
 import java.util.Objects;
 
 /**
@@ -32,5 +34,10 @@ public record Text(String value, boolean isCData) implements Node {
     @Override
     public boolean isElement() {
         return false;
+    }
+
+    @Override
+    public ClarkNodes.Text toClarkNode() {
+        return new ClarkNodes.Text(value, isCData);
     }
 }

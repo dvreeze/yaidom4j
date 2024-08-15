@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+
 import java.util.Objects;
 
 /**
@@ -33,5 +35,10 @@ public record ProcessingInstruction(String target, String data) implements CanBe
     @Override
     public boolean isElement() {
         return false;
+    }
+
+    @Override
+    public ClarkNodes.ProcessingInstruction toClarkNode() {
+        return new ClarkNodes.ProcessingInstruction(target, data);
     }
 }

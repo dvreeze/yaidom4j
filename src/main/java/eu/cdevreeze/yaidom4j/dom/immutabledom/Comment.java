@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+
 import java.util.Objects;
 
 /**
@@ -32,5 +34,10 @@ public record Comment(String value) implements CanBeDocumentChild {
     @Override
     public boolean isElement() {
         return false;
+    }
+
+    @Override
+    public ClarkNodes.Comment toClarkNode() {
+        return new ClarkNodes.Comment(value);
     }
 }
