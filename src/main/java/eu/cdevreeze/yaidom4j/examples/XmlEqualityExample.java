@@ -22,7 +22,6 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -47,8 +46,7 @@ public class XmlEqualityExample {
         Document doc1 = Objects.requireNonNull(getDocument1());
         Document doc2 = Objects.requireNonNull(getDocument2());
 
-        var nodeComparison = NodeComparisons.defaultEquality();
-        boolean areEqual = nodeComparison.areEqual(doc1.documentElement(), doc2.documentElement());
+        boolean areEqual = doc1.documentElement().toClarkNode().equals(doc2.documentElement().toClarkNode());
 
         System.out.printf("Both documents are equal: %b%n", areEqual);
 
@@ -57,7 +55,7 @@ public class XmlEqualityExample {
 
         areEqual = allElems1.size() == allElems2.size() &&
                 IntStream.range(0, allElems1.size())
-                        .allMatch(i -> nodeComparison.areEqual(allElems1.get(i), allElems2.get(i)));
+                        .allMatch(i -> allElems1.get(i).toClarkNode().equals(allElems2.get(i).toClarkNode()));
 
         System.out.printf("Both documents are equal (by comparing element streams): %b%n", areEqual);
 

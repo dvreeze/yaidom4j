@@ -19,7 +19,6 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +30,8 @@ import java.io.InputStream;
 import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Node builder tests against sample XML files from
@@ -76,13 +76,11 @@ class NodeBuilderTests {
         Element rootElement1 = rootElement1(innerText);
         Element rootElement2 = rootElement2(innerText);
 
-        var defaultEquality = NodeComparisons.defaultEquality();
+        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
+        assertEquals(doc1.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
+        assertEquals(doc3.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
 
-        assertTrue(defaultEquality.areEqual(doc1.documentElement(), doc2.documentElement()));
-        assertTrue(defaultEquality.areEqual(doc1.documentElement(), doc3.documentElement()));
-        assertTrue(defaultEquality.areEqual(doc3.documentElement(), doc2.documentElement()));
-
-        assertFalse(defaultEquality.areEqual(doc1.documentElement(), rootElement1));
+        assertNotEquals(doc1.documentElement().toClarkNode(), rootElement1.toClarkNode());
 
         Element docRootElement1 = prepareForComparison(doc1.documentElement());
         Element docRootElement2 = prepareForComparison(doc2.documentElement());
@@ -91,10 +89,10 @@ class NodeBuilderTests {
                 rootElement1.elementStream().map(e -> e.name().getPrefix()).collect(Collectors.toSet()),
                 rootElement2.elementStream().map(e -> e.name().getPrefix()).collect(Collectors.toSet())
         );
-        assertTrue(defaultEquality.areEqual(rootElement1, rootElement2));
+        assertEquals(rootElement1.toClarkNode(), rootElement2.toClarkNode());
 
-        assertTrue(defaultEquality.areEqual(docRootElement1, rootElement1));
-        assertTrue(defaultEquality.areEqual(docRootElement2, rootElement2));
+        assertEquals(docRootElement1.toClarkNode(), rootElement1.toClarkNode());
+        assertEquals(docRootElement2.toClarkNode(), rootElement2.toClarkNode());
     }
 
     private static final NodeBuilder.ConciseApi nb1 = new NodeBuilder.ConciseApi(

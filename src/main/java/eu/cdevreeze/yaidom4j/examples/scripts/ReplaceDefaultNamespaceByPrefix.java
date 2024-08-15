@@ -22,7 +22,6 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Elements;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
@@ -61,9 +60,8 @@ public class ReplaceDefaultNamespaceByPrefix {
         String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
         Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
 
-        var equalityComparison = new NodeComparisons.DefaultEqualityComparison();
         Preconditions.checkArgument(
-                equalityComparison.areEqual(doc.documentElement(), transformedElement)
+                doc.documentElement().toClarkNode().equals(transformedElement.toClarkNode())
         );
 
         String xmlString = printElement(transformedElement);

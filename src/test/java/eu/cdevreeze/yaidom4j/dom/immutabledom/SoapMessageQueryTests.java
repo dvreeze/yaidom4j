@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +31,6 @@ import java.util.List;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * SOAP message query tests.
@@ -144,7 +142,6 @@ class SoapMessageQueryTests {
                         .distinct()
                         .count());
 
-        var nodeComparison = NodeComparisons.defaultEquality();
-        assertTrue(nodeComparison.areEqual(soapMessage.documentElement(), editedSoapMessage));
+        assertEquals(soapMessage.documentElement().toClarkNode(), editedSoapMessage.toClarkNode());
     }
 }

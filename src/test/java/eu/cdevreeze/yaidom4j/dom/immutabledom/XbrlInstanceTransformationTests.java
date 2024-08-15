@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +29,8 @@ import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * XBRL instance transformation tests.
@@ -119,9 +119,7 @@ class XbrlInstanceTransformationTests {
 
         assertEquals(instance.element().elementStream().count() + 1, newInstance.element().elementStream().count());
 
-        var nodeComparison = NodeComparisons.defaultEquality();
-
-        assertTrue(nodeComparison.areEqual(newInstance.element(), newInstance2.element()));
+        assertEquals(newInstance.element().toClarkNode(), newInstance2.element().toClarkNode());
 
         TestXbrlInstances.XbrlInstance newInstance3 = TestXbrlInstances.XbrlInstance.from(
                 Elements.transformChildElementsToNodeLists(
@@ -136,9 +134,9 @@ class XbrlInstanceTransformationTests {
                 )
         );
 
-        assertFalse(nodeComparison.areEqual(newInstance.element(), newInstance3.element()));
-        assertFalse(nodeComparison.areEqual(newInstance2.element(), newInstance3.element()));
+        assertNotEquals(newInstance.element().toClarkNode(), newInstance3.element().toClarkNode());
+        assertNotEquals(newInstance2.element().toClarkNode(), newInstance3.element().toClarkNode());
 
-        assertTrue(nodeComparison.areEqual(instance.element(), newInstance3.element()));
+        assertEquals(instance.element().toClarkNode(), newInstance3.element().toClarkNode());
     }
 }

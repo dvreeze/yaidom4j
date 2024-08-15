@@ -28,6 +28,7 @@ import static eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes.*;
  * Several Clark element utilities, mainly for functionally transforming elements.
  * <p>
  * Note that it is very easy to create Clark elements that cannot correspond to any valid XML (1.0).
+ * It is best to create Clark elements by converting immutable DOM elements to Clark elements.
  *
  * @author Chris de Vreeze
  */

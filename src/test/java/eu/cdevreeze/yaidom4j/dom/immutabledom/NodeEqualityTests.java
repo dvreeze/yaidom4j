@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import eu.cdevreeze.yaidom4j.dom.immutabledom.comparison.NodeComparisons;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -152,10 +151,9 @@ class NodeEqualityTests {
 
     @Test
     void testEqualDocumentElements() {
-        var nodeComparison = NodeComparisons.defaultEquality();
-        assertTrue(nodeComparison.areEqual(doc1.documentElement(), doc2.documentElement()));
-        assertTrue(nodeComparison.areEqual(doc1.documentElement(), doc3.documentElement()));
-        assertTrue(nodeComparison.areEqual(doc2.documentElement(), doc3.documentElement()));
+        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
+        assertEquals(doc1.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
+        assertEquals(doc2.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
     }
 
     @Test
@@ -175,18 +173,17 @@ class NodeEqualityTests {
         assertEquals(elements1.size(), elements2.size());
         assertEquals(elements1.size(), elements3.size());
 
-        var nodeComparison = NodeComparisons.defaultEquality();
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> nodeComparison.areEqual(elements1.get(i), elements2.get(i)))
+                        .allMatch(i -> elements1.get(i).toClarkNode().equals(elements2.get(i).toClarkNode()))
         );
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> nodeComparison.areEqual(elements1.get(i), elements3.get(i)))
+                        .allMatch(i -> elements1.get(i).toClarkNode().equals(elements3.get(i).toClarkNode()))
         );
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> nodeComparison.areEqual(elements2.get(i), elements3.get(i)))
+                        .allMatch(i -> elements2.get(i).toClarkNode().equals(elements3.get(i).toClarkNode()))
         );
     }
 }
