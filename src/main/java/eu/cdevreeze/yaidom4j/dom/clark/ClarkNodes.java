@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * in-scope namespaces. These nodes are good candidates for XML equality comparisons, where
  * namespaces prefixes are irrelevant but the actual namespaces of elements and attributes
  * are quite relevant. These nodes are inspired by James Clark and his article on
- * (<a href="http://www.jclark.com/xml/xmlns.htm">XML Namespaces</a>).
+ * <a href="http://www.jclark.com/xml/xmlns.htm">XML Namespaces</a>.
  * <p>
  * Note that it is possible to create a "Clark element" that could not possibly correspond to
  * any "immutable DOM" element that represents valid XML 1.0, due to the latter having prefixed namespace
