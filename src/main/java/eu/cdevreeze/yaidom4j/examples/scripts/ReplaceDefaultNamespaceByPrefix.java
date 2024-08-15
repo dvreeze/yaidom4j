@@ -79,14 +79,19 @@ public class ReplaceDefaultNamespaceByPrefix {
     private static Element transformElement(Element element, String prefix, String namespace) {
         return Elements.transformDescendantElementsOrSelf(
                 element,
-                elem -> new Element(
-                        elem.name().getPrefix().isEmpty() ?
-                                new QName(namespace, elem.name().getLocalPart(), prefix) :
-                                elem.name(),
-                        elem.attributes(), // default namespace not applicable to attributes
-                        elem.namespaceScope().withoutDefaultNamespace().resolve(prefix, namespace),
-                        elem.children()
-                )
+                elem -> {
+                    Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().isPresent());
+                    Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().equals(element.namespaceScope().defaultNamespaceOption()));
+
+                    return new Element(
+                            elem.name().getPrefix().isEmpty() ?
+                                    new QName(namespace, elem.name().getLocalPart(), prefix) :
+                                    elem.name(),
+                            elem.attributes(), // default namespace not applicable to attributes
+                            elem.namespaceScope().withoutDefaultNamespace().resolve(prefix, namespace),
+                            elem.children()
+                    );
+                }
         );
     }
 
