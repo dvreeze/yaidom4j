@@ -19,6 +19,8 @@ package eu.cdevreeze.yaidom4j.examples.scripts;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkElements;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
@@ -56,21 +58,23 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         SaxParsers.parse(inputFile, saxHandler);
         Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument().withUri(inputFile));
 
-        checkElement(doc.documentElement());
+        checkParsedElement(doc.documentElement());
 
         String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
         Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
 
-        Preconditions.checkArgument(
-                stripMeasureContent(doc.documentElement()).toClarkNode()
-                        .equals(stripMeasureContent(transformedElement).toClarkNode())
-        );
+        ClarkNodes.Element clarkDocElem =
+                transformElementForComparison(doc.documentElement().toClarkNode(), prefix);
+        ClarkNodes.Element transformedClarkElem =
+                transformElementForComparison(transformedElement.toClarkNode(), prefix);
+
+        Preconditions.checkArgument(clarkDocElem.equals(transformedClarkElem));
 
         String xmlString = printElement(transformedElement);
         System.out.println(xmlString);
     }
 
-    private static void checkElement(Element element) {
+    private static void checkParsedElement(Element element) {
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
         Preconditions.checkArgument(ns.equals(XBRLI_NS));
         Preconditions.checkArgument(
@@ -116,17 +120,31 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         }
     }
 
-    private static Element stripMeasureContent(Element element) {
-        return Elements.transformDescendantElementsOrSelf(
+    private static ClarkNodes.Element transformElementForComparison(ClarkNodes.Element element, String prefix) {
+        return ClarkElements.transformDescendantElementsOrSelf(
                 element,
                 elem -> {
-                    if (elem.name().equals(new QName(XBRLI_NS, "measure"))) {
-                        return elem.withChildren(ImmutableList.of());
-                    } else {
-                        return elem;
-                    }
+                    ImmutableList<ClarkNodes.Node> children = adaptMeasureForComparison(elem, prefix).children();
+
+                    return new ClarkNodes.Element(elem.name(), elem.attributes(), children);
                 }
         );
+    }
+
+    private static ClarkNodes.Element adaptMeasureForComparison(ClarkNodes.Element element, String xbrliPrefix) {
+        if (element.name().equals(new QName(XBRLI_NS, "measure"))) {
+            if (element.text().equals("pure") || element.text().equals(xbrliPrefix + ":pure")) {
+                String qname = new QName(XBRLI_NS, "pure").toString();
+                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname, false)));
+            } else if (element.text().equals("shares") || element.text().equals(xbrliPrefix + ":shares")) {
+                String qname = new QName(XBRLI_NS, "shares").toString();
+                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname, false)));
+            } else {
+                return element;
+            }
+        } else {
+            return element;
+        }
     }
 
     private static String printElement(Element element) {
