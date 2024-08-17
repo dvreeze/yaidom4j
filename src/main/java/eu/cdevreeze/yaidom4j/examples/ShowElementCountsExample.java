@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
@@ -62,7 +61,7 @@ public class ShowElementCountsExample {
 
         logTime("Parsed document " + domDoc.getDocumentURI());
 
-        Document doc = Documents.removeInterElementWhitespace(JaxpDomToImmutableDomConverter.convertDocument(domDoc));
+        Document doc = JaxpDomToImmutableDomConverter.convertDocument(domDoc).removeInterElementWhitespace();
 
         logTime("Converted document (to \"immutable DOM\") " + doc.uriOption().map(Object::toString).orElse(""));
 

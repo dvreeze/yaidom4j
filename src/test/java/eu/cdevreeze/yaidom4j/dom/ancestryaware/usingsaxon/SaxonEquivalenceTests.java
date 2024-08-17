@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import net.sf.saxon.BasicTransformerFactory;
@@ -82,7 +81,7 @@ class SaxonEquivalenceTests {
 
         tf.transform(xdmDoc.asSource(), new SAXResult(saxHandler));
 
-        var underlyingDoc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
         return Document.from(underlyingDoc);
     }
 

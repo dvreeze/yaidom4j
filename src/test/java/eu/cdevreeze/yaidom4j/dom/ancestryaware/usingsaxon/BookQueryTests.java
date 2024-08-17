@@ -20,7 +20,6 @@ import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import net.sf.saxon.BasicTransformerFactory;
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -75,7 +74,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
         tf.transform(xdmDoc.asSource(), new SAXResult(saxHandler));
 
-        var underlyingDoc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
         var doc = Document.from(underlyingDoc);
         rootElement = doc.documentElement();
     }

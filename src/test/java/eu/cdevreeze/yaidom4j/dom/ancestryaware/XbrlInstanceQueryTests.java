@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,7 +61,7 @@ class XbrlInstanceQueryTests {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        var underlyingDoc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
         instance = TestXbrlInstances.XbrlInstance.from(Document.from(underlyingDoc).documentElement());
     }
 

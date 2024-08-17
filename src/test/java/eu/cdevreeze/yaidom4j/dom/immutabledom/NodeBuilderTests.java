@@ -62,7 +62,7 @@ class NodeBuilderTests {
 
         InputStream inputStream = NodeBuilderTests.class.getResourceAsStream(xmlClasspathResource);
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        return Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        return saxHandler.resultingDocument().removeInterElementWhitespace();
     }
 
     @Test

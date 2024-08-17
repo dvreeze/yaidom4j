@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,7 +48,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        var underlyingDoc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
         var doc = Document.from(underlyingDoc);
         rootElement = doc.documentElement();
     }

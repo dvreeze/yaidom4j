@@ -49,4 +49,22 @@ public record Document(
     public Document withUri(URI uri) {
         return new Document(Optional.of(uri), children);
     }
+
+    /**
+     * Removes all inter-element whitespace, through the equally named method on the document element.
+     */
+    public Document removeInterElementWhitespace() {
+        return new Document(
+                uriOption(),
+                children().stream()
+                        .map(ch -> {
+                            if (ch instanceof Element e) {
+                                return e.removeInterElementWhitespace();
+                            } else {
+                                return ch;
+                            }
+                        })
+                        .collect(ImmutableList.toImmutableList())
+        );
+    }
 }

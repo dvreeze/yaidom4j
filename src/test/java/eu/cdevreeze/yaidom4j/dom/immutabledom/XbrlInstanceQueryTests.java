@@ -61,7 +61,7 @@ class XbrlInstanceQueryTests {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        Document doc = saxHandler.resultingDocument().removeInterElementWhitespace();
         instance = TestXbrlInstances.XbrlInstance.from(doc.documentElement());
     }
 

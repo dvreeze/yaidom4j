@@ -44,7 +44,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        rootElement = Documents.removeInterElementWhitespace(saxHandler.resultingDocument())
+        rootElement = saxHandler.resultingDocument().removeInterElementWhitespace()
                 .documentElement();
     }
 

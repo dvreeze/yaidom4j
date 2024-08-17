@@ -20,7 +20,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
@@ -55,7 +58,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
 
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
         SaxParsers.parse(inputFile, saxHandler);
-        Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument().withUri(inputFile));
+        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
 
         checkParsedElement(doc.documentElement());
 

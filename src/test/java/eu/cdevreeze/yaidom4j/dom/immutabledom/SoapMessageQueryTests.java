@@ -56,7 +56,7 @@ class SoapMessageQueryTests {
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-soap-message.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        soapMessage = Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        soapMessage = saxHandler.resultingDocument().removeInterElementWhitespace();
     }
 
     @Test

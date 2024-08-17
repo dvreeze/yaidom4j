@@ -60,7 +60,7 @@ class NodeEqualityTests {
 
         InputStream inputStream = NodeEqualityTests.class.getResourceAsStream(xmlClasspathResource);
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        return Documents.removeInterElementWhitespace(saxHandler.resultingDocument());
+        return saxHandler.resultingDocument().removeInterElementWhitespace();
     }
 
     @Test

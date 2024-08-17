@@ -19,7 +19,6 @@ package eu.cdevreeze.yaidom4j.examples.scripts;
 import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
@@ -52,7 +51,7 @@ public class ReplaceDefaultNamespaceByPrefix {
 
         ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
         SaxParsers.parse(inputFile, saxHandler);
-        Document doc = Documents.removeInterElementWhitespace(saxHandler.resultingDocument().withUri(inputFile));
+        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
 
         checkElement(doc.documentElement());
 
