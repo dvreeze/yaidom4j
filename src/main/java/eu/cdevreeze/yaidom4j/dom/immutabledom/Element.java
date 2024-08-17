@@ -23,12 +23,16 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.ElementQueryApi;
 import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
+import eu.cdevreeze.yaidom4j.transformationapi.internal.TransformableElementApi;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +46,7 @@ public record Element(
         ImmutableMap<QName, String> attributes,
         NamespaceScope namespaceScope,
         ImmutableList<Node> children
-) implements CanBeDocumentChild, ElementApi<Element> {
+) implements CanBeDocumentChild, ElementApi<Element>, TransformableElementApi<Element, Node> {
 
     public Element {
         Objects.requireNonNull(name);
@@ -203,6 +207,7 @@ public record Element(
      * prevent invalid XML 1.0 from being created. After all, prefixed namespace undeclarations
      * are not allowed in XML 1.0.
      */
+    @Override
     public Element withChildren(ImmutableList<Node> newChildren) {
         return new Element(
                 name(),
@@ -245,6 +250,93 @@ public record Element(
                         .put(attrName, attrValue)
                         .buildKeepingLast()
         );
+    }
+
+    @Override
+    public Element transformChildrenToNodeLists(Function<Node, List<Node>> f) {
+        return withChildren(
+                children().stream()
+                        .flatMap(ch -> f.apply(ch).stream())
+                        .collect(ImmutableList.toImmutableList())
+        );
+    }
+
+    @Override
+    public Element transformChildElementsToNodeLists(Function<Element, List<Node>> f) {
+        return transformChildrenToNodeLists(
+                ch -> {
+                    if (ch instanceof Element e) {
+                        return f.apply(e);
+                    } else {
+                        return List.of(ch);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public Element transformChildElements(UnaryOperator<Element> f) {
+        return transformChildElementsToNodeLists(e -> List.of(f.apply(e)));
+    }
+
+    @Override
+    public Element transformDescendantElementsOrSelf(UnaryOperator<Element> f) {
+        // Recursion
+        Element descendantResult =
+                transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
+        return f.apply(descendantResult);
+    }
+
+    @Override
+    public Element transformDescendantElements(UnaryOperator<Element> f) {
+        return transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
+    }
+
+    // Custom element transformations
+
+    @Override
+    public Element removeInterElementWhitespace() {
+        ImmutableList<Node> children = children();
+
+        // Naive implementation
+        boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
+        boolean hasOnlyInterElementWhitespaceTextChildren = hasElementChild &&
+                children.stream().allMatch(ch -> !(ch instanceof Text t) || t.value().isBlank());
+
+        List<Node> filteredChildren =
+                hasOnlyInterElementWhitespaceTextChildren ?
+                        children.stream().filter(ch -> !(ch instanceof Text)).toList() :
+                        children;
+
+        return withChildren(
+                filteredChildren.stream()
+                        .map(ch -> {
+                            if (ch instanceof Element che) {
+                                // Recursion
+                                return che.removeInterElementWhitespace();
+                            } else {
+                                return ch;
+                            }
+                        })
+                        .collect(ImmutableList.toImmutableList())
+        );
+    }
+
+    /**
+     * Returns the "same element", except that there are no prefixed namespace un-declarations
+     * (which are not allowed in XML 1.0), and the given parent scope (without its default
+     * namespace, if any) is taken as the "starting point".
+     */
+    public Element notUndeclaringPrefixes(NamespaceScope parentScope) {
+        NamespaceScope newScope =
+                parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
+
+        Preconditions.checkArgument(namespaceScope().subScopeOf(newScope));
+        Preconditions.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
+
+        // Recursion
+        return new Element(name(), attributes(), newScope, children())
+                .transformChildElements(che -> che.notUndeclaringPrefixes(newScope));
     }
 
     /**

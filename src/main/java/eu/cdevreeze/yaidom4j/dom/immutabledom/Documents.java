@@ -34,7 +34,7 @@ public class Documents {
                 doc.children().stream()
                         .map(ch -> {
                             if (ch instanceof Element e) {
-                                return Elements.removeInterElementWhitespace(e);
+                                return e.removeInterElementWhitespace();
                             } else {
                                 return ch;
                             }

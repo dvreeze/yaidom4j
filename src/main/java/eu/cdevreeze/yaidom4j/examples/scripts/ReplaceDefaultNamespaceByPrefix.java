@@ -21,7 +21,6 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Documents;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Elements;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.internal.SaxParsers;
@@ -77,8 +76,7 @@ public class ReplaceDefaultNamespaceByPrefix {
     }
 
     private static Element transformElement(Element element, String prefix, String namespace) {
-        return Elements.transformDescendantElementsOrSelf(
-                element,
+        return element.transformDescendantElementsOrSelf(
                 elem -> {
                     Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().isPresent());
                     Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().equals(element.namespaceScope().defaultNamespaceOption()));

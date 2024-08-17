@@ -21,11 +21,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.queryapi.ElementQueryApi;
 import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
+import eu.cdevreeze.yaidom4j.transformationapi.internal.TransformableElementApi;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,7 +64,7 @@ public class ClarkNodes {
             QName name,
             ImmutableMap<QName, String> attributes,
             ImmutableList<Node> children
-    ) implements Node, ElementApi<Element> {
+    ) implements Node, ElementApi<Element>, TransformableElementApi<Element, Node> {
 
         public Element {
             Objects.requireNonNull(name);
@@ -194,6 +198,7 @@ public class ClarkNodes {
         /**
          * Functionally updates this element by replacing the collection of child nodes.
          */
+        @Override
         public Element withChildren(ImmutableList<Node> newChildren) {
             return new Element(
                     name(),
@@ -231,6 +236,74 @@ public class ClarkNodes {
                             .putAll(attributes)
                             .put(attrName, attrValue)
                             .buildKeepingLast()
+            );
+        }
+
+        @Override
+        public Element transformChildrenToNodeLists(Function<Node, List<Node>> f) {
+            return withChildren(
+                    children().stream()
+                            .flatMap(ch -> f.apply(ch).stream())
+                            .collect(ImmutableList.toImmutableList())
+            );
+        }
+
+        @Override
+        public Element transformChildElementsToNodeLists(Function<Element, List<Node>> f) {
+            return transformChildrenToNodeLists(
+                    ch -> {
+                        if (ch instanceof Element e) {
+                            return f.apply(e);
+                        } else {
+                            return List.of(ch);
+                        }
+                    }
+            );
+        }
+
+        @Override
+        public Element transformChildElements(UnaryOperator<Element> f) {
+            return transformChildElementsToNodeLists(e -> List.of(f.apply(e)));
+        }
+
+        @Override
+        public Element transformDescendantElementsOrSelf(UnaryOperator<Element> f) {
+            // Recursion
+            Element descendantResult =
+                    transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
+            return f.apply(descendantResult);
+        }
+
+        @Override
+        public Element transformDescendantElements(UnaryOperator<Element> f) {
+            return transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
+        }
+
+        @Override
+        public Element removeInterElementWhitespace() {
+            ImmutableList<Node> children = children();
+
+            // Naive implementation
+            boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
+            boolean hasOnlyInterElementWhitespaceTextChildren = hasElementChild &&
+                    children.stream().allMatch(ch -> !(ch instanceof Text t) || t.value().isBlank());
+
+            List<Node> filteredChildren =
+                    hasOnlyInterElementWhitespaceTextChildren ?
+                            children.stream().filter(ch -> !(ch instanceof Text)).toList() :
+                            children;
+
+            return withChildren(
+                    filteredChildren.stream()
+                            .map(ch -> {
+                                if (ch instanceof Element che) {
+                                    // Recursion
+                                    return che.removeInterElementWhitespace();
+                                } else {
+                                    return ch;
+                                }
+                            })
+                            .collect(ImmutableList.toImmutableList())
             );
         }
 

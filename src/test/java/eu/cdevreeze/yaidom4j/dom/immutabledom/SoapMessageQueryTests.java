@@ -126,8 +126,7 @@ class SoapMessageQueryTests {
                         .distinct()
                         .count());
 
-        Element editedSoapMessage = Elements.notUndeclaringPrefixes(
-                soapMessage.documentElement(),
+        Element editedSoapMessage = soapMessage.documentElement().notUndeclaringPrefixes(
                 NamespaceScope.from(ImmutableMap.of(
                         "env", ENV_NS,
                         "m", M_NS,

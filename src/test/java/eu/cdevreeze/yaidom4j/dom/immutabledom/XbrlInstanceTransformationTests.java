@@ -79,8 +79,7 @@ class XbrlInstanceTransformationTests {
         );
 
         TestXbrlInstances.XbrlInstance newInstance = TestXbrlInstances.XbrlInstance.from(
-                Elements.transformChildElementsToNodeLists(
-                        instance.element(),
+                instance.element().transformChildElementsToNodeLists(
                         e -> {
                             if (e.name().equals(new QName(GAAP_NS, "Loans")) &&
                                     new TestXbrlInstances.ItemFact(e).contextRef().equals("I-2007")) {
@@ -109,8 +108,7 @@ class XbrlInstanceTransformationTests {
         assertEquals(instance.element().elementStream().count() + 1, newInstance.element().elementStream().count());
 
         TestXbrlInstances.XbrlInstance newInstance2 = TestXbrlInstances.XbrlInstance.from(
-                Elements.notUndeclaringPrefixes(
-                        newInstance.element(),
+                newInstance.element().notUndeclaringPrefixes(
                         instance.element().namespaceScope().resolve("d", ns)
                 )
         );
@@ -122,8 +120,7 @@ class XbrlInstanceTransformationTests {
         assertEquals(newInstance.element().toClarkNode(), newInstance2.element().toClarkNode());
 
         TestXbrlInstances.XbrlInstance newInstance3 = TestXbrlInstances.XbrlInstance.from(
-                Elements.transformChildElementsToNodeLists(
-                        newInstance.element(),
+                newInstance.element().transformChildElementsToNodeLists(
                         e -> {
                             if (e.name().getNamespaceURI().equals(ns)) {
                                 return List.of();

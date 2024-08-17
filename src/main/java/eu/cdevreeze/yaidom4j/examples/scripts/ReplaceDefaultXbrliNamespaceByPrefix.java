@@ -19,7 +19,6 @@ package eu.cdevreeze.yaidom4j.examples.scripts;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.clark.ClarkElements;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
@@ -84,8 +83,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
     }
 
     private static Element transformElement(Element element, String prefix, String namespace) {
-        return Elements.transformDescendantElementsOrSelf(
-                element,
+        return element.transformDescendantElementsOrSelf(
                 elem -> {
                     Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().isPresent());
                     Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().equals(element.namespaceScope().defaultNamespaceOption()));
@@ -121,8 +119,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
     }
 
     private static ClarkNodes.Element transformElementForComparison(ClarkNodes.Element element, String prefix) {
-        return ClarkElements.transformDescendantElementsOrSelf(
-                element,
+        return element.transformDescendantElementsOrSelf(
                 elem -> {
                     ImmutableList<ClarkNodes.Node> children = adaptMeasureForComparison(elem, prefix).children();
 

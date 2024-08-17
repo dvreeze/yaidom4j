@@ -144,8 +144,7 @@ class NodeBuilderTests {
     }
 
     private static Element prepareForComparison(Element element) {
-        Element result = Elements.transformDescendantElementsOrSelf(
-                element,
+        Element result = element.transformDescendantElementsOrSelf(
                 e -> {
                     if (hasName(XHTML_NS, "div").test(e)) {
                         return e.withChildren(ImmutableList.of(new Text(e.text(), false)));
@@ -155,6 +154,6 @@ class NodeBuilderTests {
                     }
                 }
         );
-        return Elements.removeInterElementWhitespace(result);
+        return result.removeInterElementWhitespace();
     }
 }
