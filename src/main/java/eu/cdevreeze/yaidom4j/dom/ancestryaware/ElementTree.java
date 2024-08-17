@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementQueryApi;
 import eu.cdevreeze.yaidom4j.queryapi.internal.AncestryAwareElementApi;
 
 import javax.xml.namespace.QName;
@@ -32,7 +31,7 @@ import java.util.stream.Stream;
  *
  * @author Chris de Vreeze
  */
-public final class ElementTree implements AncestryAwareElementQueryApi<ElementTree.Element> {
+public final class ElementTree {
 
     private final ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
@@ -42,148 +41,6 @@ public final class ElementTree implements AncestryAwareElementQueryApi<ElementTr
 
     public Element rootElement() {
         return new Element(ImmutableList.of());
-    }
-
-    @Override
-    public Optional<Element> parentElementOption(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.parentElementOption();
-    }
-
-    @Override
-    public Stream<Element> ancestorElementOrSelfStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.ancestorElementOrSelfStream();
-    }
-
-    @Override
-    public Stream<Element> ancestorElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.ancestorElementOrSelfStream(predicate);
-    }
-
-    @Override
-    public Stream<Element> ancestorElementStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.ancestorElementStream();
-    }
-
-    @Override
-    public Stream<Element> ancestorElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.ancestorElementStream(predicate);
-    }
-
-    @Override
-    public QName elementName(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.elementName();
-    }
-
-    @Override
-    public ImmutableMap<QName, String> attributes(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.attributes();
-    }
-
-    @Override
-    public Optional<String> attributeOption(Element element, QName attrName) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(attrName);
-
-        return element.attributeOption(attrName);
-    }
-
-    @Override
-    public String attribute(Element element, QName attrName) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(attrName);
-
-        return element.attribute(attrName);
-    }
-
-    @Override
-    public String text(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.text();
-    }
-
-    @Override
-    public Stream<? super Element> childNodeStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.childNodeStream();
-    }
-
-    @Override
-    public Stream<Element> childElementStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.childElementStream();
-    }
-
-    @Override
-    public Stream<Element> childElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.childElementStream(predicate);
-    }
-
-    @Override
-    public Stream<Element> descendantElementOrSelfStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.descendantElementOrSelfStream();
-    }
-
-    @Override
-    public Stream<Element> descendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.descendantElementOrSelfStream(predicate);
-    }
-
-    @Override
-    public Stream<Element> descendantElementStream(Element element) {
-        Objects.requireNonNull(element);
-
-        return element.descendantElementStream();
-    }
-
-    @Override
-    public Stream<Element> descendantElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.descendantElementStream(predicate);
-    }
-
-    @Override
-    public Stream<Element> topmostDescendantElementOrSelfStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.topmostDescendantElementOrSelfStream(predicate);
-    }
-
-    @Override
-    public Stream<Element> topmostDescendantElementStream(Element element, Predicate<Element> predicate) {
-        Objects.requireNonNull(element);
-        Objects.requireNonNull(predicate);
-
-        return element.topmostDescendantElementStream(predicate);
     }
 
     public final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
