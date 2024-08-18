@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public class ShowElementCountsExampleUsingSax {
 
-    public record ElementNameCount(QName name, long count) {
+    record ElementNameCount(QName name, long count) {
     }
 
     public static void main(String[] args) throws URISyntaxException {
