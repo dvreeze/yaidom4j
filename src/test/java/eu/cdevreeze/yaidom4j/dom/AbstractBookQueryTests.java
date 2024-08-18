@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom;
 
 import com.google.common.base.Preconditions;
-import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;

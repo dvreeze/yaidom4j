@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
-import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
-import eu.cdevreeze.yaidom4j.transformationapi.internal.TransformableElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;

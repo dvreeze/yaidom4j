@@ -19,8 +19,8 @@ package eu.cdevreeze.yaidom4j.dom.clark;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.queryapi.internal.ElementApi;
-import eu.cdevreeze.yaidom4j.transformationapi.internal.TransformableElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.List;

@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.queryapi.internal.AncestryAwareElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.*;

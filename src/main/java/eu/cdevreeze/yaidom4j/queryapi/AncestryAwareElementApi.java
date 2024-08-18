@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.queryapi.internal;
+package eu.cdevreeze.yaidom4j.queryapi;
 
 import java.util.Optional;
 import java.util.function.Predicate;

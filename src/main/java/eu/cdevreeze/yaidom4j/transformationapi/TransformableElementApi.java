@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.transformationapi.internal;
+package eu.cdevreeze.yaidom4j.transformationapi;
 
 import com.google.common.collect.ImmutableList;
 

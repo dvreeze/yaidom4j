@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.queryapi.internal;
+package eu.cdevreeze.yaidom4j.queryapi;
 
 import com.google.common.collect.ImmutableMap;
 
