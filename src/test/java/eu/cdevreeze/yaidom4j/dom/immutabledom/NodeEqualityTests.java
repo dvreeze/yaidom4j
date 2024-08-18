@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.internal.SaxParsers;
+import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

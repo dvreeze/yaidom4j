@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.internal;
+package eu.cdevreeze.yaidom4j.jaxp;
 
 import com.google.common.base.Preconditions;
 

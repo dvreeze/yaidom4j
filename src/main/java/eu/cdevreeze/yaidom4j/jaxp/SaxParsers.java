@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.internal;
+package eu.cdevreeze.yaidom4j.jaxp;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -39,6 +39,9 @@ public class SaxParsers {
     private SaxParsers() {
     }
 
+    /**
+     * Creates a namespace-aware non-validating SAXParserFactory
+     */
     public static SAXParserFactory newSaxParserFactory() {
         try {
             SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();

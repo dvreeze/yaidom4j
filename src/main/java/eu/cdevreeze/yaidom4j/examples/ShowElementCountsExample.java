@@ -24,8 +24,8 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
-import eu.cdevreeze.yaidom4j.internal.DocumentBuilders;
-import eu.cdevreeze.yaidom4j.internal.TransformerHandlers;
+import eu.cdevreeze.yaidom4j.jaxp.DocumentBuilders;
+import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.sax.TransformerHandler;

@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.internal.SaxParsers;
+import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;

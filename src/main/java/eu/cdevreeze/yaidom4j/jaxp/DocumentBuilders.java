@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.internal;
+package eu.cdevreeze.yaidom4j.jaxp;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -40,6 +40,9 @@ public class DocumentBuilders {
     private DocumentBuilders() {
     }
 
+    /**
+     * Creates a namespace-aware non-validating DocumentBuilderFactory
+     */
     public static DocumentBuilderFactory newDocumentBuilderFactory() {
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
