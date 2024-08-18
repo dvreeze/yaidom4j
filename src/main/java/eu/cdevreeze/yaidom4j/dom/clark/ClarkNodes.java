@@ -194,9 +194,6 @@ public class ClarkNodes {
 
         // Functional updates
 
-        /**
-         * Functionally updates this element by replacing the collection of child nodes.
-         */
         @Override
         public Element withChildren(ImmutableList<Node> newChildren) {
             return new Element(
@@ -206,18 +203,14 @@ public class ClarkNodes {
             );
         }
 
-        /**
-         * Calls method "withChildren" to functionally add one child node at the end
-         */
+        @Override
         public Element plusChild(Node newChild) {
             return withChildren(
                     ImmutableList.<Node>builder().addAll(children).add(newChild).build()
             );
         }
 
-        /**
-         * Functionally updates this element by replacing the collection of attributes.
-         */
+        @Override
         public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
             return new Element(
                     name(),
@@ -226,9 +219,7 @@ public class ClarkNodes {
             );
         }
 
-        /**
-         * Calls method "withAttributes" to functionally add or update one attribute
-         */
+        @Override
         public Element plusAttribute(QName attrName, String attrValue) {
             return withAttributes(
                     ImmutableMap.<QName, String>builder()

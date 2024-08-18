@@ -17,7 +17,9 @@
 package eu.cdevreeze.yaidom4j.transformationapi;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -35,6 +37,21 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
      * Functionally updates the list of children of this element.
      */
     E withChildren(ImmutableList<N> newChildren);
+
+    /**
+     * Calls method "withChildren" to functionally add one child node at the end
+     */
+    E plusChild(N newChild);
+
+    /**
+     * Functionally updates this element by replacing the collection of attributes.
+     */
+    E withAttributes(ImmutableMap<QName, String> newAttributes);
+
+    /**
+     * Calls method "withAttributes" to functionally add or update one attribute
+     */
+    E plusAttribute(QName attrName, String attrValue);
 
     /**
      * Returns an adapted copy of this element where the children are replaced by the results of applying

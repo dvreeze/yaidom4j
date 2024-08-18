@@ -219,6 +219,7 @@ public record Element(
     /**
      * Calls method "withChildren" to functionally add one child node at the end
      */
+    @Override
     public Element plusChild(Node newChild) {
         return withChildren(
                 ImmutableList.<Node>builder().addAll(children).add(newChild).build()
@@ -230,6 +231,7 @@ public record Element(
      * <p>
      * For prefixed attributes, take care to use only prefixes that are in scope.
      */
+    @Override
     public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
         return new Element(
                 name(),
@@ -242,6 +244,7 @@ public record Element(
     /**
      * Calls method "withAttributes" to functionally add or update one attribute
      */
+    @Override
     public Element plusAttribute(QName attrName, String attrValue) {
         return withAttributes(
                 ImmutableMap.<QName, String>builder()
