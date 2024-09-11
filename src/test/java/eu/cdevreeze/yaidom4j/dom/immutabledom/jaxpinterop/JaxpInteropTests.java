@@ -22,18 +22,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * JAXP interop tests.
@@ -85,5 +90,41 @@ class JaxpInteropTests {
         Document doc2 = result.getDocument();
 
         assertEquals(doc.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
+    }
+
+    @Test
+    void testSchemaValidationForValidDoc() throws SAXException, IOException {
+        Document validInstanceDoc = parseDocument("/valid-books.xml");
+        Document xsdDoc = parseDocument("/books.xsd");
+
+        SchemaFactory schemaFactory = SchemaFactory.newDefaultInstance();
+        ImmutableDomSource xsdSource = new ImmutableDomSource(xsdDoc);
+        xsdSource.setSystemId("http://example.com/books.xsd");
+        Schema schema = schemaFactory.newSchema(xsdSource);
+
+        ImmutableDomResult result = new ImmutableDomResult();
+        // Throws SAXException if not valid according to the schema, which is not the case here
+        schema.newValidator().validate(new ImmutableDomSource(validInstanceDoc), result);
+
+        Document resultDoc = result.getDocument();
+
+        assertEquals(validInstanceDoc.documentElement().toClarkNode(), resultDoc.documentElement().toClarkNode());
+    }
+
+    @Test
+    void testSchemaValidationForInvalidDoc() throws SAXException, IOException {
+        Document invalidInstanceDoc = parseDocument("/invalid-books.xml");
+        Document xsdDoc = parseDocument("/books.xsd");
+
+        SchemaFactory schemaFactory = SchemaFactory.newDefaultInstance();
+        ImmutableDomSource xsdSource = new ImmutableDomSource(xsdDoc);
+        xsdSource.setSystemId("http://example.com/books.xsd");
+        Schema schema = schemaFactory.newSchema(xsdSource);
+
+        // Throws SAXException if not valid according to the schema, which is indeed the case
+        assertThrows(
+                SAXException.class,
+                () -> schema.newValidator().validate(new ImmutableDomSource(invalidInstanceDoc), null)
+        );
     }
 }
