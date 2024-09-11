@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
 import org.xml.sax.*;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.transform.sax.SAXResult;
@@ -32,6 +33,7 @@ import java.util.Objects;
  * <p>
  * This class extends class SAXSource, which is an implementation detail, but needed in order to plug into
  * the Transformer API. SAXSource methods such as setXMLReader and setInputSource should never be called.
+ * Methods of the contained XMLReader should not be called either.
  *
  * @author Chris de Vreeze
  */
@@ -61,42 +63,74 @@ public class ImmutableDomSource extends SAXSource {
     private static XMLReader pseudoXmlReader(Document document, SAXTransformerFactory saxTransformerFactory) {
         return new XMLReader() {
 
-            // The feature/property getters and setters should not be called
-
             @Override
-            public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-                return false;
+            public boolean getFeature(String name) throws SAXNotRecognizedException {
+                return switch (name) {
+                    case "http://xml.org/sax/features/namespaces" -> true;
+                    case "http://xml.org/sax/features/namespace-prefixes" -> false;
+                    default -> throw new SAXNotRecognizedException(name);
+                };
             }
 
             @Override
-            public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+            public void setFeature(String name, boolean value) throws SAXNotRecognizedException {
+                switch (name) {
+                    case "http://xml.org/sax/features/namespaces" -> {
+                        if (!value) {
+                            throw new SAXNotRecognizedException(name);
+                        }
+                    }
+                    case "http://xml.org/sax/features/namespace-prefixes" -> {
+                        if (value) {
+                            throw new SAXNotRecognizedException(name);
+                        }
+                    }
+                    default -> throw new SAXNotRecognizedException(name);
+                }
             }
 
             @Override
-            public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-                return null;
+            public Object getProperty(String name) throws SAXNotRecognizedException {
+                if (name.equals("http://xml.org/sax/properties/lexical-handler")) {
+                    return lexicalHandler;
+                } else {
+                    throw new SAXNotRecognizedException(name);
+                }
             }
 
             @Override
-            public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
+            public void setProperty(String name, Object value) throws SAXNotRecognizedException {
+                if (name.equals("http://xml.org/sax/properties/lexical-handler")) {
+                    this.lexicalHandler = (LexicalHandler) value;
+                } else {
+                    throw new SAXNotRecognizedException(name);
+                }
             }
+
+            private LexicalHandler lexicalHandler;
+
+            private EntityResolver entityResolver;
 
             @Override
             public void setEntityResolver(EntityResolver resolver) {
+                this.entityResolver = resolver;
             }
 
             @Override
             public EntityResolver getEntityResolver() {
-                return null;
+                return entityResolver;
             }
+
+            private DTDHandler dtdHandler;
 
             @Override
             public void setDTDHandler(DTDHandler handler) {
+                this.dtdHandler = handler;
             }
 
             @Override
             public DTDHandler getDTDHandler() {
-                return null;
+                return dtdHandler;
             }
 
             private final XMLFilter xmlFilter = new XMLFilterImpl();
@@ -111,37 +145,46 @@ public class ImmutableDomSource extends SAXSource {
                 return xmlFilter.getContentHandler();
             }
 
+            private ErrorHandler errorHandler;
+
             @Override
             public void setErrorHandler(ErrorHandler handler) {
-                // TODO
+                this.errorHandler = handler;
             }
 
             @Override
             public ErrorHandler getErrorHandler() {
-                // TODO
-                return null;
+                return errorHandler;
             }
 
             @Override
-            public void parse(InputSource input) {
+            public void parse(InputSource input) throws SAXException {
                 // Ignoring InputSource
                 parse();
             }
 
             @Override
-            public void parse(String systemId) {
+            public void parse(String systemId) throws SAXException {
                 // Ignoring systemId
                 parse();
             }
 
-            public void parse() {
-                // Not parsing, but "processing" the Document
-                TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
-                SAXResult result = new SAXResult(Objects.requireNonNull(xmlFilter.getContentHandler()));
-                // No system ID set!
-                th.setResult(result);
-                ImmutableDomConsumingSaxEventGenerator eventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-                eventGenerator.processDocument(document);
+            public void parse() throws SAXException {
+                try {
+                    // Not parsing, but "processing" the Document
+                    TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
+                    SAXResult result = new SAXResult(Objects.requireNonNull(xmlFilter.getContentHandler()));
+                    // No system ID set!
+                    th.setResult(result);
+                    ImmutableDomConsumingSaxEventGenerator eventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+                    eventGenerator.processDocument(document);
+                } catch (RuntimeException e) {
+                    var se = new SAXParseException(e.getMessage(), null, null, -1, -1, e);
+                    if (errorHandler != null) {
+                        errorHandler.fatalError(se);
+                    }
+                    throw se;
+                }
             }
         };
     }
