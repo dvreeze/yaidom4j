@@ -72,7 +72,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         Preconditions.checkArgument(!prefix.isBlank());
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
 
-        checkParsedElement(element, prefix);
+        checkElement(element, prefix);
 
         Element transformedElement = transformElement(element, prefix, ns);
 
@@ -106,7 +106,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         return sw.toString();
     }
 
-    private static void checkParsedElement(Element element, String prefix) {
+    private static void checkElement(Element element, String prefix) {
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
         Preconditions.checkArgument(ns.equals(XBRLI_NS));
         Preconditions.checkArgument(
