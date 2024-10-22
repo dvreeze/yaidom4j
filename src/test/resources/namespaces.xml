@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<namespaces>
+    <namespace oldPrefix="" newPrefix="xbrli">http://www.xbrl.org/2003/instance</namespace>
+    <namespace oldPrefix="xlink" newPrefix="xl">http://www.w3.org/1999/xlink</namespace>
+    <namespace oldPrefix="link" newPrefix="lnk">http://www.xbrl.org/2003/linkbase</namespace>
+</namespaces>
