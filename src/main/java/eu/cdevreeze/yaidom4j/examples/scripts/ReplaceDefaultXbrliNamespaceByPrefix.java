@@ -49,6 +49,8 @@ import java.util.Optional;
  */
 public class ReplaceDefaultXbrliNamespaceByPrefix {
 
+    // Note that the xsi:schemaLocation attribute, if any, can stay the same
+
     private static final String XBRLI_NS = "http://www.xbrl.org/2003/instance";
 
     public static void main(String[] args) throws URISyntaxException {
@@ -60,7 +62,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         SaxParsers.parse(inputFile, saxHandler);
         Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
 
-        checkParsedElement(doc.documentElement());
+        checkParsedElement(doc.documentElement(), prefix);
 
         String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
         Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
@@ -76,12 +78,16 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         System.out.println(xmlString);
     }
 
-    private static void checkParsedElement(Element element) {
+    private static void checkParsedElement(Element element, String prefix) {
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
         Preconditions.checkArgument(ns.equals(XBRLI_NS));
         Preconditions.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().defaultNamespaceOption().equals(Optional.of(ns)))
+        );
+        Preconditions.checkArgument(
+                element.elementStream()
+                        .allMatch(e -> e.namespaceScope().findNamespaceOfPrefix(prefix).stream().allMatch(ns::equals))
         );
     }
 

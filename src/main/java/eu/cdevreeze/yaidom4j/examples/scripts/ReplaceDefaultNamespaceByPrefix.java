@@ -44,6 +44,8 @@ import java.util.Optional;
  */
 public class ReplaceDefaultNamespaceByPrefix {
 
+    // Note that the xsi:schemaLocation attribute, if any, can stay the same
+
     public static void main(String[] args) throws URISyntaxException {
         Objects.checkIndex(1, args.length);
         URI inputFile = new URI(args[0]);
@@ -53,7 +55,7 @@ public class ReplaceDefaultNamespaceByPrefix {
         SaxParsers.parse(inputFile, saxHandler);
         Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
 
-        checkElement(doc.documentElement());
+        checkElement(doc.documentElement(), prefix);
 
         String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
         Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
@@ -66,11 +68,15 @@ public class ReplaceDefaultNamespaceByPrefix {
         System.out.println(xmlString);
     }
 
-    private static void checkElement(Element element) {
+    private static void checkElement(Element element, String prefix) {
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
         Preconditions.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().defaultNamespaceOption().equals(Optional.of(ns)))
+        );
+        Preconditions.checkArgument(
+                element.elementStream()
+                        .allMatch(e -> e.namespaceScope().findNamespaceOfPrefix(prefix).stream().allMatch(ns::equals))
         );
     }
 

@@ -61,6 +61,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         }
     }
 
+    public Optional<String> findNamespaceOfPrefix(String prefix) {
+        return Optional.ofNullable(inScopeNamespaces.get(prefix));
+    }
+
     /**
      * Functionally updates the namespace scope with the parameter prefix and corresponding namespace.
      * <p>
