@@ -58,24 +58,52 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         URI inputFile = new URI(args[0]);
         String prefix = args.length == 2 ? args[1] : "xbrli";
 
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        SaxParsers.parse(inputFile, saxHandler);
-        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+        Document doc = parseDocument(inputFile);
 
-        checkParsedElement(doc.documentElement(), prefix);
+        Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 
-        String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
-        Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
+        String xmlString = printElement(transformedElement);
+        System.out.println(xmlString);
+    }
+
+    // Programmatic access to the functionality
+
+    public static Element replaceDefaultNamespaceByPrefix(Element element, String prefix) {
+        Preconditions.checkArgument(!prefix.isBlank());
+        String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
+
+        checkParsedElement(element, prefix);
+
+        Element transformedElement = transformElement(element, prefix, ns);
 
         ClarkNodes.Element clarkDocElem =
-                transformElementForComparison(doc.documentElement().toClarkNode(), prefix);
+                transformElementForComparison(element.toClarkNode(), prefix);
         ClarkNodes.Element transformedClarkElem =
                 transformElementForComparison(transformedElement.toClarkNode(), prefix);
 
         Preconditions.checkArgument(clarkDocElem.equals(transformedClarkElem));
 
-        String xmlString = printElement(transformedElement);
-        System.out.println(xmlString);
+        return transformedElement;
+    }
+
+    public static Document parseDocument(URI inputFile) {
+        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
+        SaxParsers.parse(inputFile, saxHandler);
+        return saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+    }
+
+    public static String printElement(Element element) {
+        var sw = new StringWriter();
+        var streamResult = new StreamResult(sw);
+
+        TransformerHandler th = TransformerHandlers.newTransformerHandler();
+        th.setResult(streamResult);
+
+        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+        saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+        return sw.toString();
     }
 
     private static void checkParsedElement(Element element, String prefix) {
@@ -151,19 +179,5 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         } else {
             return element;
         }
-    }
-
-    private static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 }

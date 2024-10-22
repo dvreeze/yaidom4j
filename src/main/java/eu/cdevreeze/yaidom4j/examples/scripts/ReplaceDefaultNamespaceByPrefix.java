@@ -51,21 +51,49 @@ public class ReplaceDefaultNamespaceByPrefix {
         URI inputFile = new URI(args[0]);
         String prefix = args[1];
 
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        SaxParsers.parse(inputFile, saxHandler);
-        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+        Document doc = parseDocument(inputFile);
 
-        checkElement(doc.documentElement(), prefix);
-
-        String ns = doc.documentElement().namespaceScope().defaultNamespaceOption().orElseThrow();
-        Element transformedElement = transformElement(doc.documentElement(), prefix, ns);
-
-        Preconditions.checkArgument(
-                doc.documentElement().toClarkNode().equals(transformedElement.toClarkNode())
-        );
+        Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 
         String xmlString = printElement(transformedElement);
         System.out.println(xmlString);
+    }
+
+    // Programmatic access to the functionality
+
+    public static Element replaceDefaultNamespaceByPrefix(Element element, String prefix) {
+        Preconditions.checkArgument(!prefix.isBlank());
+        String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
+
+        checkElement(element, prefix);
+
+        Element transformedElement = transformElement(element, prefix, ns);
+
+        Preconditions.checkArgument(
+                element.toClarkNode().equals(transformedElement.toClarkNode())
+        );
+
+        return transformedElement;
+    }
+
+    public static Document parseDocument(URI inputFile) {
+        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
+        SaxParsers.parse(inputFile, saxHandler);
+        return saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+    }
+
+    public static String printElement(Element element) {
+        var sw = new StringWriter();
+        var streamResult = new StreamResult(sw);
+
+        TransformerHandler th = TransformerHandlers.newTransformerHandler();
+        th.setResult(streamResult);
+
+        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+        saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+        return sw.toString();
     }
 
     private static void checkElement(Element element, String prefix) {
@@ -96,19 +124,5 @@ public class ReplaceDefaultNamespaceByPrefix {
                     );
                 }
         );
-    }
-
-    private static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 }

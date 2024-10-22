@@ -60,20 +60,51 @@ public class ReplacePrefix {
         Preconditions.checkArgument(!newPrefix.isBlank());
         Preconditions.checkArgument(!newPrefix.equals(oldPrefix));
 
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        SaxParsers.parse(inputFile, saxHandler);
-        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+        Document doc = parseDocument(inputFile);
 
-        checkElement(doc.documentElement(), oldPrefix, namespace, newPrefix);
-
-        Element transformedElement = transformElement(doc.documentElement(), oldPrefix, namespace, newPrefix);
-
-        Preconditions.checkArgument(
-                doc.documentElement().toClarkNode().equals(transformedElement.toClarkNode())
-        );
+        Element transformedElement = replacePrefix(doc.documentElement(), oldPrefix, namespace, newPrefix);
 
         String xmlString = printElement(transformedElement);
         System.out.println(xmlString);
+    }
+
+    // Programmatic access to the functionality
+
+    public static Element replacePrefix(Element element, String oldPrefix, String namespace, String newPrefix) {
+        Preconditions.checkArgument(!oldPrefix.isBlank());
+        Preconditions.checkArgument(!namespace.isBlank());
+        Preconditions.checkArgument(!newPrefix.isBlank());
+        Preconditions.checkArgument(!newPrefix.equals(oldPrefix));
+
+        checkElement(element, oldPrefix, namespace, newPrefix);
+
+        Element transformedElement = transformElement(element, oldPrefix, namespace, newPrefix);
+
+        Preconditions.checkArgument(
+                element.toClarkNode().equals(transformedElement.toClarkNode())
+        );
+
+        return transformedElement;
+    }
+
+    public static Document parseDocument(URI inputFile) {
+        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
+        SaxParsers.parse(inputFile, saxHandler);
+        return saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+    }
+
+    public static String printElement(Element element) {
+        var sw = new StringWriter();
+        var streamResult = new StreamResult(sw);
+
+        TransformerHandler th = TransformerHandlers.newTransformerHandler();
+        th.setResult(streamResult);
+
+        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+        saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+        return sw.toString();
     }
 
     private static void checkElement(Element element, String oldPrefix, String namespace, String newPrefix) {
@@ -115,19 +146,5 @@ public class ReplacePrefix {
         } else {
             return name;
         }
-    }
-
-    private static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 }
