@@ -16,15 +16,26 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
+import javax.xml.namespace.QName;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -37,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Large file base64 decoding/encoding test, that happens to be an XML file.
+ * The test also tests processing of base64 encoded XML as element text content.
  * <p>
  * This is not a unit test.
  *
@@ -56,9 +68,10 @@ class Base64LargeXmlTests {
         Base64.Encoder encoder = Base64.getMimeEncoder();
         byte[] base64EncodedXml = encoder.encode(xmlString.getBytes(UTF_8));
 
+        String base64EncodedXmlAsString = new String(base64EncodedXml, UTF_8);
+
         System.out.println("First 1000 base64 encoded bytes:");
-        // Extremely inefficient
-        String firstEncodedChars = new String(base64EncodedXml, UTF_8).substring(0, 1000);
+        String firstEncodedChars = base64EncodedXmlAsString.substring(0, 1000);
         System.out.println(firstEncodedChars);
 
         // MIME encoded, with lines less than 100 characters
@@ -76,6 +89,58 @@ class Base64LargeXmlTests {
         long numberOfElements = doc.documentElement().elementStream().count();
         assertTrue(numberOfElements >= 150_000L);
         assertFalse(numberOfElements >= 1_000_000L);
+
+        // Let's ramp things up a bit:
+        // Create an XML document containing the base64 encoded XML string as element content
+
+        Element rootElem =
+                new Element(
+                        new QName("dummyRoot"),
+                        ImmutableMap.of(),
+                        doc.documentElement().namespaceScope(),
+                        ImmutableList.of(
+                                new Element(
+                                        new QName("dummyChild"),
+                                        ImmutableMap.of(),
+                                        doc.documentElement().namespaceScope(),
+                                        ImmutableList.of(new Text(base64EncodedXmlAsString, false))
+                                )
+                        )
+                );
+
+        String wrapperXmlString = printElement(rootElem);
+
+        Document wrapperDoc = parseDocument(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8)));
+
+        System.out.println();
+        System.out.println("The wrapper document, without the base64 encoded string holding XML itself:");
+        System.out.println(
+                printElement(
+                        wrapperDoc.documentElement().transformDescendantElements(
+                                e -> e.withChildren(
+                                        e.children()
+                                                .stream()
+                                                .filter(n -> !(n instanceof Text))
+                                                .collect(ImmutableList.toImmutableList())
+                                )
+                        )
+                )
+        );
+
+        // Extracting the same XML as the original, step by step
+
+        Element childElem = wrapperDoc.documentElement().childElementStream().findFirst().orElseThrow();
+
+        String childElemTextContent = childElem.text();
+        byte[] base64DecodedChildElemTextContent = decoder.decode(childElemTextContent.getBytes(UTF_8));
+
+        Document nestedDoc = parseDocument(new ByteArrayInputStream(base64DecodedChildElemTextContent));
+
+        // We should get the original XML again, so at the very least the root element names must match
+        assertEquals(doc.documentElement().name(), nestedDoc.documentElement().name());
+
+        // Hopefully we have equivalent XML again
+        assertEquals(doc.documentElement().toClarkNode(), nestedDoc.documentElement().toClarkNode());
     }
 
     private static Document parseDocument(InputStream inputStream) {
@@ -83,5 +148,19 @@ class Base64LargeXmlTests {
         InputSource inputSource = new InputSource(inputStream);
         SaxParsers.parse(inputSource, saxHandler);
         return saxHandler.resultingDocument().removeInterElementWhitespace();
+    }
+
+    private static String printElement(Element element) {
+        var sw = new StringWriter();
+        var streamResult = new StreamResult(sw);
+
+        TransformerHandler th = TransformerHandlers.newTransformerHandler();
+        th.setResult(streamResult);
+
+        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+        saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+        return sw.toString();
     }
 }
