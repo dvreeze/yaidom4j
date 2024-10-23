@@ -65,6 +65,13 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         return Optional.ofNullable(inScopeNamespaces.get(prefix));
     }
 
+    public ImmutableMap<String, String> inScopeNamespacesIncludingXmlNamespace() {
+        return ImmutableMap.<String, String>builderWithExpectedSize(inScopeNamespaces.size() + 1)
+                .putAll(inScopeNamespaces)
+                .put(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI)
+                .build();
+    }
+
     /**
      * Functionally updates the namespace scope with the parameter prefix and corresponding namespace.
      * <p>

@@ -24,7 +24,6 @@ import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
@@ -53,27 +52,24 @@ public record Element(
         Objects.requireNonNull(namespaceScope);
         Objects.requireNonNull(children);
 
-        Preconditions.checkArgument(
-                name.getPrefix().isEmpty() ||
-                        name.getPrefix().equals(XMLConstants.XML_NS_PREFIX) ||
-                        namespaceScope.inScopeNamespaces().containsKey(name.getPrefix())
-        );
+        ImmutableMap<String, String> inScopeNamespacesWithXmlNs =
+                namespaceScope.inScopeNamespacesIncludingXmlNamespace();
+        ImmutableMap<String, String> inScopeAttrNamespacesWithXmlNs =
+                namespaceScope.withoutDefaultNamespace().inScopeNamespacesIncludingXmlNamespace();
 
-        // TODO Better checks; the namespace(s) must match exactly
-        if (namespaceScope.defaultNamespaceOption().isPresent() && name.getPrefix().isEmpty()) {
-            Preconditions.checkArgument(!name.getNamespaceURI().isEmpty());
-        }
+        Preconditions.checkArgument(
+                name.getNamespaceURI().equals(
+                        Optional.ofNullable(inScopeNamespacesWithXmlNs.get(name.getPrefix())).orElse("")
+                )
+        );
 
         Preconditions.checkArgument(
                 attributes.keySet().stream()
                         .allMatch(attrName ->
-                                attrName.getPrefix().isEmpty() ||
-                                        attrName.getPrefix().equals(XMLConstants.XML_NS_PREFIX) ||
-                                        namespaceScope.inScopeNamespaces().containsKey(attrName.getPrefix())));
-
-        Preconditions.checkArgument(
-                attributes.keySet().stream()
-                        .allMatch(attrName -> attrName.getNamespaceURI().isEmpty() || !attrName.getPrefix().isEmpty())
+                                attrName.getNamespaceURI().equals(
+                                        Optional.ofNullable(inScopeAttrNamespacesWithXmlNs.get(attrName.getPrefix())).orElse("")
+                                )
+                        )
         );
     }
 
