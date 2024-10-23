@@ -81,6 +81,7 @@ public class ReplacePrefixes {
     // Programmatic access to the functionality
 
     public static Element replacePrefixes(Element element, List<PrefixMapping> prefixMappings) {
+        // To implement this method with a Java Stream pipeline instead of recursion, we would need a Java 22+ folding Gatherer
         if (prefixMappings.isEmpty()) {
             return element;
         } else {
