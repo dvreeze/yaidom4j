@@ -93,16 +93,20 @@ class Base64LargeXmlTests {
         // Let's ramp things up a bit:
         // Create an XML document containing the base64 encoded XML string as element content
 
+        NamespaceScope nsScope = doc.documentElement().namespaceScope();
+        String ns = doc.documentElement().name().getNamespaceURI();
+        String prefix = doc.documentElement().name().getPrefix();
+
         Element rootElem =
                 new Element(
-                        new QName("dummyRoot"),
+                        new QName(ns, "dummyRoot", prefix),
                         ImmutableMap.of(),
-                        doc.documentElement().namespaceScope(),
+                        nsScope,
                         ImmutableList.of(
                                 new Element(
-                                        new QName("dummyChild"),
+                                        new QName(ns, "dummyChild", prefix),
                                         ImmutableMap.of(),
-                                        doc.documentElement().namespaceScope(),
+                                        nsScope,
                                         ImmutableList.of(new Text(base64EncodedXmlAsString, false))
                                 )
                         )
