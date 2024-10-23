@@ -59,6 +59,10 @@ public record Element(
                         namespaceScope.inScopeNamespaces().containsKey(name.getPrefix())
         );
 
+        if (namespaceScope.defaultNamespaceOption().isPresent() && name.getPrefix().isEmpty()) {
+            Preconditions.checkArgument(!name.getNamespaceURI().isEmpty());
+        }
+
         Preconditions.checkArgument(
                 attributes.keySet().stream()
                         .allMatch(attrName ->
