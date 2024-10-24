@@ -18,21 +18,15 @@ package eu.cdevreeze.yaidom4j.examples.scripts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
-import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -58,11 +52,11 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         URI inputFile = new URI(args[0]);
         String prefix = args.length == 2 ? args[1] : "xbrli";
 
-        Document doc = parseDocument(inputFile);
+        Document doc = DocumentParsers.parse(inputFile);
 
         Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 
-        String xmlString = printElement(transformedElement);
+        String xmlString = DocumentPrinters.print(transformedElement);
         System.out.println(xmlString);
     }
 
@@ -84,26 +78,6 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         Preconditions.checkArgument(clarkDocElem.equals(transformedClarkElem));
 
         return transformedElement;
-    }
-
-    public static Document parseDocument(URI inputFile) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        SaxParsers.parse(inputFile, saxHandler);
-        return saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
-    }
-
-    public static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 
     private static void checkElement(Element element, String prefix) {

@@ -18,8 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -52,11 +51,8 @@ class SoapMessageQueryTests {
 
     @BeforeAll
     void parseDocument() {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-soap-message.xml");
-        SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        soapMessage = saxHandler.resultingDocument().removeInterElementWhitespace();
+        soapMessage = DocumentParsers.parse(new InputSource(inputStream));
     }
 
     @Test

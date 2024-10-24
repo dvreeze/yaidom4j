@@ -18,8 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -55,11 +54,8 @@ class XbrlInstanceTransformationTests {
 
     @BeforeAll
     void parseDocument() {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
-        SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        Document doc = saxHandler.resultingDocument().removeInterElementWhitespace();
+        Document doc = DocumentParsers.parse(new InputSource(inputStream));
         instance = TestXbrlInstances.XbrlInstance.from(doc.documentElement());
     }
 

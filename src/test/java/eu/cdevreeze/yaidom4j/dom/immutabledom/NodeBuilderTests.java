@@ -19,8 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -58,11 +57,8 @@ class NodeBuilderTests {
     }
 
     private Document parseDocument(String xmlClasspathResource) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
         InputStream inputStream = NodeBuilderTests.class.getResourceAsStream(xmlClasspathResource);
-        SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        return saxHandler.resultingDocument().removeInterElementWhitespace();
+        return DocumentParsers.parse(new InputSource(inputStream));
     }
 
     @Test

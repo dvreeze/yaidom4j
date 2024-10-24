@@ -17,7 +17,6 @@
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,7 +31,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -58,11 +56,8 @@ class JaxpInteropTests {
     }
 
     private Document parseDocument(String xmlClasspathResource) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
-        InputStream inputStream = JaxpInteropTests.class.getResourceAsStream(xmlClasspathResource);
-        SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        return saxHandler.resultingDocument().removeInterElementWhitespace()
+        return DocumentParsers
+                .parse(new InputSource(JaxpInteropTests.class.getResourceAsStream(xmlClasspathResource)))
                 .withUri(URI.create("http://example.com/feed1.xml"));
     }
 

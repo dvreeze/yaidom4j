@@ -17,18 +17,12 @@
 package eu.cdevreeze.yaidom4j.examples.scripts;
 
 import com.google.common.base.Preconditions;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
-import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -67,14 +61,14 @@ public class ReplacePrefixes {
         URI inputFile = new URI(args[0]);
         URI configFile = new URI(args[1]);
 
-        Document doc = parseDocument(inputFile);
-        Document configDoc = parseDocument(configFile);
+        Document doc = DocumentParsers.parse(inputFile);
+        Document configDoc = DocumentParsers.parse(configFile);
 
         List<PrefixMapping> prefixMappings = extractPrefixMappings(configDoc.documentElement());
 
         Element transformedElement = replacePrefixes(doc.documentElement(), prefixMappings);
 
-        String xmlString = printElement(transformedElement);
+        String xmlString = DocumentPrinters.print(transformedElement);
         System.out.println(xmlString);
     }
 
@@ -106,26 +100,6 @@ public class ReplacePrefixes {
                         )
                 )
                 .toList();
-    }
-
-    public static Document parseDocument(URI inputFile) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        SaxParsers.parse(inputFile, saxHandler);
-        return saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
-    }
-
-    public static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 
     private static Element replacePrefix(Element element, PrefixMapping prefixMapping) {

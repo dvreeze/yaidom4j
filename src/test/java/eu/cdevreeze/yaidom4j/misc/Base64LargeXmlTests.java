@@ -22,20 +22,14 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
-import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -84,7 +78,7 @@ class Base64LargeXmlTests {
         // Round tripping of base64 encoding and decoding returns the same (XML) string
         assertEquals(xmlString, xmlString2);
 
-        Document doc = parseDocument(new ByteArrayInputStream(xmlString.getBytes(UTF_8)));
+        Document doc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
 
         // The parsed base64 decoded XML indeed has quite a lot of element nodes
         long numberOfElements = doc.documentElement().elementStream().count();
@@ -98,7 +92,7 @@ class Base64LargeXmlTests {
 
         String xmlString = Files.readString(Path.of(xmlUri), UTF_8);
 
-        Document doc = parseDocument(new ByteArrayInputStream(xmlString.getBytes(UTF_8)));
+        Document doc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
 
         Base64.Encoder encoder = Base64.getMimeEncoder();
         byte[] base64EncodedXml = encoder.encode(xmlString.getBytes(UTF_8));
@@ -112,14 +106,14 @@ class Base64LargeXmlTests {
 
         Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
 
-        String wrapperXmlString = printElement(rootElem);
+        String wrapperXmlString = DocumentPrinters.print(rootElem);
 
-        Document wrapperDoc = parseDocument(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8)));
+        Document wrapperDoc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8))));
 
         System.out.println();
         System.out.println("The wrapper document, without the base64 encoded string holding XML itself:");
         System.out.println(
-                printElement(
+                DocumentPrinters.print(
                         wrapperDoc.documentElement().transformDescendantElements(
                                 e -> e.withChildren(
                                         e.children()
@@ -140,7 +134,7 @@ class Base64LargeXmlTests {
         String childElemTextContent = childElem.text();
         byte[] base64DecodedChildElemTextContent = decoder.decode(childElemTextContent.getBytes(UTF_8));
 
-        Document nestedDoc = parseDocument(new ByteArrayInputStream(base64DecodedChildElemTextContent));
+        Document nestedDoc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(base64DecodedChildElemTextContent)));
 
         // We should get the original XML again, so at the very least the root element names must match
         assertEquals(doc.documentElement().name(), nestedDoc.documentElement().name());
@@ -163,26 +157,5 @@ class Base64LargeXmlTests {
                         )
                 )
         );
-    }
-
-    private static Document parseDocument(InputStream inputStream) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        InputSource inputSource = new InputSource(inputStream);
-        SaxParsers.parse(inputSource, saxHandler);
-        return saxHandler.resultingDocument().removeInterElementWhitespace();
-    }
-
-    private static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 }

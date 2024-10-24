@@ -16,8 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -56,11 +55,8 @@ class NodeEqualityTests {
     }
 
     private Document parseDocument(String xmlClasspathResource) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
         InputStream inputStream = NodeEqualityTests.class.getResourceAsStream(xmlClasspathResource);
-        SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        return saxHandler.resultingDocument().removeInterElementWhitespace();
+        return DocumentParsers.parse(new InputSource(inputStream));
     }
 
     @Test

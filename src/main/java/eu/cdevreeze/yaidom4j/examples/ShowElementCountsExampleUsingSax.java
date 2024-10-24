@@ -22,15 +22,11 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
-import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -102,7 +98,7 @@ public class ShowElementCountsExampleUsingSax {
         );
 
         System.out.println();
-        String xmlOutput = printElement(convertElementCountsToXml(elementCounts));
+        String xmlOutput = DocumentPrinters.print(convertElementCountsToXml(elementCounts));
         System.out.println(xmlOutput);
 
         System.out.println();
@@ -143,19 +139,5 @@ public class ShowElementCountsExampleUsingSax {
                         ))
                         .collect(ImmutableList.toImmutableList())
         );
-    }
-
-    private static String printElement(Element element) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-        return sw.toString();
     }
 }
