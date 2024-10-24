@@ -52,24 +52,11 @@ public record Element(
         Objects.requireNonNull(namespaceScope);
         Objects.requireNonNull(children);
 
-        ImmutableMap<String, String> inScopeNamespacesWithXmlNs =
-                namespaceScope.inScopeNamespacesIncludingXmlNamespace();
-        ImmutableMap<String, String> inScopeAttrNamespacesWithXmlNs =
-                namespaceScope.withoutDefaultNamespace().inScopeNamespacesIncludingXmlNamespace();
-
-        Preconditions.checkArgument(
-                name.getNamespaceURI().equals(
-                        Optional.ofNullable(inScopeNamespacesWithXmlNs.get(name.getPrefix())).orElse("")
-                )
-        );
+        Preconditions.checkArgument(namespaceScope.allowsElementName(name));
 
         Preconditions.checkArgument(
                 attributes.keySet().stream()
-                        .allMatch(attrName ->
-                                attrName.getNamespaceURI().equals(
-                                        Optional.ofNullable(inScopeAttrNamespacesWithXmlNs.get(attrName.getPrefix())).orElse("")
-                                )
-                        )
+                        .allMatch(attrName -> namespaceScope().allowsAttributeName(attrName))
         );
     }
 

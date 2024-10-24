@@ -62,14 +62,26 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     public Optional<String> findNamespaceOfPrefix(String prefix) {
-        return Optional.ofNullable(inScopeNamespaces.get(prefix));
+        if (XMLConstants.XML_NS_PREFIX.equals(prefix)) {
+            return Optional.of(XMLConstants.XML_NS_URI);
+        } else {
+            return Optional.ofNullable(inScopeNamespaces.get(prefix));
+        }
     }
 
-    public ImmutableMap<String, String> inScopeNamespacesIncludingXmlNamespace() {
-        return ImmutableMap.<String, String>builderWithExpectedSize(inScopeNamespaces.size() + 1)
-                .putAll(inScopeNamespaces)
-                .put(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI)
-                .build();
+    public boolean allowsElementName(QName name) {
+        return findNamespaceOfPrefix(name.getPrefix())
+                .orElse(XMLConstants.NULL_NS_URI)
+                .equals(name.getNamespaceURI());
+    }
+
+    public boolean allowsAttributeName(QName name) {
+        if (name.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+            return XMLConstants.NULL_NS_URI.equals(name.getNamespaceURI());
+        }
+        return findNamespaceOfPrefix(name.getPrefix())
+                .orElse(XMLConstants.NULL_NS_URI)
+                .equals(name.getNamespaceURI());
     }
 
     /**
