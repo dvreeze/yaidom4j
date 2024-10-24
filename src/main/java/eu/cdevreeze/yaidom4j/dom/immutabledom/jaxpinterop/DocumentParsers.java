@@ -38,27 +38,49 @@ public class DocumentParsers {
     private DocumentParsers() {
     }
 
-    public static Document parse(InputSource inputSource, SAXParserFactory saxParserFactory) {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-        Optional<URI> optDocUri = Optional.ofNullable(inputSource.getSystemId()).map(URI::create);
-        SaxParsers.parse(inputSource, saxHandler, saxParserFactory);
-        Document doc = saxHandler.resultingDocument().removeInterElementWhitespace();
-        return optDocUri.map(doc::withUri).orElse(doc);
+    private static final DocumentParser instance = new DefaultDocumentParser(false);
+
+    private static final DocumentParser instanceRemovingInterElementWhitespace = new DefaultDocumentParser(true);
+
+    public static DocumentParser instance() {
+        return instance;
     }
 
-    public static Document parse(InputSource inputSource) {
-        return parse(inputSource, SaxParsers.newNonValidatingSaxParserFactory());
+    public static DocumentParser removingInterElementWhitespace() {
+        return instanceRemovingInterElementWhitespace;
     }
 
-    public static Document parse(URI inputFile, SAXParserFactory saxParserFactory) {
-        try {
-            return parse(new InputSource(inputFile.toURL().openStream()), saxParserFactory);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+    public static final class DefaultDocumentParser implements DocumentParser {
+
+        private final boolean removeInterElementWhitespace;
+
+        public DefaultDocumentParser(boolean removeInterElementWhitespace) {
+            this.removeInterElementWhitespace = removeInterElementWhitespace;
         }
-    }
 
-    public static Document parse(URI inputFile) {
-        return parse(inputFile, SaxParsers.newNonValidatingSaxParserFactory());
+        public Document parse(InputSource inputSource, SAXParserFactory saxParserFactory) {
+            ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
+            Optional<URI> optDocUri = Optional.ofNullable(inputSource.getSystemId()).map(URI::create);
+            SaxParsers.parse(inputSource, saxHandler, saxParserFactory);
+            Document rawDoc = saxHandler.resultingDocument();
+            Document doc = removeInterElementWhitespace ? rawDoc.removeInterElementWhitespace() : rawDoc;
+            return optDocUri.map(doc::withUri).orElse(doc);
+        }
+
+        public Document parse(InputSource inputSource) {
+            return parse(inputSource, SaxParsers.newNonValidatingSaxParserFactory());
+        }
+
+        public Document parse(URI inputFile, SAXParserFactory saxParserFactory) {
+            try {
+                return parse(new InputSource(inputFile.toURL().openStream()), saxParserFactory);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        public Document parse(URI inputFile) {
+            return parse(inputFile, SaxParsers.newNonValidatingSaxParserFactory());
+        }
     }
 }

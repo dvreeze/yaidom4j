@@ -78,7 +78,7 @@ class Base64LargeXmlTests {
         // Round tripping of base64 encoding and decoding returns the same (XML) string
         assertEquals(xmlString, xmlString2);
 
-        Document doc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
+        Document doc = DocumentParsers.removingInterElementWhitespace().parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
 
         // The parsed base64 decoded XML indeed has quite a lot of element nodes
         long numberOfElements = doc.documentElement().elementStream().count();
@@ -92,7 +92,7 @@ class Base64LargeXmlTests {
 
         String xmlString = Files.readString(Path.of(xmlUri), UTF_8);
 
-        Document doc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
+        Document doc = DocumentParsers.removingInterElementWhitespace().parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes(UTF_8))));
 
         Base64.Encoder encoder = Base64.getMimeEncoder();
         byte[] base64EncodedXml = encoder.encode(xmlString.getBytes(UTF_8));
@@ -108,7 +108,7 @@ class Base64LargeXmlTests {
 
         String wrapperXmlString = DocumentPrinters.print(rootElem);
 
-        Document wrapperDoc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8))));
+        Document wrapperDoc = DocumentParsers.removingInterElementWhitespace().parse(new InputSource(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8))));
 
         System.out.println();
         System.out.println("The wrapper document, without the base64 encoded string holding XML itself:");
@@ -134,7 +134,7 @@ class Base64LargeXmlTests {
         String childElemTextContent = childElem.text();
         byte[] base64DecodedChildElemTextContent = decoder.decode(childElemTextContent.getBytes(UTF_8));
 
-        Document nestedDoc = DocumentParsers.parse(new InputSource(new ByteArrayInputStream(base64DecodedChildElemTextContent)));
+        Document nestedDoc = DocumentParsers.removingInterElementWhitespace().parse(new InputSource(new ByteArrayInputStream(base64DecodedChildElemTextContent)));
 
         // We should get the original XML again, so at the very least the root element names must match
         assertEquals(doc.documentElement().name(), nestedDoc.documentElement().name());

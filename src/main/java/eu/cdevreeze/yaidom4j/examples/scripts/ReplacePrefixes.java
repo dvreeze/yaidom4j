@@ -61,8 +61,8 @@ public class ReplacePrefixes {
         URI inputFile = new URI(args[0]);
         URI configFile = new URI(args[1]);
 
-        Document doc = DocumentParsers.parse(inputFile);
-        Document configDoc = DocumentParsers.parse(configFile);
+        Document doc = DocumentParsers.removingInterElementWhitespace().parse(inputFile);
+        Document configDoc = DocumentParsers.removingInterElementWhitespace().parse(configFile);
 
         List<PrefixMapping> prefixMappings = extractPrefixMappings(configDoc.documentElement());
 

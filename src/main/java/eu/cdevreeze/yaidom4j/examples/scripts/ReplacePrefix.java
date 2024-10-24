@@ -54,7 +54,7 @@ public class ReplacePrefix {
         Preconditions.checkArgument(!newPrefix.isBlank());
         Preconditions.checkArgument(!newPrefix.equals(oldPrefix));
 
-        Document doc = DocumentParsers.parse(inputFile);
+        Document doc = DocumentParsers.removingInterElementWhitespace().parse(inputFile);
 
         Element transformedElement = replacePrefix(doc.documentElement(), oldPrefix, namespace, newPrefix);
 

@@ -57,6 +57,7 @@ class JaxpInteropTests {
 
     private Document parseDocument(String xmlClasspathResource) {
         return DocumentParsers
+                .removingInterElementWhitespace()
                 .parse(new InputSource(JaxpInteropTests.class.getResourceAsStream(xmlClasspathResource)))
                 .withUri(URI.create("http://example.com/feed1.xml"));
     }
