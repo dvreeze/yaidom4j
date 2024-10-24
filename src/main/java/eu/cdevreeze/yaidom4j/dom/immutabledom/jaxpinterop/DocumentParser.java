@@ -17,10 +17,8 @@
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.SAXParserFactory;
 import java.net.URI;
 
 /**
@@ -30,15 +28,7 @@ import java.net.URI;
  */
 public interface DocumentParser {
 
-    Document parse(InputSource inputSource, SAXParserFactory saxParserFactory);
+    Document parse(InputSource inputSource);
 
-    default Document parse(InputSource inputSource) {
-        return parse(inputSource, SaxParsers.newNonValidatingSaxParserFactory());
-    }
-
-    Document parse(URI inputFile, SAXParserFactory saxParserFactory);
-
-    default Document parse(URI inputFile) {
-        return parse(inputFile, SaxParsers.newNonValidatingSaxParserFactory());
-    }
+    Document parse(URI inputFile);
 }

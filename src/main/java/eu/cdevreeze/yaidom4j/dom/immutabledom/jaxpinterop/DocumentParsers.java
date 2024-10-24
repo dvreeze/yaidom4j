@@ -52,13 +52,27 @@ public class DocumentParsers {
 
     public static final class DefaultDocumentParser implements DocumentParser {
 
+        private final SAXParserFactory saxParserFactory;
         private final boolean removeInterElementWhitespace;
 
-        public DefaultDocumentParser(boolean removeInterElementWhitespace) {
+        public DefaultDocumentParser(SAXParserFactory saxParserFactory, boolean removeInterElementWhitespace) {
+            this.saxParserFactory = saxParserFactory;
             this.removeInterElementWhitespace = removeInterElementWhitespace;
         }
 
-        public Document parse(InputSource inputSource, SAXParserFactory saxParserFactory) {
+        public DefaultDocumentParser(boolean removeInterElementWhitespace) {
+            this(SaxParsers.newNonValidatingSaxParserFactory(), removeInterElementWhitespace);
+        }
+
+        public DefaultDocumentParser usingSaxParserFactory(SAXParserFactory spf) {
+            return new DefaultDocumentParser(spf, removeInterElementWhitespace);
+        }
+
+        public DefaultDocumentParser removingInterElementWhitespace() {
+            return new DefaultDocumentParser(saxParserFactory, true);
+        }
+
+        public Document parse(InputSource inputSource) {
             ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
             Optional<URI> optDocUri = Optional.ofNullable(inputSource.getSystemId()).map(URI::create);
             SaxParsers.parse(inputSource, saxHandler, saxParserFactory);
@@ -67,20 +81,12 @@ public class DocumentParsers {
             return optDocUri.map(doc::withUri).orElse(doc);
         }
 
-        public Document parse(InputSource inputSource) {
-            return parse(inputSource, SaxParsers.newNonValidatingSaxParserFactory());
-        }
-
-        public Document parse(URI inputFile, SAXParserFactory saxParserFactory) {
+        public Document parse(URI inputFile) {
             try {
-                return parse(new InputSource(inputFile.toURL().openStream()), saxParserFactory);
+                return parse(new InputSource(inputFile.toURL().openStream()));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-        }
-
-        public Document parse(URI inputFile) {
-            return parse(inputFile, SaxParsers.newNonValidatingSaxParserFactory());
         }
     }
 }
