@@ -55,8 +55,7 @@ public record Element(
         Preconditions.checkArgument(namespaceScope.allowsElementName(name));
 
         Preconditions.checkArgument(
-                attributes.keySet().stream()
-                        .allMatch(attrName -> namespaceScope().allowsAttributeName(attrName))
+                attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName)
         );
     }
 
