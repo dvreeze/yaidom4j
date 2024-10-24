@@ -38,16 +38,35 @@ public class DocumentParsers {
     private DocumentParsers() {
     }
 
-    private static final DocumentParser instance = new DefaultDocumentParser(false);
-
-    private static final DocumentParser instanceRemovingInterElementWhitespace = new DefaultDocumentParser(true);
-
-    public static DocumentParser instance() {
-        return instance;
+    public static Builder builder(SAXParserFactory saxParserFactory) {
+        return new Builder(saxParserFactory);
     }
 
-    public static DocumentParser removingInterElementWhitespace() {
-        return instanceRemovingInterElementWhitespace;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+
+        private final SAXParserFactory saxParserFactory;
+        private boolean removeInterElementWhitespace;
+
+        public Builder(SAXParserFactory saxParserFactory) {
+            this.saxParserFactory = saxParserFactory;
+        }
+
+        public Builder() {
+            this(SaxParsers.newNonValidatingSaxParserFactory());
+        }
+
+        public Builder removingInterElementWhitespace() {
+            this.removeInterElementWhitespace = true;
+            return this;
+        }
+
+        public DocumentParser build() {
+            return new DefaultDocumentParser(saxParserFactory, removeInterElementWhitespace);
+        }
     }
 
     public static final class DefaultDocumentParser implements DocumentParser {
@@ -58,18 +77,6 @@ public class DocumentParsers {
         public DefaultDocumentParser(SAXParserFactory saxParserFactory, boolean removeInterElementWhitespace) {
             this.saxParserFactory = saxParserFactory;
             this.removeInterElementWhitespace = removeInterElementWhitespace;
-        }
-
-        public DefaultDocumentParser(boolean removeInterElementWhitespace) {
-            this(SaxParsers.newNonValidatingSaxParserFactory(), removeInterElementWhitespace);
-        }
-
-        public DefaultDocumentParser usingSaxParserFactory(SAXParserFactory spf) {
-            return new DefaultDocumentParser(spf, removeInterElementWhitespace);
-        }
-
-        public DefaultDocumentParser removingInterElementWhitespace() {
-            return new DefaultDocumentParser(saxParserFactory, true);
         }
 
         public Document parse(InputSource inputSource) {

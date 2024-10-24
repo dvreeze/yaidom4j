@@ -58,7 +58,7 @@ class NodeBuilderTests {
 
     private Document parseDocument(String xmlClasspathResource) {
         InputStream inputStream = NodeBuilderTests.class.getResourceAsStream(xmlClasspathResource);
-        return DocumentParsers.removingInterElementWhitespace().parse(new InputSource(inputStream));
+        return DocumentParsers.builder().removingInterElementWhitespace().build().parse(new InputSource(inputStream));
     }
 
     @Test

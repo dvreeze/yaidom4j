@@ -52,7 +52,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         URI inputFile = new URI(args[0]);
         String prefix = args.length == 2 ? args[1] : "xbrli";
 
-        Document doc = DocumentParsers.removingInterElementWhitespace().parse(inputFile);
+        Document doc = DocumentParsers.builder().removingInterElementWhitespace().build().parse(inputFile);
 
         Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 
