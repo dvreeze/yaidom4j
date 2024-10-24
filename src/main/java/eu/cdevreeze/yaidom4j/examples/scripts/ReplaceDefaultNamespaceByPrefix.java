@@ -45,7 +45,8 @@ public class ReplaceDefaultNamespaceByPrefix {
         URI inputFile = new URI(args[0]);
         String prefix = args[1];
 
-        Document doc = DocumentParsers.builder().removingInterElementWhitespace().build().parse(inputFile);
+        Document doc = DocumentParsers.builder().removingInterElementWhitespace().build()
+                .parse(inputFile);
 
         Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 

@@ -57,7 +57,8 @@ class XbrlInstanceQueryTests {
     @BeforeAll
     void parseDocument() {
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
-        var underlyingDoc = DocumentParsers.builder().removingInterElementWhitespace().build().parse(new InputSource(inputStream));
+        var underlyingDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
+                .parse(new InputSource(inputStream));
         instance = TestXbrlInstances.XbrlInstance.from(Document.from(underlyingDoc).documentElement());
     }
 
