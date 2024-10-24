@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
+import java.util.function.Consumer;
 
 /**
  * Opinionated utility to create TransformerHandler instances.
@@ -44,19 +45,27 @@ public class TransformerHandlers {
         return (SAXTransformerFactory) tf;
     }
 
-    public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf) {
+    public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf, Consumer<TransformerHandler> thInitializer) {
         try {
             TransformerHandler th = stf.newTransformerHandler();
-            th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-            th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            thInitializer.accept(th);
             return th;
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf) {
+        return newTransformerHandler(stf, TransformerHandlers::initializeTransformerHandler);
+    }
+
     public static TransformerHandler newTransformerHandler() {
         return newTransformerHandler(newSaxTransformerFactory());
+    }
+
+    public static void initializeTransformerHandler(TransformerHandler th) {
+        th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
+        th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
     }
 }

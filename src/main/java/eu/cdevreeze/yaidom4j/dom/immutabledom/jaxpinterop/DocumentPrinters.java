@@ -25,6 +25,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.util.function.Consumer;
 
 /**
  * Simple utility to print immutable Documents to a String.
@@ -49,19 +50,24 @@ public class DocumentPrinters {
     public static final class Builder {
 
         private final SAXTransformerFactory saxTransformerFactory;
+        private Consumer<TransformerHandler> thInitializer;
 
         public Builder(SAXTransformerFactory saxTransformerFactory) {
             this.saxTransformerFactory = saxTransformerFactory;
+            this.thInitializer = TransformerHandlers::initializeTransformerHandler;
         }
 
         public Builder() {
             this(TransformerHandlers.newSaxTransformerFactory());
         }
 
-        // TODO Configure TransformerHandler
+        public Builder withTransformerHandlerInitializer(Consumer<TransformerHandler> newThInitializer) {
+            this.thInitializer = newThInitializer;
+            return this;
+        }
 
         public DocumentPrinter build() {
-            return new DefaultDocumentPrinter(saxTransformerFactory);
+            return new DefaultDocumentPrinter(saxTransformerFactory, thInitializer);
         }
     }
 
@@ -72,16 +78,18 @@ public class DocumentPrinters {
     public static final class DefaultDocumentPrinter implements DocumentPrinter {
 
         private final SAXTransformerFactory saxTransformerFactory;
+        private final Consumer<TransformerHandler> thInitializer;
 
-        public DefaultDocumentPrinter(SAXTransformerFactory saxTransformerFactory) {
+        public DefaultDocumentPrinter(SAXTransformerFactory saxTransformerFactory, Consumer<TransformerHandler> thInitializer) {
             this.saxTransformerFactory = saxTransformerFactory;
+            this.thInitializer = thInitializer;
         }
 
         public String print(Document document) {
             var sw = new StringWriter();
             var streamResult = new StreamResult(sw);
 
-            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
+            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory, thInitializer);
             th.setResult(streamResult);
 
             var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
@@ -95,7 +103,7 @@ public class DocumentPrinters {
             var sw = new StringWriter();
             var streamResult = new StreamResult(sw);
 
-            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
+            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory, thInitializer);
             th.setResult(streamResult);
 
             var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
