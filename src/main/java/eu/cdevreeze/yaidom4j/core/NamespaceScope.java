@@ -50,7 +50,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     public Optional<String> defaultNamespaceOption() {
-        return Optional.ofNullable(inScopeNamespaces.get(XMLConstants.DEFAULT_NS_PREFIX));
+        return findNamespaceOfPrefix(XMLConstants.DEFAULT_NS_PREFIX);
     }
 
     public NamespaceScope withoutDefaultNamespace() {
@@ -62,6 +62,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     public Optional<String> findNamespaceOfPrefix(String prefix) {
+        Preconditions.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
+
         if (XMLConstants.XML_NS_PREFIX.equals(prefix)) {
             return Optional.of(XMLConstants.XML_NS_URI);
         } else {
@@ -91,6 +93,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * allowed if the prefix is non-empty, but this method does not prevent that.
      */
     public NamespaceScope resolve(String prefix, String namespace) {
+        Preconditions.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
+
         if (namespace.isEmpty()) {
             return new NamespaceScope(
                     inScopeNamespaces.entrySet().stream()
@@ -104,10 +108,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
             return this;
         } else {
             if (inScopeNamespaces.containsKey(prefix) && namespace.equals(inScopeNamespaces.get(prefix))) {
-                return this; // No unnecessary object creation in most cases
+                return this; // No unnecessary object creation needed in most cases
             } else {
                 return new NamespaceScope(
-                        ImmutableMap.<String, String>builder()
+                        ImmutableMap.<String, String>builderWithExpectedSize(1 + this.inScopeNamespaces.size())
                                 .putAll(this.inScopeNamespaces)
                                 .put(prefix, namespace)
                                 .buildKeepingLast()
