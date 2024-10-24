@@ -70,11 +70,12 @@ class Base64LargeXmlTests {
 
         String base64EncodedXmlAsString = new String(base64EncodedXml, UTF_8);
 
+        System.out.println();
         System.out.println("First 1000 base64 encoded bytes:");
         String firstEncodedChars = base64EncodedXmlAsString.substring(0, 1000);
         System.out.println(firstEncodedChars);
 
-        // MIME encoded, with lines less than 100 characters
+        // MIME encoded, with multiple lines each having less than 100 characters
         assertTrue(firstEncodedChars.lines().count() >= 10L);
 
         Base64.Decoder decoder = Base64.getMimeDecoder();
@@ -89,28 +90,27 @@ class Base64LargeXmlTests {
         long numberOfElements = doc.documentElement().elementStream().count();
         assertTrue(numberOfElements >= 150_000L);
         assertFalse(numberOfElements >= 1_000_000L);
+    }
 
-        // Let's ramp things up a bit:
+    @Test
+    void testProcessingOfBase64EncodedXmlAttribute() throws URISyntaxException, IOException {
+        URI xmlUri = Objects.requireNonNull(Base64LargeXmlTests.class.getResource("/orders.xml")).toURI();
+
+        String xmlString = Files.readString(Path.of(xmlUri), UTF_8);
+
+        Document doc = parseDocument(new ByteArrayInputStream(xmlString.getBytes(UTF_8)));
+
+        Base64.Encoder encoder = Base64.getMimeEncoder();
+        byte[] base64EncodedXml = encoder.encode(xmlString.getBytes(UTF_8));
+        String base64EncodedXmlAsString = new String(base64EncodedXml, UTF_8);
+
         // Create an XML document containing the base64 encoded XML string as element content
 
         NamespaceScope nsScope = doc.documentElement().namespaceScope();
         String ns = doc.documentElement().name().getNamespaceURI();
         String prefix = doc.documentElement().name().getPrefix();
 
-        Element rootElem =
-                new Element(
-                        new QName(ns, "dummyRoot", prefix),
-                        ImmutableMap.of(),
-                        nsScope,
-                        ImmutableList.of(
-                                new Element(
-                                        new QName(ns, "dummyChild", prefix),
-                                        ImmutableMap.of(),
-                                        nsScope,
-                                        ImmutableList.of(new Text(base64EncodedXmlAsString, false))
-                                )
-                        )
-                );
+        Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
 
         String wrapperXmlString = printElement(rootElem);
 
@@ -135,6 +135,8 @@ class Base64LargeXmlTests {
 
         Element childElem = wrapperDoc.documentElement().childElementStream().findFirst().orElseThrow();
 
+        Base64.Decoder decoder = Base64.getMimeDecoder();
+
         String childElemTextContent = childElem.text();
         byte[] base64DecodedChildElemTextContent = decoder.decode(childElemTextContent.getBytes(UTF_8));
 
@@ -145,6 +147,22 @@ class Base64LargeXmlTests {
 
         // Hopefully we have equivalent XML again
         assertEquals(doc.documentElement().toClarkNode(), nestedDoc.documentElement().toClarkNode());
+    }
+
+    private static Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {
+        return new Element(
+                new QName(ns, "dummyRoot", prefix),
+                ImmutableMap.of(),
+                nsScope,
+                ImmutableList.of(
+                        new Element(
+                                new QName(ns, "dummyChild", prefix),
+                                ImmutableMap.of(),
+                                nsScope,
+                                ImmutableList.of(new Text(childElementText, false))
+                        )
+                )
+        );
     }
 
     private static Document parseDocument(InputStream inputStream) {
