@@ -54,9 +54,7 @@ public record Element(
 
         Preconditions.checkArgument(namespaceScope.allowsElementName(name));
 
-        Preconditions.checkArgument(
-                attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName)
-        );
+        Preconditions.checkArgument(attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName));
     }
 
     @Override
