@@ -57,7 +57,7 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
 
         Element transformedElement = replaceDefaultNamespaceByPrefix(doc.documentElement(), prefix);
 
-        String xmlString = DocumentPrinters.print(transformedElement);
+        String xmlString = DocumentPrinters.instance().print(transformedElement);
         System.out.println(xmlString);
     }
 

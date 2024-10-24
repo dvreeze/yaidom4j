@@ -70,7 +70,7 @@ public class ReplacePrefixes {
 
         Element transformedElement = replacePrefixes(doc.documentElement(), prefixMappings);
 
-        String xmlString = DocumentPrinters.print(transformedElement);
+        String xmlString = DocumentPrinters.instance().print(transformedElement);
         System.out.println(xmlString);
     }
 

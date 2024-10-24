@@ -38,39 +38,71 @@ public class DocumentPrinters {
     private DocumentPrinters() {
     }
 
-    public static String print(Document document, SAXTransformerFactory saxTransformerFactory) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
-
-        TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
-        th.setResult(streamResult);
-
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-        saxEventGenerator.processDocument(document);
-
-        return sw.toString();
+    public static Builder builder(SAXTransformerFactory saxTransformerFactory) {
+        return new Builder(saxTransformerFactory);
     }
 
-    public static String print(Document document) {
-        return print(document, TransformerHandlers.newSaxTransformerFactory());
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static String print(Element element, SAXTransformerFactory saxTransformerFactory) {
-        var sw = new StringWriter();
-        var streamResult = new StreamResult(sw);
+    public static final class Builder {
 
-        TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
-        th.setResult(streamResult);
+        private final SAXTransformerFactory saxTransformerFactory;
 
-        var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+        public Builder(SAXTransformerFactory saxTransformerFactory) {
+            this.saxTransformerFactory = saxTransformerFactory;
+        }
 
-        saxEventGenerator.processElement(element, NamespaceScope.empty());
+        public Builder() {
+            this(TransformerHandlers.newSaxTransformerFactory());
+        }
 
-        return sw.toString();
+        // TODO Configure TransformerHandler
+
+        public DocumentPrinter build() {
+            return new DefaultDocumentPrinter(saxTransformerFactory);
+        }
     }
 
-    public static String print(Element element) {
-        return print(element, TransformerHandlers.newSaxTransformerFactory());
+    public static DocumentPrinter instance() {
+        return builder().build();
+    }
+
+    public static final class DefaultDocumentPrinter implements DocumentPrinter {
+
+        private final SAXTransformerFactory saxTransformerFactory;
+
+        public DefaultDocumentPrinter(SAXTransformerFactory saxTransformerFactory) {
+            this.saxTransformerFactory = saxTransformerFactory;
+        }
+
+        public String print(Document document) {
+            var sw = new StringWriter();
+            var streamResult = new StreamResult(sw);
+
+            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
+            th.setResult(streamResult);
+
+            var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+            saxEventGenerator.processDocument(document);
+
+            return sw.toString();
+        }
+
+        public String print(Element element) {
+            var sw = new StringWriter();
+            var streamResult = new StreamResult(sw);
+
+            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory);
+            th.setResult(streamResult);
+
+            var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+            saxEventGenerator.processElement(element, NamespaceScope.empty());
+
+            return sw.toString();
+        }
     }
 }

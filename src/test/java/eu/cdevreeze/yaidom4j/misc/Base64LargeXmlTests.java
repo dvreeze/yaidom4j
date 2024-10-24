@@ -108,7 +108,7 @@ class Base64LargeXmlTests {
 
         Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
 
-        String wrapperXmlString = DocumentPrinters.print(rootElem);
+        String wrapperXmlString = DocumentPrinters.instance().print(rootElem);
 
         Document wrapperDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8))));
@@ -116,7 +116,7 @@ class Base64LargeXmlTests {
         System.out.println();
         System.out.println("The wrapper document, without the base64 encoded string holding XML itself:");
         System.out.println(
-                DocumentPrinters.print(
+                DocumentPrinters.instance().print(
                         wrapperDoc.documentElement().transformDescendantElements(
                                 e -> e.withChildren(
                                         e.children()

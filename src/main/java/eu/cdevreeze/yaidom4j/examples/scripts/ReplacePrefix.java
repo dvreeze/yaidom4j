@@ -59,7 +59,7 @@ public class ReplacePrefix {
 
         Element transformedElement = replacePrefix(doc.documentElement(), oldPrefix, namespace, newPrefix);
 
-        String xmlString = DocumentPrinters.print(transformedElement);
+        String xmlString = DocumentPrinters.instance().print(transformedElement);
         System.out.println(xmlString);
     }
 

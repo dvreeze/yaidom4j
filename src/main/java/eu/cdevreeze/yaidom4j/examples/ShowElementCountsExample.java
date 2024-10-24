@@ -99,7 +99,7 @@ public class ShowElementCountsExample {
         );
 
         System.out.println();
-        String xmlOutput = DocumentPrinters.print(convertElementCountsToXml(elementCounts));
+        String xmlOutput = DocumentPrinters.instance().print(convertElementCountsToXml(elementCounts));
         System.out.println(xmlOutput);
 
         System.out.println();
