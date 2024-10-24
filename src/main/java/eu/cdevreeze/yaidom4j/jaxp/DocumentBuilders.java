@@ -43,7 +43,7 @@ public class DocumentBuilders {
     /**
      * Creates a namespace-aware non-validating DocumentBuilderFactory
      */
-    public static DocumentBuilderFactory newDocumentBuilderFactory() {
+    public static DocumentBuilderFactory newNonValidatingDocumentBuilderFactory() {
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
             docBuilderFactory.setNamespaceAware(true); // Important!
@@ -65,7 +65,7 @@ public class DocumentBuilders {
     }
 
     public static Document parse(InputSource inputSource) {
-        return parse(inputSource, newDocumentBuilderFactory());
+        return parse(inputSource, newNonValidatingDocumentBuilderFactory());
     }
 
     public static Document parse(URI inputFile, DocumentBuilderFactory documentBuilderFactory) {
@@ -77,6 +77,6 @@ public class DocumentBuilders {
     }
 
     public static Document parse(URI inputFile) {
-        return parse(inputFile, newDocumentBuilderFactory());
+        return parse(inputFile, newNonValidatingDocumentBuilderFactory());
     }
 }

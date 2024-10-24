@@ -42,7 +42,7 @@ public class SaxParsers {
     /**
      * Creates a namespace-aware non-validating SAXParserFactory
      */
-    public static SAXParserFactory newSaxParserFactory() {
+    public static SAXParserFactory newNonValidatingSaxParserFactory() {
         try {
             SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
             saxParserFactory.setNamespaceAware(true); // Important!
@@ -64,7 +64,7 @@ public class SaxParsers {
     }
 
     public static void parse(InputSource inputSource, DefaultHandler saxHandler) {
-        parse(inputSource, saxHandler, newSaxParserFactory());
+        parse(inputSource, saxHandler, newNonValidatingSaxParserFactory());
     }
 
     public static void parse(URI inputFile, DefaultHandler saxHandler, SAXParserFactory saxParserFactory) {
@@ -76,6 +76,6 @@ public class SaxParsers {
     }
 
     public static void parse(URI inputFile, DefaultHandler saxHandler) {
-        parse(inputFile, saxHandler, newSaxParserFactory());
+        parse(inputFile, saxHandler, newNonValidatingSaxParserFactory());
     }
 }
