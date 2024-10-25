@@ -16,6 +16,20 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.jaxp.SchemaFactories;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Test for different scenarios around ignorable whitespace, with and without schema validation.
  * <p>
@@ -23,7 +37,82 @@ package eu.cdevreeze.yaidom4j.misc;
  *
  * @author Chris de Vreeze
  */
-public class IgnorableWhitespaceTests {
+class IgnorableWhitespaceTests {
 
-    // TODO
+    private static Path xmlFilePath;
+    private static Path xsdFilePath;
+
+    @BeforeAll
+    static void init() {
+        try {
+            xmlFilePath = Path.of(IgnorableWhitespaceTests.class.getResource("/bestellung.xml").toURI());
+            xsdFilePath = Path.of(IgnorableWhitespaceTests.class.getResource("/bestellung.xsd").toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testParsingWithoutSchemaButRemovingWhitespace() {
+        DocumentParser parser = DocumentParsers.builder().removingInterElementWhitespace().build();
+        Document document = parser.parse(xmlFilePath.toUri());
+
+        assertTrue(
+                document.documentElement()
+                        .elementStream(e -> e.text().isBlank() && !e.text().isEmpty())
+                        .findAny()
+                        .isEmpty()
+        );
+    }
+
+    @Test
+    void testParsingWithoutSchema() {
+        DocumentParser parser = DocumentParsers.builder().build();
+        Document document = parser.parse(xmlFilePath.toUri());
+
+        assertTrue(
+                document.documentElement()
+                        .elementStream(e -> e.text().isBlank() && !e.text().isEmpty())
+                        .count() >= 5
+        );
+
+        Document otherDoc =
+                DocumentParsers.builder().removingInterElementWhitespace().build().parse(xmlFilePath.toUri());
+
+        assertNotEquals(
+                otherDoc.documentElement().toClarkNode(),
+                document.documentElement().toClarkNode()
+        );
+        assertEquals(
+                otherDoc.documentElement().toClarkNode(),
+                document.documentElement().removeInterElementWhitespace().toClarkNode()
+        );
+    }
+
+    @Test
+    void testParsingUsingSchema() throws SAXException {
+        DocumentParser parser = DocumentParsers
+                .builder(
+                        SaxParsers.newSaxParserFactory(
+                                SchemaFactories.newSchemaFactory().newSchema(xsdFilePath.toFile())
+                        )
+                )
+                .build();
+        Document document = parser.parse(xmlFilePath.toUri());
+
+        assertTrue(
+                document.documentElement()
+                        .elementStream(e -> e.text().isBlank() && !e.text().isEmpty())
+                        .findAny()
+                        .isEmpty()
+        );
+
+        Document otherDoc =
+                DocumentParsers.builder().removingInterElementWhitespace().build().parse(xmlFilePath.toUri());
+
+        assertEquals(
+                otherDoc.documentElement().toClarkNode(),
+                document.documentElement().toClarkNode()
+        );
+    }
 }
