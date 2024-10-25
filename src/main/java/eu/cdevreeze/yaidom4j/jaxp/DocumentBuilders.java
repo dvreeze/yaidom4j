@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,14 +42,24 @@ public class DocumentBuilders {
     }
 
     /**
-     * Creates a namespace-aware non-validating DocumentBuilderFactory
+     * Creates a namespace-aware non-(DTD-)validating DocumentBuilderFactory.
+     * The factory is aware of XXE attacks and tries to protect against them.
+     * To create a factory performing validation against an XML schema, consider using the factory
+     * returned by this method as a basis, and setting a Schema (array) on the result.
      */
     public static DocumentBuilderFactory newNonValidatingDocumentBuilderFactory() {
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
             docBuilderFactory.setNamespaceAware(true); // Important!
             docBuilderFactory.setValidating(false);
+            // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            // Ideally, feature "http://apache.org/xml/features/disallow-doctype-decl" would be set to true
+            docBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            docBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            docBuilderFactory.setXIncludeAware(false);
+            docBuilderFactory.setExpandEntityReferences(false);
+            docBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return docBuilderFactory;
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);

@@ -20,6 +20,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,14 +41,23 @@ public class SaxParsers {
     }
 
     /**
-     * Creates a namespace-aware non-validating SAXParserFactory
+     * Creates a namespace-aware non-(DTD-)validating SAXParserFactory.
+     * The factory is aware of XXE attacks and tries to protect against them.
+     * To create a factory performing validation against an XML schema, consider using the factory
+     * returned by this method as a basis, and setting a Schema (array) on the result.
      */
     public static SAXParserFactory newNonValidatingSaxParserFactory() {
         try {
             SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
             saxParserFactory.setNamespaceAware(true); // Important!
             saxParserFactory.setValidating(false);
+            // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            // Ideally, feature "http://apache.org/xml/features/disallow-doctype-decl" would be set to true
+            saxParserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            saxParserFactory.setXIncludeAware(false);
+            saxParserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return saxParserFactory;
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
