@@ -121,6 +121,7 @@
       </plugins>
     </pluginManagement>
   </build>
+  <!-- Release a new non-snapshot version with command "mvn clean deploy -Prelease" -->
   <profiles>
     <profile>
       <id>release</id>
