@@ -104,6 +104,7 @@ Then we can obtain the February magazine titles (in a namespace-aware manner) as
 
 ```java
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
@@ -123,14 +124,17 @@ List<String> februaryMagazineTitles = doc.documentElement()
         .flatMap(e -> e.childElementStream(hasName(ns, "Title")))
         .map(ElementApi::text)
         .toList();
+
+// [National Geographic, Newsweek]
 ```
 
 As shown above, XML querying in yaidom4j is *Java Stream processing*. It's just that yaidom4j adds
 *intermediate operations* corresponding to XPath axes, except that these operations return streams
 of element nodes, instead of streams of arbitrary nodes.
 
-The querying stream pipeline works for multiple yaidom4j element implementations, and not just for
-the default immutable DOM implementation.
+The same querying stream pipeline above (but with different imports and bootstrapping, of course)
+works for multiple yaidom4j element implementations, and not just for the default immutable DOM
+implementation.
 
 ## Characteristics of yaidom4j
 
