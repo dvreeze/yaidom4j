@@ -19,6 +19,8 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 
+import javax.xml.transform.Result;
+
 /**
  * Document printer API.
  *
@@ -29,4 +31,8 @@ public interface DocumentPrinter {
     String print(Document document);
 
     String print(Element element);
+
+    void print(Document document, Result result);
+
+    void print(Element element, Result result);
 }

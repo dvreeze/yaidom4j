@@ -44,7 +44,7 @@ public class SaxParsers {
      * Creates a namespace-aware non-(DTD-)validating SAXParserFactory.
      * The factory is aware of XXE attacks and tries to protect against them.
      * To create a factory performing validation against an XML schema, consider using the factory
-     * returned by this method as a basis, and setting a Schema (array) on the result.
+     * returned by this method as a basis, and setting a Schema on the result.
      */
     public static SAXParserFactory newNonValidatingSaxParserFactory() {
         try {

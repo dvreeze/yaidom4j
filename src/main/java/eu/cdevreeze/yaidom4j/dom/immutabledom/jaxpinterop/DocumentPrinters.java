@@ -21,6 +21,7 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
@@ -29,8 +30,6 @@ import java.util.function.Consumer;
 
 /**
  * Simple utility to print immutable Documents to a String, offering a fluent API.
- * <p>
- * Do not use this utility when the printed documents take too much memory.
  *
  * @author Chris de Vreeze
  */
@@ -54,7 +53,7 @@ public class DocumentPrinters {
 
         public Builder(SAXTransformerFactory saxTransformerFactory) {
             this.saxTransformerFactory = saxTransformerFactory;
-            this.thInitializer = th -> TransformerHandlers.indentingAndOmittingXmlDeclaration().accept(th);
+            this.thInitializer = th -> TransformerHandlers.Config.indentingAndOmittingXmlDeclaration().accept(th);
         }
 
         public Builder() {
@@ -89,12 +88,7 @@ public class DocumentPrinters {
             var sw = new StringWriter();
             var streamResult = new StreamResult(sw);
 
-            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory, thInitializer);
-            th.setResult(streamResult);
-
-            var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
-
-            saxEventGenerator.processDocument(document);
+            print(document, streamResult);
 
             return sw.toString();
         }
@@ -103,14 +97,27 @@ public class DocumentPrinters {
             var sw = new StringWriter();
             var streamResult = new StreamResult(sw);
 
+            print(element, streamResult);
+
+            return sw.toString();
+        }
+
+        public void print(Document document, Result result) {
             TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory, thInitializer);
-            th.setResult(streamResult);
+            th.setResult(result);
+
+            var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
+
+            saxEventGenerator.processDocument(document);
+        }
+
+        public void print(Element element, Result result) {
+            TransformerHandler th = TransformerHandlers.newTransformerHandler(saxTransformerFactory, thInitializer);
+            th.setResult(result);
 
             var saxEventGenerator = new ImmutableDomConsumingSaxEventGenerator(th);
 
             saxEventGenerator.processElement(element, NamespaceScope.empty());
-
-            return sw.toString();
         }
     }
 }

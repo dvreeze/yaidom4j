@@ -40,6 +40,9 @@ public class TransformerHandlers {
     private TransformerHandlers() {
     }
 
+    /**
+     * Creates a SAXTransformerFactory. The factory is aware of XXE attacks and tries to protect against them.
+     */
     public static SAXTransformerFactory newSaxTransformerFactory() {
         TransformerFactory tf = TransformerFactory.newDefaultInstance();
         Preconditions.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
@@ -59,27 +62,28 @@ public class TransformerHandlers {
     }
 
     public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf) {
-        return newTransformerHandler(stf, withIndent(4).andThen(omittingXmlDeclaration()));
+        return newTransformerHandler(stf, Config.indenting(4).andThen(Config.omittingXmlDeclaration()));
     }
 
     public static TransformerHandler newTransformerHandler() {
         return newTransformerHandler(newSaxTransformerFactory());
     }
 
-    // Composable TransformerHandler configuration
+    public static final class Config {
 
-    public static Consumer<TransformerHandler> withIndent(int indent) {
-        return th -> {
-            th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-            th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
-        };
-    }
+        public static Consumer<TransformerHandler> indenting(int indent) {
+            return th -> {
+                th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
+                th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
+            };
+        }
 
-    public static Consumer<TransformerHandler> omittingXmlDeclaration() {
-        return th -> th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    }
+        public static Consumer<TransformerHandler> omittingXmlDeclaration() {
+            return th -> th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        }
 
-    public static Consumer<TransformerHandler> indentingAndOmittingXmlDeclaration() {
-        return withIndent(4).andThen(omittingXmlDeclaration());
+        public static Consumer<TransformerHandler> indentingAndOmittingXmlDeclaration() {
+            return indenting(4).andThen(omittingXmlDeclaration());
+        }
     }
 }
