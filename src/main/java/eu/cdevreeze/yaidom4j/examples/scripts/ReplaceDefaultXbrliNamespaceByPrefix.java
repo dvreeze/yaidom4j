@@ -144,10 +144,10 @@ public class ReplaceDefaultXbrliNamespaceByPrefix {
         if (element.name().equals(new QName(XBRLI_NS, "measure"))) {
             if (element.text().equals("pure") || element.text().equals(xbrliPrefix + ":pure")) {
                 String qname = new QName(XBRLI_NS, "pure").toString();
-                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname, false)));
+                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname)));
             } else if (element.text().equals("shares") || element.text().equals(xbrliPrefix + ":shares")) {
                 String qname = new QName(XBRLI_NS, "shares").toString();
-                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname, false)));
+                return element.withChildren(ImmutableList.of(new ClarkNodes.Text(qname)));
             } else {
                 return element;
             }

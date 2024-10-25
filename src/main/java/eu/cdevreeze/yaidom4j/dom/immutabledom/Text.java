@@ -38,6 +38,6 @@ public record Text(String value, boolean isCData) implements Node {
 
     @Override
     public ClarkNodes.Text toClarkNode() {
-        return new ClarkNodes.Text(value, isCData);
+        return new ClarkNodes.Text(value);
     }
 }

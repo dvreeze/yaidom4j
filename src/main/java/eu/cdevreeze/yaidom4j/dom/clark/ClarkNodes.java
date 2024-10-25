@@ -298,7 +298,7 @@ public class ClarkNodes {
         }
     }
 
-    public record Text(String value, boolean isCData) implements Node {
+    public record Text(String value) implements Node {
 
         public Text {
             Objects.requireNonNull(value);
