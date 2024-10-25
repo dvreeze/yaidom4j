@@ -129,7 +129,7 @@ List<String> februaryMagazineTitles = doc.documentElement()
 ```
 
 As shown above, XML querying in yaidom4j is *Java Stream processing*. It's just that yaidom4j adds
-*Stream factories* corresponding to XPath axes, except that these operations return streams
+*Stream factories* corresponding to XPath axes, except that these Stream factories return streams
 of element nodes, instead of streams of arbitrary nodes.
 
 The same querying stream pipeline above (but with different imports and bootstrapping, of course)
