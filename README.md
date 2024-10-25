@@ -26,7 +26,111 @@ Some of many use cases for yaidom4j include the following:
 
 ## Example code
 
-TODO
+Suppose we have the following XML document, in file `bookstore.xml`:
+
+```xml
+<books:Bookstore xmlns="http://bookstore" xmlns:books="http://bookstore">
+    <Book ISBN="ISBN-0-13-713526-2" Price="85" Edition="3rd">
+        <Title>A First Course in Database Systems</Title>
+        <Authors>
+            <Author>
+                <First_Name>Jeffrey</First_Name>
+                <Last_Name>Ullman</Last_Name>
+            </Author>
+            <Author>
+                <First_Name>Jennifer</First_Name>
+                <Last_Name>Widom</Last_Name>
+            </Author>
+        </Authors>
+    </Book>
+    <Book ISBN="ISBN-0-13-815504-6" Price="100">
+        <Title>Database Systems: The Complete Book</Title>
+        <Authors>
+            <Author>
+                <First_Name>Hector</First_Name>
+                <Last_Name>Garcia-Molina</Last_Name>
+            </Author>
+            <Author>
+                <First_Name>Jeffrey</First_Name>
+                <Last_Name>Ullman</Last_Name>
+            </Author>
+            <Author>
+                <First_Name>Jennifer</First_Name>
+                <Last_Name>Widom</Last_Name>
+            </Author>
+        </Authors>
+        <Remark>Buy this book bundled with "A First Course" - a great deal!
+        </Remark>
+    </Book>
+    <Book ISBN="ISBN-0-11-222222-3" Price="50">
+        <Title>Hector and Jeff's Database Hints</Title>
+        <Authors>
+            <Author>
+                <First_Name>Jeffrey</First_Name>
+                <Last_Name>Ullman</Last_Name>
+            </Author>
+            <Author>
+                <First_Name>Hector</First_Name>
+                <Last_Name>Garcia-Molina</Last_Name>
+            </Author>
+        </Authors>
+        <Remark>An indispensable companion to your textbook</Remark>
+    </Book>
+    <Book ISBN="ISBN-9-88-777777-6" Price="25">
+        <Title>Jennifer's Economical Database Hints</Title>
+        <Authors>
+            <Author>
+                <First_Name>Jennifer</First_Name>
+                <Last_Name>Widom</Last_Name>
+            </Author>
+        </Authors>
+    </Book>
+    <Magazine Month="January" Year="2009">
+        <Title>National Geographic</Title>
+    </Magazine>
+    <Magazine Month="February" Year="2009">
+        <Title>National Geographic</Title>
+    </Magazine>
+    <Magazine Month="February" Year="2009">
+        <Title>Newsweek</Title>
+    </Magazine>
+    <Magazine Month="March" Year="2009">
+        <Title>Hector and Jeff's Database Hints</Title>
+    </Magazine>
+</books:Bookstore>
+```
+
+Then we can obtain the February magazine titles (in a namespace-aware manner) as follows:
+
+```java
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+
+import java.nio.file.Path;
+import java.util.List;
+
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.*;
+
+DocumentParser parser = DocumentParsers.instance();
+Document doc = parser.parse(Path.of("bookstore.xml").toUri());
+
+var ns = "http://bookstore";
+
+List<String> februaryMagazineTitles = doc.documentElement()
+        .childElementStream(hasName(ns, "Magazine"))
+        .filter(hasAttribute("Month", "February"))
+        .flatMap(e -> e.childElementStream(hasName(ns, "Title")))
+        .map(ElementApi::text)
+        .toList();
+```
+
+As shown above, XML querying in yaidom4j is *Java Stream processing*. It's just that yaidom4j adds
+*intermediate operations* corresponding to XPath axes, except that these operations return streams
+of element nodes, instead of streams of arbitrary nodes.
+
+The querying stream pipeline works for multiple yaidom4j element implementations, and not just for
+the default immutable DOM implementation.
 
 ## Characteristics of yaidom4j
 
