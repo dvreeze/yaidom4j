@@ -35,7 +35,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * XML element node.
+ * XML element node. The element is namespace-well-formed in the sense that prefixes in element name
+ * and attribute names are guaranteed to be bound to a namespace, or else an exception is thrown.
+ * It is also checked that the element name and attribute names are allowed by the passed namespace scope.
  *
  * @author Chris de Vreeze
  */

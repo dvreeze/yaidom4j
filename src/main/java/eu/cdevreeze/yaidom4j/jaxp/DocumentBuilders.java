@@ -24,12 +24,13 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 
 /**
- * Opinionated utility to create W3C DOM parsers and use them.
+ * Utility to create W3C DOM parsers and use them.
  * <p>
  * The parsed DOM tree can be converted to an immutable DOM tree native to yaidom4j, using class
  * "JaxpDomToImmutableDomConverter".
@@ -44,8 +45,6 @@ public class DocumentBuilders {
     /**
      * Creates a namespace-aware non-(DTD-)validating DocumentBuilderFactory.
      * The factory is aware of XXE attacks and tries to protect against them.
-     * To create a factory performing validation against an XML schema, consider using the factory
-     * returned by this method as a basis, and setting a Schema on the result.
      */
     public static DocumentBuilderFactory newNonValidatingDocumentBuilderFactory() {
         try {
@@ -64,6 +63,16 @@ public class DocumentBuilders {
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Creates a DocumentBuilderFactory that uses the passed Schema for schema validation.
+     * The factory is aware of XXE attacks and tries to protect against them.
+     */
+    public static DocumentBuilderFactory newDocumentBuilderFactory(Schema schema) {
+        DocumentBuilderFactory dbf = newNonValidatingDocumentBuilderFactory();
+        dbf.setSchema(schema);
+        return dbf;
     }
 
     public static Document parse(InputSource inputSource, DocumentBuilderFactory documentBuilderFactory) {

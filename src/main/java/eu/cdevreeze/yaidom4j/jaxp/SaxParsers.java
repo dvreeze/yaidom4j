@@ -24,12 +24,13 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 
 /**
- * Opinionated utility to create SAX parsers and use them.
+ * Utility to create SAX parsers and use them.
  * <p>
  * If the SAX handler is an "ImmutableDomProducingSaxHandler", the SAX parser creates an immutable DOM tree.
  *
@@ -43,8 +44,6 @@ public class SaxParsers {
     /**
      * Creates a namespace-aware non-(DTD-)validating SAXParserFactory.
      * The factory is aware of XXE attacks and tries to protect against them.
-     * To create a factory performing validation against an XML schema, consider using the factory
-     * returned by this method as a basis, and setting a Schema on the result.
      */
     public static SAXParserFactory newNonValidatingSaxParserFactory() {
         try {
@@ -62,6 +61,16 @@ public class SaxParsers {
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Creates a SAXParserFactory that uses the passed Schema for schema validation.
+     * The factory is aware of XXE attacks and tries to protect against them.
+     */
+    public static SAXParserFactory newSaxParserFactory(Schema schema) {
+        SAXParserFactory spf = newNonValidatingSaxParserFactory();
+        spf.setSchema(schema);
+        return spf;
     }
 
     public static void parse(InputSource inputSource, DefaultHandler saxHandler, SAXParserFactory saxParserFactory) {

@@ -29,7 +29,7 @@ import java.io.StringWriter;
 import java.util.function.Consumer;
 
 /**
- * Simple utility to print immutable Documents to a String, offering a fluent API.
+ * Simple utility to print immutable Documents to a String or Result, offering a fluent API.
  *
  * @author Chris de Vreeze
  */

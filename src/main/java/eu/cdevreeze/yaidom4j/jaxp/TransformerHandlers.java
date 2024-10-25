@@ -27,7 +27,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import java.util.function.Consumer;
 
 /**
- * Opinionated utility to create TransformerHandler instances.
+ * Utility to create TransformerHandler instances.
  * <p>
  * The created TransformerHandler instances can be used with class "ImmutableDomConsumingSaxEventGenerator"
  * to output an immutable DOM tree. The idea is to first set a Result on the TransformerHandler (which
@@ -62,7 +62,7 @@ public class TransformerHandlers {
     }
 
     public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf) {
-        return newTransformerHandler(stf, Config.indenting(4).andThen(Config.omittingXmlDeclaration()));
+        return newTransformerHandler(stf, Config.indentingAndOmittingXmlDeclaration());
     }
 
     public static TransformerHandler newTransformerHandler() {
@@ -70,6 +70,9 @@ public class TransformerHandlers {
     }
 
     public static final class Config {
+
+        private Config() {
+        }
 
         public static Consumer<TransformerHandler> indenting(int indent) {
             return th -> {
