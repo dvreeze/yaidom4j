@@ -28,7 +28,7 @@ import java.io.StringWriter;
 import java.util.function.Consumer;
 
 /**
- * Simple utility to print immutable Documents to a String.
+ * Simple utility to print immutable Documents to a String, offering a fluent API.
  * <p>
  * Do not use this utility when the printed documents take too much memory.
  *
@@ -54,7 +54,7 @@ public class DocumentPrinters {
 
         public Builder(SAXTransformerFactory saxTransformerFactory) {
             this.saxTransformerFactory = saxTransformerFactory;
-            this.thInitializer = TransformerHandlers::initializeTransformerHandler;
+            this.thInitializer = th -> TransformerHandlers.indentingAndOmittingXmlDeclaration().accept(th);
         }
 
         public Builder() {

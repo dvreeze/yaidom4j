@@ -56,16 +56,27 @@ public class TransformerHandlers {
     }
 
     public static TransformerHandler newTransformerHandler(SAXTransformerFactory stf) {
-        return newTransformerHandler(stf, TransformerHandlers::initializeTransformerHandler);
+        return newTransformerHandler(stf, withIndent(4).andThen(omittingXmlDeclaration()));
     }
 
     public static TransformerHandler newTransformerHandler() {
         return newTransformerHandler(newSaxTransformerFactory());
     }
 
-    public static void initializeTransformerHandler(TransformerHandler th) {
-        th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-        th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+    // Composable TransformerHandler configuration
+
+    public static Consumer<TransformerHandler> withIndent(int indent) {
+        return th -> {
+            th.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
+            th.getTransformer().setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
+        };
+    }
+
+    public static Consumer<TransformerHandler> omittingXmlDeclaration() {
+        return th -> th.getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    }
+
+    public static Consumer<TransformerHandler> indentingAndOmittingXmlDeclaration() {
+        return withIndent(4).andThen(omittingXmlDeclaration());
     }
 }

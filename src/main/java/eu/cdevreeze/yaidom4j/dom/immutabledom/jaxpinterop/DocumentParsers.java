@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.Optional;
 
 /**
- * Simple utility to parse input XML into immutable Documents.
+ * Simple utility to parse input XML into immutable Documents, offering a fluent API.
  * <p>
  * Do not use this utility when the parsed documents take too much memory.
  *
@@ -67,6 +67,10 @@ public class DocumentParsers {
         public DocumentParser build() {
             return new DefaultDocumentParser(saxParserFactory, removeInterElementWhitespace);
         }
+    }
+
+    public static DocumentParser instance() {
+        return builder().build();
     }
 
     public static final class DefaultDocumentParser implements DocumentParser {
