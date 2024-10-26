@@ -47,8 +47,7 @@ public class SaxParsers {
      */
     public static SAXParserFactory newNonValidatingSaxParserFactory() {
         try {
-            SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultInstance();
-            saxParserFactory.setNamespaceAware(true); // Important!
+            SAXParserFactory saxParserFactory = SAXParserFactory.newDefaultNSInstance();
             saxParserFactory.setValidating(false);
             // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
             // Ideally, feature "http://apache.org/xml/features/disallow-doctype-decl" would be set to true

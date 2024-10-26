@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Originating from: http://www.datypic.com/books/defxmlschema/chapter04.html -->
+<!-- Note that attribute elementFormDefault is missing (default false) -->
+<!-- Adapted schema locations to absolute URLs, which are resolved using a catalog -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.org/ord"
+           xmlns="http://example.org/ord"
+           xmlns:prod="http://example.org/prod">
+    <xs:include schemaLocation="https://example.org/chapter04ord2.xsd"/>
+    <xs:include schemaLocation="https://example.org/chapter04cust.xsd"/>
+    <xs:import namespace="http://example.org/prod"
+               schemaLocation="https://example.org/chapter04prod.xsd"/>
+    <xs:element name="order" type="OrderType"/>
+    <xs:complexType name="OrderType">
+        <xs:sequence>
+            <xs:element name="number" type="OrderNumType"/>
+            <xs:element name="customer" type="CustomerType"/>
+            <xs:element name="items" type="prod:ItemsType"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

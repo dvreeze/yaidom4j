@@ -48,8 +48,7 @@ public class DocumentBuilders {
      */
     public static DocumentBuilderFactory newNonValidatingDocumentBuilderFactory() {
         try {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
-            docBuilderFactory.setNamespaceAware(true); // Important!
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newDefaultNSInstance();
             docBuilderFactory.setValidating(false);
             // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
             // Ideally, feature "http://apache.org/xml/features/disallow-doctype-decl" would be set to true
