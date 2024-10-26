@@ -49,6 +49,18 @@ public class SaxonElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
+    public static Predicate<Element> hasAttributeWithName(QName attrName) {
+        return factory.hasAttributeWithName(attrName);
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+        return factory.hasAttributeWithName(attrNamespace, attrLocalName);
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+        return factory.hasAttributeWithName(attrNoNamespaceName);
+    }
+
     public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
         return factory.hasAttributeValue(attrName, attrValuePredicate);
     }
@@ -85,6 +97,10 @@ public class SaxonElementPredicates {
         return factory.hasOnlyStrippedText(text);
     }
 
+    /**
+     * Element predicate factory, implementing a generic interface that is useful for yaidom4j querying code
+     * that generalizes over element implementations.
+     */
     public static final class Factory implements ElementPredicateFactoryApi<Element> {
 
         @Override
@@ -100,6 +116,21 @@ public class SaxonElementPredicates {
         @Override
         public Predicate<Element> hasName(String noNamespaceName) {
             return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(QName attrName) {
+            return e -> e.attributeOption(attrName).isPresent();
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+            return hasAttributeWithName(new QName(attrNamespace, attrLocalName));
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+            return hasAttributeWithName(new QName(attrNoNamespaceName));
         }
 
         @Override

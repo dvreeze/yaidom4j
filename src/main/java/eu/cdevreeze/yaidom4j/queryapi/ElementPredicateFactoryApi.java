@@ -32,6 +32,12 @@ public interface ElementPredicateFactoryApi<E> {
 
     Predicate<E> hasName(String noNamespaceName);
 
+    Predicate<E> hasAttributeWithName(QName attrName);
+
+    Predicate<E> hasAttributeWithName(String attrNamespace, String attrLocalName);
+
+    Predicate<E> hasAttributeWithName(String attrNoNamespaceName);
+
     Predicate<E> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate);
 
     Predicate<E> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate);

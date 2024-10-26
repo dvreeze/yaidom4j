@@ -46,6 +46,18 @@ public class ElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
+    public static Predicate<Element> hasAttributeWithName(QName attrName) {
+        return factory.hasAttributeWithName(attrName);
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+        return factory.hasAttributeWithName(attrNamespace, attrLocalName);
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+        return factory.hasAttributeWithName(attrNoNamespaceName);
+    }
+
     public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
         return factory.hasAttributeValue(attrName, attrValuePredicate);
     }
@@ -82,6 +94,10 @@ public class ElementPredicates {
         return factory.hasOnlyStrippedText(text);
     }
 
+    /**
+     * Element predicate factory, implementing a generic interface that is useful for yaidom4j querying code
+     * that generalizes over element implementations.
+     */
     public static final class Factory implements ElementPredicateFactoryApi<Element> {
 
         private final eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory underlyingFactory =
@@ -100,6 +116,21 @@ public class ElementPredicates {
         @Override
         public Predicate<Element> hasName(String noNamespaceName) {
             return e -> underlyingFactory.hasName(noNamespaceName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(QName attrName) {
+            return e -> underlyingFactory.hasAttributeWithName(attrName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+            return e -> underlyingFactory.hasAttributeWithName(attrNamespace, attrLocalName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+            return e -> underlyingFactory.hasAttributeWithName(attrNoNamespaceName).test(e.underlyingElement());
         }
 
         @Override
