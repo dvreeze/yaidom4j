@@ -16,9 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
-import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
-import net.sf.saxon.s9api.*;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -58,13 +60,7 @@ class BookQueryTests extends AbstractBookQueryTests<SaxonNodes.Element> {
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         XdmNode xdmDoc = docBuilder.build(new StreamSource(inputStream));
 
-        if (xdmDoc.getNodeKind().equals(XdmNodeKind.DOCUMENT)) {
-            XdmNode xdmElem = xdmDoc.select(SaxonElementSteps.childElements()).findFirst().orElseThrow();
-            rootElement = new SaxonNodes.Element(xdmElem);
-        } else {
-            Preconditions.checkArgument(xdmDoc.getNodeKind().equals(XdmNodeKind.ELEMENT));
-            rootElement = new SaxonNodes.Element(xdmDoc.getOutermostElement());
-        }
+        rootElement = new SaxonNodes.Element(xdmDoc.getOutermostElement());
     }
 
     @Override
