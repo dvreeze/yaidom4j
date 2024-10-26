@@ -20,7 +20,7 @@ import javax.xml.namespace.QName;
 import java.util.function.Predicate;
 
 /**
- * Factory API for several element predicates.
+ * Generic factory API for several element predicates, applicable to multiple element implementations.
  *
  * @author Chris de Vreeze
  */

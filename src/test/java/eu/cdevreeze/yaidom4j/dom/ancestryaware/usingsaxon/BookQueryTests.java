@@ -16,29 +16,18 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
+import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
-import net.sf.saxon.BasicTransformerFactory;
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,11 +42,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Chris de Vreeze
  */
-class BookQueryTests extends AbstractBookQueryTests<Element> {
+class BookQueryTests extends AbstractBookQueryTests<SaxonNodes.Element> {
 
     private static final String NS = "http://bookstore";
 
-    private static Element rootElement;
+    private static SaxonNodes.Element rootElement;
+
+    private static final SaxonElementPredicates.Factory epf = new SaxonElementPredicates.Factory();
 
     @BeforeAll
     protected static void parseRootElement() throws SAXException, ParserConfigurationException, IOException, SaxonApiException, TransformerException {
@@ -67,41 +58,23 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         XdmNode xdmDoc = docBuilder.build(new StreamSource(inputStream));
 
-        TransformerFactory tff = new BasicTransformerFactory(processor.getUnderlyingConfiguration());
-        Transformer tf = tff.newTransformer();
-
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
-
-        tf.transform(xdmDoc.asSource(), new SAXResult(saxHandler));
-
-        var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
-        var doc = Document.from(underlyingDoc);
-        rootElement = doc.documentElement();
+        if (xdmDoc.getNodeKind().equals(XdmNodeKind.DOCUMENT)) {
+            XdmNode xdmElem = xdmDoc.select(SaxonElementSteps.childElements()).findFirst().orElseThrow();
+            rootElement = new SaxonNodes.Element(xdmElem);
+        } else {
+            Preconditions.checkArgument(xdmDoc.getNodeKind().equals(XdmNodeKind.ELEMENT));
+            rootElement = new SaxonNodes.Element(xdmDoc.getOutermostElement());
+        }
     }
 
     @Override
-    protected Element rootElement() {
+    protected SaxonNodes.Element rootElement() {
         return rootElement;
     }
 
     @Override
-    protected Predicate<Element> hasName(String namespace, String localName) {
-        return ElementPredicates.hasName(namespace, localName);
-    }
-
-    @Override
-    protected Predicate<Element> hasAttributeValue(String noNamespaceAttrName, String attrValue) {
-        return ElementPredicates.hasAttributeValue(noNamespaceAttrName, attrValue);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyText(String text) {
-        return ElementPredicates.hasOnlyText(text);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyStrippedText(String text) {
-        return ElementPredicates.hasOnlyStrippedText(text);
+    protected SaxonElementPredicates.Factory epf() {
+        return epf;
     }
 
     @Test

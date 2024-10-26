@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.dom;
 
 import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
@@ -43,13 +44,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
 
     protected abstract E rootElement();
 
-    protected abstract Predicate<E> hasName(String namespace, String localName);
-
-    protected abstract Predicate<E> hasAttributeValue(String noNamespaceAttrName, String attrValue);
-
-    protected abstract Predicate<E> hasOnlyText(String text);
-
-    protected abstract Predicate<E> hasOnlyStrippedText(String text);
+    protected abstract ElementPredicateFactoryApi<E> epf();
 
     @Test
     void testQueryNamespacesOfAllElements() {
@@ -123,7 +118,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
 
         Map<QName, Long> childElemCounts2 =
                 rootElement().topmostDescendantElementOrSelfStream(e ->
-                                hasName(NS, "Book").test(e) || hasName(NS, "Magazine").test(e)
+                                epf().hasName(NS, "Book").test(e) || epf().hasName(NS, "Magazine").test(e)
                         )
                         .collect(Collectors.groupingBy(ElementApi::elementName, Collectors.counting()));
 
@@ -133,7 +128,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryMagazineMonths() {
         List<String> magazineMonths = rootElement()
-                .childElementStream(hasName(NS, "Magazine"))
+                .childElementStream(epf().hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
@@ -143,7 +138,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         );
 
         List<String> magazineMonths2 = rootElement()
-                .descendantElementOrSelfStream(hasName(NS, "Magazine"))
+                .descendantElementOrSelfStream(epf().hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
@@ -152,8 +147,8 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
 
     @Test
     void testQueryMagazineTitles() {
-        List<String> magazineTitles = rootElement().childElementStream(hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.childElementStream(hasName(NS, "Title")))
+        List<String> magazineTitles = rootElement().childElementStream(epf().hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.childElementStream(epf().hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .distinct()
                 .toList();
@@ -167,8 +162,8 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
                 magazineTitles
         );
 
-        List<String> magazineTitles2 = rootElement().elementStream(hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.elementStream(hasName(NS, "Title")))
+        List<String> magazineTitles2 = rootElement().elementStream(epf().hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.elementStream(epf().hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .distinct()
                 .toList();
@@ -179,21 +174,21 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryBooksCoauthoredByJenniferWidom() {
         Predicate<E> authorIsJenniferWidom = authorElem ->
-                hasName(NS, "Author").test(authorElem) &&
-                        authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(hasOnlyText("Jennifer")) &&
-                        authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(hasOnlyText("Widom"));
+                epf().hasName(NS, "Author").test(authorElem) &&
+                        authorElem.childElementStream(epf().hasName(NS, "First_Name"))
+                                .anyMatch(epf().hasOnlyText("Jennifer")) &&
+                        authorElem.childElementStream(epf().hasName(NS, "Last_Name"))
+                                .anyMatch(epf().hasOnlyText("Widom"));
 
         Predicate<E> bookCowrittenByJenniferWidom = bookElem ->
-                hasName(NS, "Book").test(bookElem) &&
-                        bookElem.descendantElementStream(hasName(NS, "Author"))
+                epf().hasName(NS, "Book").test(bookElem) &&
+                        bookElem.descendantElementStream(epf().hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
 
         Set<String> bookTitlesCoauthoredByJenniferWidom =
-                rootElement().childElementStream(hasName(NS, "Book"))
+                rootElement().childElementStream(epf().hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
-                        .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
+                        .flatMap(e -> e.childElementStream(epf().hasName(NS, "Title")))
                         .map(ElementApi::text)
                         .collect(Collectors.toSet());
 
@@ -207,9 +202,9 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         );
 
         Set<String> bookTitlesCoauthoredByJenniferWidom2 =
-                rootElement().descendantElementOrSelfStream(hasName(NS, "Book"))
+                rootElement().descendantElementOrSelfStream(epf().hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
-                        .flatMap(e -> e.descendantElementOrSelfStream(hasName(NS, "Title")))
+                        .flatMap(e -> e.descendantElementOrSelfStream(epf().hasName(NS, "Title")))
                         .map(ElementApi::text)
                         .collect(Collectors.toSet());
 
@@ -219,14 +214,14 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryAuthorNames() {
         Function<E, String> getAuthorName = authorElem -> {
-            Preconditions.checkArgument(hasName(NS, "Author").test(authorElem));
+            Preconditions.checkArgument(epf().hasName(NS, "Author").test(authorElem));
 
-            String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
+            String firstName = authorElem.childElementStream(epf().hasName(NS, "First_Name"))
                     .findFirst()
                     .map(ElementApi::text)
                     .orElse("");
 
-            String lastName = authorElem.childElementStream(hasName(NS, "Last_Name"))
+            String lastName = authorElem.childElementStream(epf().hasName(NS, "Last_Name"))
                     .findFirst()
                     .map(ElementApi::text)
                     .orElse("");
@@ -235,7 +230,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         };
 
         Set<String> authorNames = rootElement()
-                .descendantElementStream(hasName(NS, "Author"))
+                .descendantElementStream(epf().hasName(NS, "Author"))
                 .map(getAuthorName)
                 .collect(Collectors.toSet());
 
@@ -245,7 +240,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         );
 
         Set<String> authorNames2 = rootElement()
-                .topmostElementStream(hasName(NS, "Author"))
+                .topmostElementStream(epf().hasName(NS, "Author"))
                 .map(getAuthorName)
                 .collect(Collectors.toSet());
 
@@ -255,19 +250,19 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryBookIsbnsCoauthoredByJenniferWidom() {
         Predicate<E> authorIsJenniferWidom = authorElem ->
-                hasName(NS, "Author").test(authorElem) &&
-                        authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(hasOnlyStrippedText("Jennifer")) &&
-                        authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(hasOnlyStrippedText("Widom"));
+                epf().hasName(NS, "Author").test(authorElem) &&
+                        authorElem.childElementStream(epf().hasName(NS, "First_Name"))
+                                .anyMatch(epf().hasOnlyStrippedText("Jennifer")) &&
+                        authorElem.childElementStream(epf().hasName(NS, "Last_Name"))
+                                .anyMatch(epf().hasOnlyStrippedText("Widom"));
 
         Predicate<E> bookCowrittenByJenniferWidom = bookElem ->
-                hasName(NS, "Book").test(bookElem) &&
-                        bookElem.descendantElementStream(hasName(NS, "Author"))
+                epf().hasName(NS, "Book").test(bookElem) &&
+                        bookElem.descendantElementStream(epf().hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
 
         Set<String> bookIsbnsCoauthoredByJenniferWidom =
-                rootElement().childElementStream(hasName(NS, "Book"))
+                rootElement().childElementStream(epf().hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .map(e -> e.attribute(new QName("ISBN")))
                         .collect(Collectors.toSet());
@@ -278,7 +273,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         );
 
         Set<String> bookIsbnsCoauthoredByJenniferWidom2 =
-                rootElement().topmostElementStream(hasName(NS, "Book"))
+                rootElement().topmostElementStream(epf().hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .map(e -> e.attribute(new QName("ISBN")))
                         .collect(Collectors.toSet());
@@ -289,9 +284,9 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryFebruaryMagazines() {
         List<String> februaryMagazineTitles = rootElement()
-                .childElementStream(hasName(NS, "Magazine"))
-                .filter(hasAttributeValue("Month", "February"))
-                .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
+                .childElementStream(epf().hasName(NS, "Magazine"))
+                .filter(epf().hasAttributeValue("Month", "February"))
+                .flatMap(e -> e.childElementStream(epf().hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .toList();
 
@@ -301,9 +296,9 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
         );
 
         List<String> februaryMagazineTitles2 = rootElement()
-                .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
-                .filter(hasAttributeValue("Month", "February"))
-                .flatMap(e -> e.elementStream(hasName(NS, "Title")))
+                .topmostDescendantElementOrSelfStream(epf().hasName(NS, "Magazine"))
+                .filter(epf().hasAttributeValue("Month", "February"))
+                .flatMap(e -> e.elementStream(epf().hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .toList();
 

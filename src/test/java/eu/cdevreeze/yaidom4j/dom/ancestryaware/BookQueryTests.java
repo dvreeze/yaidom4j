@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,6 +40,8 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     private static final String NS = "http://bookstore";
 
     private static Element rootElement;
+
+    private static final ElementPredicates.Factory epf = new ElementPredicates.Factory();
 
     @BeforeAll
     protected static void parseRootElement() {
@@ -59,23 +60,8 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     }
 
     @Override
-    protected Predicate<Element> hasName(String namespace, String localName) {
-        return ElementPredicates.hasName(namespace, localName);
-    }
-
-    @Override
-    protected Predicate<Element> hasAttributeValue(String noNamespaceAttrName, String attrValue) {
-        return ElementPredicates.hasAttributeValue(noNamespaceAttrName, attrValue);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyText(String text) {
-        return ElementPredicates.hasOnlyText(text);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyStrippedText(String text) {
-        return ElementPredicates.hasOnlyStrippedText(text);
+    protected ElementPredicates.Factory epf() {
+        return epf;
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
-import java.util.function.Predicate;
 
 import static eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes.Element;
 
@@ -39,6 +38,8 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     private static final String NS = "http://bookstore";
 
     private static Element rootElement;
+
+    private static final ClarkElementPredicates.Factory epf = new ClarkElementPredicates.Factory();
 
     @BeforeAll
     protected static void parseRootElement() {
@@ -57,22 +58,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     }
 
     @Override
-    protected Predicate<Element> hasName(String namespace, String localName) {
-        return ClarkElementPredicates.hasName(namespace, localName);
-    }
-
-    @Override
-    protected Predicate<Element> hasAttributeValue(String noNamespaceAttrName, String attrValue) {
-        return ClarkElementPredicates.hasAttributeValue(noNamespaceAttrName, attrValue);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyText(String text) {
-        return ClarkElementPredicates.hasOnlyText(text);
-    }
-
-    @Override
-    protected Predicate<Element> hasOnlyStrippedText(String text) {
-        return ClarkElementPredicates.hasOnlyStrippedText(text);
+    protected ClarkElementPredicates.Factory epf() {
+        return epf;
     }
 }
