@@ -46,28 +46,28 @@ public class ElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
-    public static Predicate<Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
-        return factory.hasAttribute(attrName, attrValuePredicate);
+    public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttributeValue(attrName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
-        return factory.hasAttribute(attrNamespace, attrLocalName, attrValuePredicate);
+    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttributeValue(attrNamespace, attrLocalName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
-        return factory.hasAttribute(attrNoNamespaceName, attrValuePredicate);
+    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+        return factory.hasAttributeValue(attrNoNamespaceName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttribute(QName attrName, String attrValue) {
-        return factory.hasAttribute(attrName, attrValue);
+    public static Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+        return factory.hasAttributeValue(attrName, attrValue);
     }
 
-    public static Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, String attrValue) {
-        return factory.hasAttribute(attrNamespace, attrLocalName, attrValue);
+    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+        return factory.hasAttributeValue(attrNamespace, attrLocalName, attrValue);
     }
 
-    public static Predicate<Element> hasAttribute(String attrNoNamespaceName, String attrValue) {
-        return factory.hasAttribute(attrNoNamespaceName, attrValue);
+    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+        return factory.hasAttributeValue(attrNoNamespaceName, attrValue);
     }
 
     public static Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
@@ -100,34 +100,34 @@ public class ElementPredicates {
         }
 
         @Override
-        public Predicate<Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
+        public Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
             return e -> e.attributes().entrySet().stream()
                     .anyMatch(kv -> kv.getKey().equals(attrName) && attrValuePredicate.test(kv.getValue()));
         }
 
         @Override
-        public Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
-            return hasAttribute(new QName(attrNamespace, attrLocalName), attrValuePredicate);
+        public Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+            return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValuePredicate);
         }
 
         @Override
-        public Predicate<Element> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
-            return hasAttribute(new QName(attrNoNamespaceName), attrValuePredicate);
+        public Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+            return hasAttributeValue(new QName(attrNoNamespaceName), attrValuePredicate);
         }
 
         @Override
-        public Predicate<Element> hasAttribute(QName attrName, String attrValue) {
-            return hasAttribute(attrName, s -> s.equals(attrValue));
+        public Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+            return hasAttributeValue(attrName, s -> s.equals(attrValue));
         }
 
         @Override
-        public Predicate<Element> hasAttribute(String attrNamespace, String attrLocalName, String attrValue) {
-            return hasAttribute(new QName(attrNamespace, attrLocalName), attrValue);
+        public Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+            return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValue);
         }
 
         @Override
-        public Predicate<Element> hasAttribute(String attrNoNamespaceName, String attrValue) {
-            return hasAttribute(new QName(attrNoNamespaceName), attrValue);
+        public Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+            return hasAttributeValue(new QName(attrNoNamespaceName), attrValue);
         }
 
         @Override

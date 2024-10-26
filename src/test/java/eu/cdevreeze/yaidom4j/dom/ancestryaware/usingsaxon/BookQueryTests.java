@@ -90,8 +90,8 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     }
 
     @Override
-    protected Predicate<Element> hasAttribute(String noNamespaceAttrName, String attrValue) {
-        return ElementPredicates.hasAttribute(noNamespaceAttrName, attrValue);
+    protected Predicate<Element> hasAttributeValue(String noNamespaceAttrName, String attrValue) {
+        return ElementPredicates.hasAttributeValue(noNamespaceAttrName, attrValue);
     }
 
     @Override

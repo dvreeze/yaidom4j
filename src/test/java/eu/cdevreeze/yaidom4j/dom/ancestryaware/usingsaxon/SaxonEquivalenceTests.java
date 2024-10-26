@@ -554,7 +554,7 @@ class SaxonEquivalenceTests {
     void testQueryFebruaryMagazines() {
         List<String> februaryMagazineTitles = rootElement()
                 .childElementStream(hasName(NS, "Magazine"))
-                .filter(hasAttribute("Month", "February"))
+                .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
                 .map(ElementTree.Element::text)
                 .toList();
@@ -566,7 +566,7 @@ class SaxonEquivalenceTests {
 
         List<String> februaryMagazineTitles2 = rootElement()
                 .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
-                .filter(hasAttribute("Month", "February"))
+                .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.elementStream(hasName(NS, "Title")))
                 .map(ElementTree.Element::text)
                 .toList();

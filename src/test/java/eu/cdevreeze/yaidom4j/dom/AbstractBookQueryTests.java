@@ -45,7 +45,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
 
     protected abstract Predicate<E> hasName(String namespace, String localName);
 
-    protected abstract Predicate<E> hasAttribute(String noNamespaceAttrName, String attrValue);
+    protected abstract Predicate<E> hasAttributeValue(String noNamespaceAttrName, String attrValue);
 
     protected abstract Predicate<E> hasOnlyText(String text);
 
@@ -290,7 +290,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     void testQueryFebruaryMagazines() {
         List<String> februaryMagazineTitles = rootElement()
                 .childElementStream(hasName(NS, "Magazine"))
-                .filter(hasAttribute("Month", "February"))
+                .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .toList();
@@ -302,7 +302,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
 
         List<String> februaryMagazineTitles2 = rootElement()
                 .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
-                .filter(hasAttribute("Month", "February"))
+                .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.elementStream(hasName(NS, "Title")))
                 .map(ElementApi::text)
                 .toList();

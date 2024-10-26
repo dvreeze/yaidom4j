@@ -32,17 +32,17 @@ public interface ElementPredicateFactoryApi<E> {
 
     Predicate<E> hasName(String noNamespaceName);
 
-    Predicate<E> hasAttribute(QName attrName, Predicate<String> attrValuePredicate);
+    Predicate<E> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate);
 
-    Predicate<E> hasAttribute(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate);
+    Predicate<E> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate);
 
-    Predicate<E> hasAttribute(String attrNoNamespaceName, Predicate<String> attrValuePredicate);
+    Predicate<E> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate);
 
-    Predicate<E> hasAttribute(QName attrName, String attrValue);
+    Predicate<E> hasAttributeValue(QName attrName, String attrValue);
 
-    Predicate<E> hasAttribute(String attrNamespace, String attrLocalName, String attrValue);
+    Predicate<E> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue);
 
-    Predicate<E> hasAttribute(String attrNoNamespaceName, String attrValue);
+    Predicate<E> hasAttributeValue(String attrNoNamespaceName, String attrValue);
 
     /**
      * Returns an element predicate which returns true if and only if the element has only text

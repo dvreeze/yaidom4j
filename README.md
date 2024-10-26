@@ -120,7 +120,7 @@ var ns = "http://bookstore";
 
 List<String> februaryMagazineTitles = doc.documentElement()
         .childElementStream(hasName(ns, "Magazine"))
-        .filter(hasAttribute("Month", "February"))
+        .filter(hasAttributeValue("Month", "February"))
         .flatMap(e -> e.childElementStream(hasName(ns, "Title")))
         .map(ElementApi::text)
         .toList();
