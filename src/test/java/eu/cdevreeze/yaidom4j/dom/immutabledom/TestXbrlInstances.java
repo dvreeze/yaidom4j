@@ -366,7 +366,7 @@ public class TestXbrlInstances {
 
         public ImmutableList<ItemFact> topLevelItemFacts() {
             return element
-                    .childElementStream(hasName(nm -> !Set.of(XBRLI_NS, LINK_NS).contains(nm.getNamespaceURI())))
+                    .childElementStream(e -> !Set.of(XBRLI_NS, LINK_NS).contains(e.name().getNamespaceURI()))
                     .map(ItemFact::new)
                     .collect(ImmutableList.toImmutableList());
         }

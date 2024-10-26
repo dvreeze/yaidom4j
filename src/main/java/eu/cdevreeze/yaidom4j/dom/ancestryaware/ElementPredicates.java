@@ -20,7 +20,6 @@ import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -35,10 +34,6 @@ public class ElementPredicates {
 
     private static final Factory factory = new Factory();
 
-    public static Predicate<Element> hasName(Predicate<QName> namePredicate) {
-        return factory.hasName(namePredicate);
-    }
-
     public static Predicate<Element> hasName(QName name) {
         return factory.hasName(name);
     }
@@ -49,10 +44,6 @@ public class ElementPredicates {
 
     public static Predicate<Element> hasName(String noNamespaceName) {
         return factory.hasName(noNamespaceName);
-    }
-
-    public static Predicate<Element> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate) {
-        return factory.hasAttribute(attrPredicate);
     }
 
     public static Predicate<Element> hasAttribute(QName attrName, Predicate<String> attrValuePredicate) {
@@ -97,11 +88,6 @@ public class ElementPredicates {
                 new eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory();
 
         @Override
-        public Predicate<Element> hasName(Predicate<QName> namePredicate) {
-            return e -> underlyingFactory.hasName(namePredicate).test(e.underlyingElement());
-        }
-
-        @Override
         public Predicate<Element> hasName(QName name) {
             return e -> underlyingFactory.hasName(name).test(e.underlyingElement());
         }
@@ -114,11 +100,6 @@ public class ElementPredicates {
         @Override
         public Predicate<Element> hasName(String noNamespaceName) {
             return e -> underlyingFactory.hasName(noNamespaceName).test(e.underlyingElement());
-        }
-
-        @Override
-        public Predicate<Element> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate) {
-            return e -> underlyingFactory.hasAttribute(attrPredicate).test(e.underlyingElement());
         }
 
         @Override

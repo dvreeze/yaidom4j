@@ -17,7 +17,6 @@
 package eu.cdevreeze.yaidom4j.queryapi;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -27,15 +26,11 @@ import java.util.function.Predicate;
  */
 public interface ElementPredicateFactoryApi<E> {
 
-    Predicate<E> hasName(Predicate<QName> namePredicate);
-
     Predicate<E> hasName(QName name);
 
     Predicate<E> hasName(String namespace, String localName);
 
     Predicate<E> hasName(String noNamespaceName);
-
-    Predicate<E> hasAttribute(Predicate<Map.Entry<QName, String>> attrPredicate);
 
     Predicate<E> hasAttribute(QName attrName, Predicate<String> attrValuePredicate);
 
