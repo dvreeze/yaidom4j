@@ -34,6 +34,10 @@ import java.util.Objects;
  * This class extends class SAXSource, which is an implementation detail, but needed in order to plug into
  * the Transformer API. SAXSource methods such as setXMLReader and setInputSource should never be called.
  * Methods of the contained XMLReader should not be called either.
+ * <p>
+ * Code using this "SAXSource" and expecting it to return proper XMLReader objects will fail, so in those
+ * cases this class is not useful. For example, this class may be of little use when offering a Source
+ * to factory method "SchemaFactory.newSchema()" (using the JAXP stack in the JDK).
  *
  * @author Chris de Vreeze
  */

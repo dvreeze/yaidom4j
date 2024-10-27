@@ -122,7 +122,7 @@ class SchemaValidationTests {
         DocumentParser docParserForSchema = DocumentParsers.instance();
 
         // This time we avoid xs:include, and parse an adapted schema that only uses xs:import
-        // Obviously, it is not needed to first parse the schema documents, and check the root elements, but we do it anyway here
+        // Obviously, we do not have to first parse and check the schema documents, but we can if we want to
 
         List<URL> schemaDocUrls =
                 Stream.of("chapter04prod.xsd", "chapter04ord1-adapted.xsd") // order matters!
@@ -140,10 +140,11 @@ class SchemaValidationTests {
                         .allMatch(d -> hasName(XMLConstants.W3C_XML_SCHEMA_NS_URI, "schema").test(d.documentElement()))
         );
 
-        SchemaFactory schemaFactory = SchemaFactory.newDefaultInstance(); // Not secure, but needed here
+        SchemaFactory schemaFactory = SchemaFactories.newSchemaFactory();
         // This time we need no XML catalog to resolve schema document URLs, because we pass all schema document URLs below
 
-        // We need to pass (stable) URLs rather than input streams (which can only be processed once)
+        // We possibly need to pass (stable) URLs rather than input streams (which can only be processed once)
+        // Passing ImmutableDomSource objects does not work, because the SchemaFactory implementation expects this "SAXSource" to be a proper SAXSource
         Schema schema =
                 schemaFactory.newSchema(
                         schemaDocUrls.stream().map(u -> new StreamSource(u.toExternalForm())).toArray(Source[]::new)
@@ -170,6 +171,42 @@ class SchemaValidationTests {
         assertThrows(
                 SAXParseException.class,
                 () -> validator.validate(new ImmutableDomSource(invalidDocument))
+        );
+
+        // Do the above once again, but this time create the Schema from InputStream objects (which does work in this case)
+
+        Schema schema2 =
+                schemaFactory.newSchema(
+                        schemaDocUrls.stream().map(u -> {
+                            try {
+                                return new StreamSource(u.openStream());
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).toArray(Source[]::new)
+                );
+
+        DocumentParser parser2 = DocumentParsers.builder(SaxParsers.newSaxParserFactory(schema2)).build();
+
+        // Parse and validate valid instance
+
+        Document document2 = parser2.parse(convertToUri(xmlFileUrl));
+
+        assertTrue(document2.documentElement().elementStream().count() >= 10);
+
+        Validator validator2 = schema2.newValidator();
+        validator2.validate(new ImmutableDomSource(document2));
+
+        // Parse and validate invalid instance (parsing itself succeeds, since we set no error resolution)
+
+        Document invalidDocument2 = parser2.parse(convertToUri(invalidXmlFileUrl));
+
+        assertTrue(invalidDocument2.documentElement().elementStream().count() >= 10);
+
+        validator2.reset();
+        assertThrows(
+                SAXParseException.class,
+                () -> validator2.validate(new ImmutableDomSource(invalidDocument2))
         );
     }
 
