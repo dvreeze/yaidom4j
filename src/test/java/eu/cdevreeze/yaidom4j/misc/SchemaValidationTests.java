@@ -16,6 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
+import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
@@ -27,23 +28,29 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import javax.xml.XMLConstants;
 import javax.xml.catalog.CatalogFeatures;
 import javax.xml.catalog.CatalogManager;
 import javax.xml.catalog.CatalogResolver;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
+import java.net.URL;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test for different ways of doing schema validation. The schema set uses xs:import and xs:include,
+ * Test for different ways of doing schema validation. The (original) schema set uses xs:import and xs:include,
  * and contains a chameleon schema as well.
  * <p>
  * This is not a unit test.
@@ -52,46 +59,45 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SchemaValidationTests {
 
-    private static Path xmlFilePath;
-    private static Path invalidXmlFilePath;
-    private static Path xsdFilePath;
+    private static URL xmlFileUrl;
+    private static URL invalidXmlFileUrl;
+    private static URL xsdFileUrl;
 
     @BeforeAll
     static void init() {
-        try {
-            xmlFilePath = Path.of(Objects.requireNonNull(SchemaValidationTests.class.getResource("/schema/chapter04.xml")).toURI());
-            invalidXmlFilePath = Path.of(Objects.requireNonNull(SchemaValidationTests.class.getResource("/schema/chapter04-invalid.xml")).toURI());
-            xsdFilePath = Path.of(Objects.requireNonNull(SchemaValidationTests.class.getResource("/schema/chapter04ord1.xsd")).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        xmlFileUrl = getClassPathResource("/schema/chapter04.xml");
+        invalidXmlFileUrl = getClassPathResource("/schema/chapter04-invalid.xml");
+        xsdFileUrl = getClassPathResource("/schema/chapter04ord1.xsd");
     }
 
     @Test
     void testNoSchemaValidation() {
         DocumentParser parser = DocumentParsers.instance();
-        Document document = parser.parse(xmlFilePath.toUri());
+        Document document = parser.parse(convertToUri(xmlFileUrl));
 
         assertTrue(document.documentElement().elementStream().count() >= 10);
 
-        Document invalidDocument = parser.parse(invalidXmlFilePath.toUri());
+        Document invalidDocument = parser.parse(convertToUri(invalidXmlFileUrl));
 
         assertTrue(invalidDocument.documentElement().elementStream().count() >= 10);
     }
 
+    // There is no test method trying out calling method "SchemaFactory.newSchema()" without arguments
+    // Not only would it feel wrong (the schema should be there before using it), but it also seems hard to get working
+
     @Test
-    void testSchemaValidation() throws SAXException, IOException {
+    void testSchemaValidationUsingSchemaLocationHints() throws SAXException, IOException {
         SchemaFactory schemaFactory = SchemaFactories.newSchemaFactory();
         schemaFactory.setResourceResolver(getCatalogResolver());
         // Using schema hints in document for imports and includes (using the catalog as well)
-        // I also tried to call method newSchema without parameters, but did not get that to work
-        Schema schema = schemaFactory.newSchema(xsdFilePath.toFile());
+        // Note the possibility of denial-of-service attacks
+        Schema schema = schemaFactory.newSchema(xsdFileUrl); // passing just the "entry point schema document URL"
 
         DocumentParser parser = DocumentParsers.builder(SaxParsers.newSaxParserFactory(schema)).build();
 
         // Parse and validate valid instance
 
-        Document document = parser.parse(xmlFilePath.toUri());
+        Document document = parser.parse(convertToUri(xmlFileUrl));
 
         assertTrue(document.documentElement().elementStream().count() >= 10);
 
@@ -100,24 +106,90 @@ class SchemaValidationTests {
 
         // Parse and validate invalid instance (parsing itself succeeds, since we set no error resolution)
 
-        Document invalidDocument = parser.parse(invalidXmlFilePath.toUri());
+        Document invalidDocument = parser.parse(convertToUri(invalidXmlFileUrl));
 
         assertTrue(invalidDocument.documentElement().elementStream().count() >= 10);
 
         validator.reset();
-        assertThrows(SAXParseException.class, () -> validator.validate(new ImmutableDomSource(invalidDocument)));
+        assertThrows(
+                SAXParseException.class,
+                () -> validator.validate(new ImmutableDomSource(invalidDocument))
+        );
+    }
+
+    @Test
+    void testSchemaValidationPassingFullSchemaSet() throws SAXException, IOException {
+        DocumentParser docParserForSchema = DocumentParsers.instance();
+
+        // This time we avoid xs:include, and parse an adapted schema that only uses xs:import
+        // Obviously, it is not needed to first parse the schema documents, and check the root elements, but we do it anyway here
+
+        List<URL> schemaDocUrls =
+                Stream.of("chapter04prod.xsd", "chapter04ord1-adapted.xsd") // order matters!
+                        .map(name -> "/schema/" + name)
+                        .map(SchemaValidationTests::getClassPathResource)
+                        .toList();
+
+        List<Document> schemaDocs =
+                schemaDocUrls.stream()
+                        .map(u -> docParserForSchema.parse(convertToUri(u)))
+                        .toList();
+
+        Preconditions.checkArgument(
+                schemaDocs.stream()
+                        .allMatch(d -> hasName(XMLConstants.W3C_XML_SCHEMA_NS_URI, "schema").test(d.documentElement()))
+        );
+
+        SchemaFactory schemaFactory = SchemaFactory.newDefaultInstance(); // Not secure, but needed here
+        // This time we need no XML catalog to resolve schema document URLs, because we pass all schema document URLs below
+
+        // We need to pass (stable) URLs rather than input streams (which can only be processed once)
+        Schema schema =
+                schemaFactory.newSchema(
+                        schemaDocUrls.stream().map(u -> new StreamSource(u.toExternalForm())).toArray(Source[]::new)
+                );
+
+        DocumentParser parser = DocumentParsers.builder(SaxParsers.newSaxParserFactory(schema)).build();
+
+        // Parse and validate valid instance
+
+        Document document = parser.parse(convertToUri(xmlFileUrl));
+
+        assertTrue(document.documentElement().elementStream().count() >= 10);
+
+        Validator validator = schema.newValidator();
+        validator.validate(new ImmutableDomSource(document));
+
+        // Parse and validate invalid instance (parsing itself succeeds, since we set no error resolution)
+
+        Document invalidDocument = parser.parse(convertToUri(invalidXmlFileUrl));
+
+        assertTrue(invalidDocument.documentElement().elementStream().count() >= 10);
+
+        validator.reset();
+        assertThrows(
+                SAXParseException.class,
+                () -> validator.validate(new ImmutableDomSource(invalidDocument))
+        );
     }
 
     private static CatalogResolver getCatalogResolver() {
+        URI catalogUri = convertToUri(getClassPathResource("/schema/catalog.xml"));
+        CatalogFeatures catalogFeatures = CatalogFeatures.builder()
+                .with(CatalogFeatures.Feature.PREFER, "system")
+                .build();
+        return CatalogManager.catalogResolver(catalogFeatures, catalogUri);
+    }
+
+    private static URI convertToUri(URL url) {
         try {
-            URI catalogUri = Objects.requireNonNull(SchemaValidationTests.class
-                    .getResource("/schema/catalog.xml")).toURI();
-            CatalogFeatures catalogFeatures = CatalogFeatures.builder()
-                    .with(CatalogFeatures.Feature.PREFER, "system")
-                    .build();
-            return CatalogManager.catalogResolver(catalogFeatures, catalogUri);
+            return url.toURI();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static URL getClassPathResource(String classPathResource) {
+        return Objects.requireNonNull(SchemaValidationTests.class.getResource(classPathResource));
     }
 }

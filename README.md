@@ -211,5 +211,5 @@ TODO:
 * Improve the process around maintaining and releasing the library; e.g.:
   * Release notes
   * Automatic dependency updates
-  * Code analysis and security checks
+  * Code analysis, security checks, test coverage
   * etc.
