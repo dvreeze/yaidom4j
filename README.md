@@ -153,7 +153,7 @@ Some characteristics of yaidom4j are as follows:
 * Also, it only partially "implements" the *XML InfoSet* (see below)
 * It "respects" *XML namespaces* (see [Understanding XML Namespaces](https://www.lenzconsulting.com/namespaces/))
 * It leaves parsing and printing of XML DOM trees to *JAXP* (or Saxon)
-* Yet is does offer some "secure JAXP factory object" creation support
+* Yet it does offer some "secure JAXP factory object" creation support
 * It can be used with StAX for keeping only chunks of XML in memory one chunk at a time, if the structure of the overall XML allows it
 
 Unlike libraries like [Saxon](https://www.saxonica.com/download/java.xml), yaidom4j does not have the aim of
