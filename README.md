@@ -152,10 +152,13 @@ Some characteristics of yaidom4j are as follows:
 * In particular, it knows nothing about DTDs or XSDs
 * Also, it only partially "implements" the *XML InfoSet* (see below)
 * It "respects" *XML namespaces* (see [Understanding XML Namespaces](https://www.lenzconsulting.com/namespaces/))
-* It leaves parsing and printing of XML DOM trees to *JAXP* (or Saxon), thus avoiding many XML security issues
+* It leaves parsing and printing of XML DOM trees to *JAXP* (or Saxon)
+* Yet is does offer some "secure JAXP factory object" creation support
 * It can be used with StAX for keeping only chunks of XML in memory one chunk at a time, if the structure of the overall XML allows it
 
-Comparisons to some other XML libraries are as follows:
+Unlike libraries like [Saxon](https://www.saxonica.com/download/java.xml), yaidom4j does not have the aim of
+implementing XML standards. It does have the aim of making (non-schema-aware) XML querying simple and practical.
+Keeping this limited scope in mind, comparisons to some other XML libraries are as follows:
 * Unlike JDOM, DOM4J, XOM, JAXP DOM, the native element implementations in yaidom4j are deeply immutable and thread-safe
 * Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
 * Unlike JAXP XPath (1.0) support, the element query API in yaidom4j is very easy to use without any involved bootstrapping
@@ -194,3 +197,19 @@ element nodes, text nodes, comment nodes or processing instructions.
 
 On the other hand, if desired, an element query API implementation can be created for DOM implementations that
 do model XML InfoSet information items that yaidom4j itself is not interested in.
+
+## Evolving the library
+
+In a broad sense, yaidom4j is envisioned to remain pretty much what it is now. Yet there is still a lot to
+improve. See for example the TODOs below.
+
+TODO:
+* Stabilize API (and keep it small and simple)
+* Improve performance, but not at the expense of clarity and simplicity of the API
+* Add useful "scripts"
+* Add and improve documentation
+* Improve the process around maintaining and releasing the library; e.g.:
+  * Release notes
+  * Automatic dependency updates
+  * Code analysis and security checks
+  * etc.
