@@ -48,6 +48,10 @@ public class PushUpNamespaceDeclarations {
         Document doc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(inputFile);
 
+        // A parsed XML 1.0 document element has no prefixed namespace undeclarations
+        Preconditions.checkArgument(
+                doc.documentElement().equals(doc.documentElement().notUndeclaringPrefixes(NamespaceScope.empty())));
+
         Element transformedElement = pushUpNamespaceDeclarations(doc.documentElement());
 
         String xmlString = DocumentPrinters.instance().print(transformedElement);
