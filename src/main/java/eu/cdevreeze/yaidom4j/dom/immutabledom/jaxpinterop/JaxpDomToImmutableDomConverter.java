@@ -46,6 +46,9 @@ public class JaxpDomToImmutableDomConverter {
 
     // TODO Review and improve implementation (are corner cases handled appropriately?)
 
+    private JaxpDomToImmutableDomConverter() {
+    }
+
     public static Document convertDocument(org.w3c.dom.Document doc) {
         Preconditions.checkArgument(
                 Optional.ofNullable(doc.getDocumentElement().getLocalName()).isPresent(),

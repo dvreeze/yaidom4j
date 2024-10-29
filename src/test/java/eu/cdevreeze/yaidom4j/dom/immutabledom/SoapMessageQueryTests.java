@@ -19,6 +19,9 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomToJaxpDomConverter;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
+import eu.cdevreeze.yaidom4j.jaxp.DocumentBuilders;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -139,5 +142,18 @@ class SoapMessageQueryTests {
                         .count());
 
         assertEquals(soapMessage.documentElement().toClarkNode(), editedSoapMessage.toClarkNode());
+    }
+
+    @Test
+    void testW3cDomRoundtripping() {
+        org.w3c.dom.Document w3cDomDocument =
+                ImmutableDomToJaxpDomConverter.convertDocument(
+                        soapMessage,
+                        DocumentBuilders.newNonValidatingDocumentBuilderFactory()
+                );
+
+        Document soapMessage2 = JaxpDomToImmutableDomConverter.convertDocument(w3cDomDocument);
+
+        assertEquals(soapMessage.documentElement().toClarkNode(), soapMessage2.documentElement().toClarkNode());
     }
 }
