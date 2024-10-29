@@ -155,5 +155,8 @@ class SoapMessageQueryTests {
         Document soapMessage2 = JaxpDomToImmutableDomConverter.convertDocument(w3cDomDocument);
 
         assertEquals(soapMessage.documentElement().toClarkNode(), soapMessage2.documentElement().toClarkNode());
+
+        // Even stronger guarantee
+        assertEquals(soapMessage.documentElement(), soapMessage2.documentElement());
     }
 }
