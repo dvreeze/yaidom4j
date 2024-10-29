@@ -46,23 +46,6 @@ public class ImmutableDomToJaxpDomConverter {
         }
     }
 
-    public static org.w3c.dom.Document convertDocument(Document document, org.w3c.dom.Document w3cDomDocument) {
-        List<org.w3c.dom.Node> w3cDomDocumentChildren = document.children()
-                .stream()
-                .map(n -> convertNode(n, w3cDomDocument, NamespaceScope.empty()))
-                .toList();
-
-        for (var w3cDomNode : w3cDomDocumentChildren) {
-            w3cDomDocument.appendChild(w3cDomNode);
-        }
-
-        document.uriOption().ifPresent(uri ->
-                w3cDomDocument.setDocumentURI(uri.toString())
-        );
-
-        return w3cDomDocument;
-    }
-
     public static org.w3c.dom.Element convertElement(Element element, org.w3c.dom.Document w3cDomDocument, NamespaceScope parentScope) {
         org.w3c.dom.Element w3cDomElement = w3cDomDocument.createElementNS(
                 convertEmptyStringToNull(element.name().getNamespaceURI()),
@@ -137,6 +120,23 @@ public class ImmutableDomToJaxpDomConverter {
 
     public static org.w3c.dom.ProcessingInstruction convertProcessingInstruction(ProcessingInstruction pi, org.w3c.dom.Document w3cDomDocument) {
         return w3cDomDocument.createProcessingInstruction(pi.target(), pi.data());
+    }
+
+    private static org.w3c.dom.Document convertDocument(Document document, org.w3c.dom.Document w3cDomDocument) {
+        List<org.w3c.dom.Node> w3cDomDocumentChildren = document.children()
+                .stream()
+                .map(n -> convertNode(n, w3cDomDocument, NamespaceScope.empty()))
+                .toList();
+
+        for (var w3cDomNode : w3cDomDocumentChildren) {
+            w3cDomDocument.appendChild(w3cDomNode);
+        }
+
+        document.uriOption().ifPresent(uri ->
+                w3cDomDocument.setDocumentURI(uri.toString())
+        );
+
+        return w3cDomDocument;
     }
 
     private static String getSyntacticQName(QName name) {
