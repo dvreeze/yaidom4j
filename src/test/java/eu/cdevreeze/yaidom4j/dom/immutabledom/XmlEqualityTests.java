@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples;
+package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -31,33 +29,35 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
- * Example showing equality of different XML documents that use different namespace prefixes and namespace
+ * Example test showing equality of different XML documents that use different namespace prefixes and namespace
  * declarations in different elements but that are otherwise equal.
  * <p>
- * The example is taken from <a href="https://www.lenzconsulting.com/namespaces/">Understanding XML Namespaces</a>
+ * The test example is taken from <a href="https://www.lenzconsulting.com/namespaces/">Understanding XML Namespaces</a>
  * (and slightly adapted).
  *
  * @author Chris de Vreeze
  */
-public class XmlEqualityExample {
+class XmlEqualityTests {
 
-    public static void main(String[] args) {
+    @Test
+    void testXmlEquality() {
         Document doc1 = Objects.requireNonNull(getDocument1());
         Document doc2 = Objects.requireNonNull(getDocument2());
 
-        boolean areEqual = doc1.documentElement().toClarkNode().equals(doc2.documentElement().toClarkNode());
-
-        System.out.printf("Both documents are equal: %b%n", areEqual);
+        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
 
         List<Element> allElems1 = doc1.documentElement().elementStream().toList();
         List<Element> allElems2 = doc2.documentElement().elementStream().toList();
 
-        areEqual = allElems1.size() == allElems2.size() &&
+        boolean areEqual = allElems1.size() == allElems2.size() &&
                 IntStream.range(0, allElems1.size())
                         .allMatch(i -> allElems1.get(i).toClarkNode().equals(allElems2.get(i).toClarkNode()));
 
-        System.out.printf("Both documents are equal (by comparing element streams): %b%n", areEqual);
+        assertTrue(areEqual);
 
         Set<QName> elementNames1 = doc1.documentElement().elementStream()
                 .map(Element::name)
@@ -66,10 +66,17 @@ public class XmlEqualityExample {
                 .map(Element::name)
                 .collect(Collectors.toSet());
 
-        System.out.printf("Both documents have the same element names: %b%n", elementNames1.equals(elementNames2));
+        assertEquals(elementNames1, elementNames2);
 
-        System.out.println();
-        System.out.printf("Element names: %s%n", elementNames1.stream().map(Object::toString).collect(Collectors.joining(", ")));
+        assertEquals(
+                Set.of(
+                        new QName("http://www.w3.org/2005/Atom", "rights"),
+                        new QName("http://www.w3.org/1999/xhtml", "div"),
+                        new QName("http://www.w3.org/2005/Atom", "feed"),
+                        new QName("http://www.w3.org/2005/Atom", "title")
+                ),
+                elementNames1
+        );
     }
 
     private static String divText() {
