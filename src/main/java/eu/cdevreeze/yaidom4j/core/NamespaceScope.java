@@ -71,13 +71,29 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         }
     }
 
+    /**
+     * Returns true if this namespace scope and the parameter QName agree on the prefix-namespace
+     * binding, for an element name.
+     * <p>
+     * If the QName has a non-empty prefix but no namespace, an exception is thrown.
+     */
     public boolean allowsElementName(QName name) {
+        Preconditions.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
+
         return findNamespaceOfPrefix(name.getPrefix())
                 .orElse(XMLConstants.NULL_NS_URI)
                 .equals(name.getNamespaceURI());
     }
 
+    /**
+     * Returns true if this namespace scope without default namespace and the parameter QName agree
+     * on the prefix-namespace binding, for an attribute name.
+     * <p>
+     * If the QName has a non-empty prefix but no namespace, an exception is thrown.
+     */
     public boolean allowsAttributeName(QName name) {
+        Preconditions.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
+
         if (name.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX)) {
             return XMLConstants.NULL_NS_URI.equals(name.getNamespaceURI());
         }
