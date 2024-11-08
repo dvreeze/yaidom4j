@@ -28,13 +28,13 @@ import java.util.stream.Stream;
  */
 public interface AncestryAwareElementApi<E extends AncestryAwareElementApi<E>> extends ElementApi<E> {
 
-    Optional<? extends E> parentElementOption();
+    Optional<E> parentElementOption();
 
-    Stream<? extends E> ancestorElementOrSelfStream();
+    Stream<E> ancestorElementOrSelfStream();
 
-    Stream<? extends E> ancestorElementOrSelfStream(Predicate<? super E> predicate);
+    Stream<E> ancestorElementOrSelfStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> ancestorElementStream();
+    Stream<E> ancestorElementStream();
 
-    Stream<? extends E> ancestorElementStream(Predicate<? super E> predicate);
+    Stream<E> ancestorElementStream(Predicate<? super E> predicate);
 }

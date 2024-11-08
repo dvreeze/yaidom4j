@@ -50,31 +50,31 @@ public interface ElementApi<E extends ElementApi<E>> {
     /**
      * Alias of descendantElementOrSelfStream
      */
-    Stream<? extends E> elementStream();
+    Stream<E> elementStream();
 
     /**
      * Alias of descendantElementOrSelfStream
      */
-    Stream<? extends E> elementStream(Predicate<? super E> predicate);
+    Stream<E> elementStream(Predicate<? super E> predicate);
 
     /**
      * Alias of topmostDescendantElementOrSelfStream
      */
-    Stream<? extends E> topmostElementStream(Predicate<? super E> predicate);
+    Stream<E> topmostElementStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> childElementStream();
+    Stream<E> childElementStream();
 
-    Stream<? extends E> childElementStream(Predicate<? super E> predicate);
+    Stream<E> childElementStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> descendantElementOrSelfStream();
+    Stream<E> descendantElementOrSelfStream();
 
-    Stream<? extends E> descendantElementOrSelfStream(Predicate<? super E> predicate);
+    Stream<E> descendantElementOrSelfStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> descendantElementStream();
+    Stream<E> descendantElementStream();
 
-    Stream<? extends E> descendantElementStream(Predicate<? super E> predicate);
+    Stream<E> descendantElementStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> topmostDescendantElementOrSelfStream(Predicate<? super E> predicate);
+    Stream<E> topmostDescendantElementOrSelfStream(Predicate<? super E> predicate);
 
-    Stream<? extends E> topmostDescendantElementStream(Predicate<? super E> predicate);
+    Stream<E> topmostDescendantElementStream(Predicate<? super E> predicate);
 }
