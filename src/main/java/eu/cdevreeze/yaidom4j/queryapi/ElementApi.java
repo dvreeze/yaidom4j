@@ -24,7 +24,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Object-oriented variant of the element query API.
+ * Object-oriented element query API. This API is implemented by yaidom4j
+ * element node implementations, but it can also be implemented by other element implementations
+ * (such as Saxon XDM item wrappers) or even domain-specific element hierarchies (such as
+ * the elements in an XML Schema, whose common super-type extends/implements this query API interface).
  *
  * @param <E> The specific element type itself
  * @author Chris de Vreeze
@@ -44,36 +47,34 @@ public interface ElementApi<E extends ElementApi<E>> {
      */
     String text();
 
-    Stream<? super E> childNodeStream();
+    /**
+     * Alias of descendantElementOrSelfStream
+     */
+    Stream<? extends E> elementStream();
 
     /**
      * Alias of descendantElementOrSelfStream
      */
-    Stream<E> elementStream();
-
-    /**
-     * Alias of descendantElementOrSelfStream
-     */
-    Stream<E> elementStream(Predicate<E> predicate);
+    Stream<? extends E> elementStream(Predicate<? super E> predicate);
 
     /**
      * Alias of topmostDescendantElementOrSelfStream
      */
-    Stream<E> topmostElementStream(Predicate<E> predicate);
+    Stream<? extends E> topmostElementStream(Predicate<? super E> predicate);
 
-    Stream<E> childElementStream();
+    Stream<? extends E> childElementStream();
 
-    Stream<E> childElementStream(Predicate<E> predicate);
+    Stream<? extends E> childElementStream(Predicate<? super E> predicate);
 
-    Stream<E> descendantElementOrSelfStream();
+    Stream<? extends E> descendantElementOrSelfStream();
 
-    Stream<E> descendantElementOrSelfStream(Predicate<E> predicate);
+    Stream<? extends E> descendantElementOrSelfStream(Predicate<? super E> predicate);
 
-    Stream<E> descendantElementStream();
+    Stream<? extends E> descendantElementStream();
 
-    Stream<E> descendantElementStream(Predicate<E> predicate);
+    Stream<? extends E> descendantElementStream(Predicate<? super E> predicate);
 
-    Stream<E> topmostDescendantElementOrSelfStream(Predicate<E> predicate);
+    Stream<? extends E> topmostDescendantElementOrSelfStream(Predicate<? super E> predicate);
 
-    Stream<E> topmostDescendantElementStream(Predicate<E> predicate);
+    Stream<? extends E> topmostDescendantElementStream(Predicate<? super E> predicate);
 }

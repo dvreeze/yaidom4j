@@ -109,7 +109,6 @@ public class ClarkNodes {
                     .collect(Collectors.joining());
         }
 
-        @Override
         public Stream<Node> childNodeStream() {
             return children().stream();
         }
@@ -120,14 +119,14 @@ public class ClarkNodes {
         }
 
         @Override
-        public Stream<Element> elementStream(Predicate<Element> predicate) {
+        public Stream<Element> elementStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return descendantElementOrSelfStream(predicate);
         }
 
         @Override
-        public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostElementStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return topmostDescendantElementOrSelfStream(predicate);
@@ -139,7 +138,7 @@ public class ClarkNodes {
         }
 
         @Override
-        public Stream<Element> childElementStream(Predicate<Element> predicate) {
+        public Stream<Element> childElementStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return childElementStream().filter(predicate);
@@ -155,7 +154,7 @@ public class ClarkNodes {
         }
 
         @Override
-        public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
+        public Stream<Element> descendantElementOrSelfStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return descendantElementOrSelfStream().filter(predicate);
@@ -167,14 +166,14 @@ public class ClarkNodes {
         }
 
         @Override
-        public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
+        public Stream<Element> descendantElementStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return descendantElementStream().filter(predicate);
         }
 
         @Override
-        public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             if (predicate.test(this)) {
@@ -186,7 +185,7 @@ public class ClarkNodes {
         }
 
         @Override
-        public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostDescendantElementStream(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return childElementStream().flatMap(che -> che.topmostDescendantElementOrSelfStream(predicate));

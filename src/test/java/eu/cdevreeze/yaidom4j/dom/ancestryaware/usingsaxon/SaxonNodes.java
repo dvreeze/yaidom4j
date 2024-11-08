@@ -132,7 +132,6 @@ public class SaxonNodes {
                     .collect(Collectors.joining());
         }
 
-        @Override
         public Stream<Node> childNodeStream() {
             return xdmNode.axisIterator(Axis.CHILD)
                     .stream()
@@ -145,12 +144,12 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> elementStream(Predicate<Element> predicate) {
+        public Stream<Element> elementStream(Predicate<? super Element> predicate) {
             return descendantElementOrSelfStream(predicate);
         }
 
         @Override
-        public Stream<Element> topmostElementStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostElementStream(Predicate<? super Element> predicate) {
             return topmostDescendantElementOrSelfStream(predicate);
         }
 
@@ -160,7 +159,7 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> childElementStream(Predicate<Element> predicate) {
+        public Stream<Element> childElementStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.childElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
@@ -171,7 +170,7 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> descendantElementOrSelfStream(Predicate<Element> predicate) {
+        public Stream<Element> descendantElementOrSelfStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.descendantOrSelfElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
@@ -182,19 +181,19 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> descendantElementStream(Predicate<Element> predicate) {
+        public Stream<Element> descendantElementStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.descendantElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
 
         @Override
-        public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostDescendantElementOrSelfStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.topmostDescendantOrSelfElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
 
         @Override
-        public Stream<Element> topmostDescendantElementStream(Predicate<Element> predicate) {
+        public Stream<Element> topmostDescendantElementStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.topmostDescendantElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
@@ -210,7 +209,7 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> ancestorElementOrSelfStream(Predicate<Element> predicate) {
+        public Stream<Element> ancestorElementOrSelfStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.ancestorOrSelfElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
@@ -221,7 +220,7 @@ public class SaxonNodes {
         }
 
         @Override
-        public Stream<Element> ancestorElementStream(Predicate<Element> predicate) {
+        public Stream<Element> ancestorElementStream(Predicate<? super Element> predicate) {
             return xdmNode.select(SaxonElementSteps.ancestorElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> Element.optionallyFrom(n).stream());
         }
