@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import net.sf.saxon.s9api.Axis;
@@ -130,6 +131,12 @@ public class SaxonNodes {
                     .filter(n -> n.getNodeKind().equals(XdmNodeKind.TEXT))
                     .map(XdmNode::getStringValue)
                     .collect(Collectors.joining());
+        }
+
+        @Override
+        public Optional<NamespaceScope> namespaceScopeOption() {
+            // TODO
+            return Optional.empty();
         }
 
         public Stream<Node> childNodeStream() {

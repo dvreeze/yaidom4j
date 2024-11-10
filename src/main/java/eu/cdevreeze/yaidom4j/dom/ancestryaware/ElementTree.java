@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 
 import javax.xml.namespace.QName;
@@ -94,6 +95,11 @@ public final class ElementTree {
         @Override
         public String text() {
             return underlyingElement().text();
+        }
+
+        @Override
+        public Optional<NamespaceScope> namespaceScopeOption() {
+            return underlyingElement().namespaceScopeOption();
         }
 
         @Override

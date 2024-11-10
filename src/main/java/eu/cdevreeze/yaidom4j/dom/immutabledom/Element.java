@@ -101,6 +101,11 @@ public record Element(
                 .collect(Collectors.joining());
     }
 
+    @Override
+    public Optional<NamespaceScope> namespaceScopeOption() {
+        return Optional.of(namespaceScope());
+    }
+
     public Stream<Node> childNodeStream() {
         return children().stream();
     }

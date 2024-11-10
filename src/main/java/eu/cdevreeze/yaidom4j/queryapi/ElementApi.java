@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.queryapi;
 
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 
 import javax.xml.namespace.QName;
 import java.util.Optional;
@@ -46,6 +47,13 @@ public interface ElementApi<E extends ElementApi<E>> {
      * Returns the concatenated text of the text children (ignoring other child nodes than text nodes)
      */
     String text();
+
+    /**
+     * Returns the NamespaceScope, if any. Most element implementations should have one, so content
+     * (text content or attribute values) that represents QNames can be resolved as QName. Note
+     * that "Clark elements" do not have any NamespaceScope. Hence, this method returns an optional result.
+     */
+    Optional<NamespaceScope> namespaceScopeOption();
 
     /**
      * Alias of descendantElementOrSelfStream
