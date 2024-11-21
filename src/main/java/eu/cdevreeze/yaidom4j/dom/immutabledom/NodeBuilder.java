@@ -150,6 +150,10 @@ public class NodeBuilder {
             return new ProcessingInstruction(target, data);
         }
 
+        public String name(String prefix, String localPart) {
+            return (prefix.isEmpty()) ? localPart : String.format("%s:%s", prefix, localPart);
+        }
+
         public static ConciseApi empty() {
             return new ConciseApi(NamespaceScope.empty());
         }
