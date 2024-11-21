@@ -21,7 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import java.net.URI;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -34,21 +36,30 @@ import java.util.stream.Stream;
  */
 public final class ElementTree {
 
+    private static final QName XML_BASE_QNAME = new QName(XMLConstants.XML_NS_URI, "base");
+
+    private final Optional<URI> docUriOption;
     private final ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
-    private ElementTree(ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap) {
+    private ElementTree(
+            Optional<URI> docUriOption,
+            ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
+    ) {
+        this.docUriOption = docUriOption;
         this.elementMap = Objects.requireNonNull(elementMap);
     }
 
     public Element rootElement() {
-        return new Element(ImmutableList.of());
+        return new Element(docUriOption, ImmutableList.of());
     }
 
     public final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
 
+        private final Optional<URI> docUriOption;
         private final ImmutableList<Integer> navigationPath;
 
-        private Element(ImmutableList<Integer> navigationPath) {
+        private Element(Optional<URI> docUriOption, ImmutableList<Integer> navigationPath) {
+            this.docUriOption = docUriOption;
             this.navigationPath = Objects.requireNonNull(navigationPath);
         }
 
@@ -103,6 +114,39 @@ public final class ElementTree {
         }
 
         @Override
+        public Optional<URI> docUriOption() {
+            return docUriOption;
+        }
+
+        @Override
+        public Optional<URI> baseUriOption() {
+            Optional<Element> currentElementOption = Optional.of(this);
+            List<URI> xmlBaseUris = new ArrayList<>();
+
+            while (currentElementOption.isPresent()) {
+                Element currentElement = currentElementOption.get();
+                currentElement.attributeOption(XML_BASE_QNAME).ifPresent(u -> xmlBaseUris.add(URI.create(u)));
+                currentElementOption = currentElement.parentElementOption();
+            }
+
+            Collections.reverse(xmlBaseUris); // Java 21 offers the more functional "reversed" method
+
+            Optional<URI> uriOption = docUriOption;
+
+            for (URI u : xmlBaseUris) {
+                // See http://stackoverflow.com/questions/22203111/is-javas-uri-resolve-incompatible-with-rfc-3986-when-the-relative-uri-contains
+                uriOption = Optional.of(uriOption.map(b -> b.resolve(u)).orElse(u));
+            }
+
+            return uriOption;
+        }
+
+        @Override
+        public NamespaceScope namespaceScope() {
+            return namespaceScopeOption().orElseThrow();
+        }
+
+        @Override
         public boolean equals(Object other) {
             if (other instanceof Element otherElement) {
                 return this.navigationPath.equals(otherElement.navigationPath);
@@ -147,7 +191,7 @@ public final class ElementTree {
 
         @Override
         public Optional<Element> parentElementOption() {
-            return parentPathOption(navigationPath()).map(Element::new);
+            return parentPathOption(navigationPath()).map(e -> new Element(docUriOption, e));
         }
 
         @Override
@@ -184,7 +228,7 @@ public final class ElementTree {
 
             for (var underlyingChildNode : underlyingElement().children()) {
                 if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element) {
-                    children.add(new Element(addToPath(elementIdx, navigationPath)));
+                    children.add(new Element(docUriOption, addToPath(elementIdx, navigationPath)));
                     elementIdx += 1;
                 } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {
                     children.add(new Text(t.value(), t.isCData()));
@@ -204,7 +248,7 @@ public final class ElementTree {
 
             return IntStream.range(0, (int) underlyingElement().childElementStream().count())
                     .mapToObj(i -> addToPath(i, navigationPath))
-                    .map(Element::new);
+                    .map(e -> new Element(docUriOption, e));
         }
 
         @Override
@@ -262,14 +306,18 @@ public final class ElementTree {
         }
     }
 
-    public static ElementTree create(eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement) {
+    public static ElementTree create(
+            Optional<URI> docUriOption,
+            eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
+    ) {
         ImmutableList<Integer> navigationPath = ImmutableList.of();
         Map<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap = new HashMap<>();
-        buildElementCache(navigationPath, underlyingRootElement, elementMap);
-        return new ElementTree(ImmutableMap.copyOf(elementMap));
+        buildElementCache(docUriOption, navigationPath, underlyingRootElement, elementMap);
+        return new ElementTree(docUriOption, ImmutableMap.copyOf(elementMap));
     }
 
     private static void buildElementCache(
+            Optional<URI> docUriOption,
             ImmutableList<Integer> elementNavigationPath,
             eu.cdevreeze.yaidom4j.dom.immutabledom.Element element,
             Map<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
@@ -280,6 +328,7 @@ public final class ElementTree {
         for (var childElement : element.childElementStream().toList()) {
             // Recursion
             buildElementCache(
+                    docUriOption,
                     addToPath(idx, elementNavigationPath),
                     childElement,
                     elementMap

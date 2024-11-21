@@ -63,7 +63,7 @@ public record Document(
                 underlyingDocument.children().stream()
                         .map(n -> {
                             if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
-                                return ElementTree.create(e).rootElement();
+                                return ElementTree.create(underlyingDocument.uriOption(), e).rootElement();
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
                                 return new Comment(c.value());
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {

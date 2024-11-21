@@ -16,17 +16,26 @@
 
 package eu.cdevreeze.yaidom4j.queryapi;
 
+import eu.cdevreeze.yaidom4j.core.NamespaceScope;
+
+import java.net.URI;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Object-oriented variant of the ancestry-aware element query API.
+ * Ancestry-aware element query API, extending ElementApi.
  *
  * @param <E> The specific element type itself
  * @author Chris de Vreeze
  */
 public interface AncestryAwareElementApi<E extends AncestryAwareElementApi<E>> extends ElementApi<E> {
+
+    Optional<URI> docUriOption();
+
+    Optional<URI> baseUriOption();
+
+    NamespaceScope namespaceScope();
 
     Optional<E> parentElementOption();
 

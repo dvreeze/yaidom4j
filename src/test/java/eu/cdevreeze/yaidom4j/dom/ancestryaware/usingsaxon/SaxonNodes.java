@@ -26,8 +26,11 @@ import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.tree.NamespaceNode;
 
 import javax.xml.namespace.QName;
+import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -135,8 +138,28 @@ public class SaxonNodes {
 
         @Override
         public Optional<NamespaceScope> namespaceScopeOption() {
-            // TODO
-            return Optional.empty();
+            ImmutableMap<String, String> nsMappings = xdmNode.axisIterator(Axis.NAMESPACE)
+                    .stream()
+                    .map(n -> (NamespaceNode) n.getUnderlyingNode())
+                    .map(n -> Map.entry(n.getDisplayName(), n.getStringValue()))
+                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            return Optional.of(NamespaceScope.from(nsMappings));
+        }
+
+        @Override
+        public Optional<URI> docUriOption() {
+            return Optional.ofNullable(xdmNode.getUnderlyingNode().getSystemId()).map(URI::create);
+        }
+
+        @Override
+        public Optional<URI> baseUriOption() {
+            return Optional.ofNullable(xdmNode.getBaseURI());
+        }
+
+        @Override
+        public NamespaceScope namespaceScope() {
+            return namespaceScopeOption().orElseThrow();
         }
 
         public Stream<Node> childNodeStream() {
