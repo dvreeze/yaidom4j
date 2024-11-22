@@ -21,6 +21,7 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Listener;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.Servlet;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.ServletMapping;
@@ -71,6 +72,11 @@ public class ServletDialectTests {
         assertEquals(
                 List.of("/hello.welcome", "/ServletErrorPage", "/IncludedServlet", "/ForwardedServlet"),
                 webApp.servletMappings().stream().flatMap(m -> m.urlPatterns().stream()).toList()
+        );
+
+        assertEquals(
+                List.of("tests.ContextListener", "tests.ServletRequestListener.RequestListener"),
+                webApp.listeners().stream().map(Listener::listenerClass).toList()
         );
 
         Element newDocElem = webApp.toXml(new QName(NS, "web-app", "w"));

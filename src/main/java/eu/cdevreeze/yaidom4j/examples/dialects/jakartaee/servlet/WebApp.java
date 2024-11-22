@@ -23,6 +23,7 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Listener;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 
@@ -37,6 +38,7 @@ import java.util.Set;
 public record WebApp(
         ImmutableList<Filter> filters,
         ImmutableList<FilterMapping> filterMappings,
+        ImmutableList<Listener> listeners,
         ImmutableList<Servlet> servlets,
         ImmutableList<ServletMapping> servletMappings
 ) implements ConvertibleToXml {
@@ -56,6 +58,10 @@ public record WebApp(
                 element
                         .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-mapping")))
                         .map(FilterMapping::parse)
+                        .collect(ImmutableList.toImmutableList()),
+                element
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "listener")))
+                        .map(Listener::parse)
                         .collect(ImmutableList.toImmutableList()),
                 element
                         .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet")))
@@ -91,6 +97,12 @@ public record WebApp(
                                 filterMappings()
                                         .stream()
                                         .map(v -> v.toXml(new QName(ns, "filter-mapping", prefix)))
+                                        .toList()
+                        )
+                        .addAll(
+                                listeners()
+                                        .stream()
+                                        .map(v -> v.toXml(new QName(ns, "listener", prefix)))
                                         .toList()
                         )
                         .addAll(

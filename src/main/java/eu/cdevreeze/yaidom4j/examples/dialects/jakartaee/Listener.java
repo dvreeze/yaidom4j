@@ -1,0 +1,74 @@
+/*
+ * Copyright 2024-2024 Chris de Vreeze
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
+import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+
+import javax.xml.namespace.QName;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+/**
+ * Listener data.
+ *
+ * @author Chris de Vreeze
+ */
+public record Listener(
+        Optional<String> idOption,
+        String listenerClass
+) implements ConvertibleToXml {
+
+    public static Listener parse(AncestryAwareElementApi<?> element) {
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+
+        String ns = element.elementName().getNamespaceURI();
+
+        return new Listener(
+                element.attributeOption(new QName("id")),
+                element
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "listener-class")))
+                        .findFirst()
+                        .orElseThrow()
+                        .text()
+        );
+    }
+
+    @Override
+    public Element toXml(QName elementName) {
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+
+        String ns = elementName.getNamespaceURI();
+        String prefix = elementName.getPrefix();
+        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+
+        return nb.element(
+                nb.name(prefix, elementName.getLocalPart()),
+                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
+                ImmutableList.<Node>builder()
+                        .add(nb.textElement(nb.name(prefix, "listener-class"), listenerClass()))
+                        .build()
+        );
+    }
+}
