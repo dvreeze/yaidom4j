@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
+package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -29,6 +29,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Description data.
@@ -41,7 +42,8 @@ public record Description(
 ) implements ConvertibleToXml {
 
     public static Description parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(element.elementName().equals(new QName(NS, "description")));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("description"));
 
         return new Description(
                 element.text(),
@@ -50,16 +52,12 @@ public record Description(
     }
 
     @Override
-    public Optional<Element> toXmlOption() {
-        return Optional.of(toXml(new QName(NS, "description")));
-    }
-
-    @Override
     public Element toXml(QName elementName) {
-        Preconditions.checkArgument(elementName.getNamespaceURI().equals(NS));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
 
+        String ns = elementName.getNamespaceURI();
         String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, NS);
+        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
@@ -69,6 +67,4 @@ public record Description(
                         .build()
         );
     }
-
-    private static final String NS = "https://jakarta.ee/xml/ns/jakartaee";
 }

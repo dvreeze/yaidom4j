@@ -23,73 +23,66 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Param-value data.
+ * Servlet-mapping data.
  *
  * @author Chris de Vreeze
  */
-public record ParamValue(
+public record ServletMapping(
         Optional<String> idOption,
-        ImmutableList<Description> descriptions,
-        String paramName,
-        String paramValue
+        String servletName,
+        ImmutableList<String> urlPatterns
 ) implements ConvertibleToXml {
 
-    public static ParamValue parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(element.elementName().equals(new QName(NS, "multipart-config")));
+    public static ServletMapping parse(AncestryAwareElementApi<?> element) {
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("servlet-mapping"));
 
-        return new ParamValue(
+        String ns = element.elementName().getNamespaceURI();
+
+        return new ServletMapping(
                 element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "description")))
-                        .map(Description::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "param-name")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
                         .findFirst()
                         .orElseThrow()
                         .text(),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "param-value")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text()
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
+                        .map(ElementApi::text)
+                        .collect(ImmutableList.toImmutableList())
         );
     }
 
     @Override
-    public Optional<Element> toXmlOption() {
-        return Optional.empty();
-    }
-
-    @Override
     public Element toXml(QName elementName) {
-        Preconditions.checkArgument(elementName.getNamespaceURI().equals(NS));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
 
+        String ns = elementName.getNamespaceURI();
         String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, NS);
+        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
                 ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
                 ImmutableList.<Node>builder()
+                        .add(nb.textElement(nb.name(prefix, "servlet-name"), servletName()))
                         .addAll(
-                                descriptions()
+                                urlPatterns()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "description", prefix)))
+                                        .map(v -> nb.textElement(nb.name(prefix, "url-pattern"), v))
                                         .toList()
                         )
-                        .add(nb.textElement(nb.name(prefix, "param-name"), paramName()))
-                        .add(nb.textElement(nb.name(prefix, "param-value"), paramValue()))
                         .build()
         );
     }
-
-    private static final String NS = "https://jakarta.ee/xml/ns/jakartaee";
 }

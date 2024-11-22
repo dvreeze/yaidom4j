@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
+package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -23,54 +23,41 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
-import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 /**
- * Multipart-config data.
+ * Run-as data.
  *
  * @author Chris de Vreeze
  */
-public record MultipartConfig(
-        Optional<String> locationOption,
-        OptionalLong maxFileSizeOption,
-        OptionalLong maxRequestSizeOption,
-        OptionalInt fileSizeThresholdOption
+public record RunAs(
+        Optional<String> idOption,
+        ImmutableList<Description> descriptions,
+        String roleName
 ) implements ConvertibleToXml {
 
-    public static MultipartConfig parse(AncestryAwareElementApi<?> element) {
+    public static RunAs parse(AncestryAwareElementApi<?> element) {
         Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
-        Preconditions.checkArgument(element.elementName().getLocalPart().equals("multipart-config"));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("run-as"));
 
         String ns = element.elementName().getNamespaceURI();
 
-        return new MultipartConfig(
+        return new RunAs(
+                element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "location")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "description")))
+                        .map(Description::parse)
+                        .collect(ImmutableList.toImmutableList()),
+                element
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "role-name")))
                         .findFirst()
-                        .map(ElementApi::text),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-file-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-request-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "file-size-threshold")))
-                        .map(ElementApi::text)
-                        .mapToInt(Integer::valueOf)
-                        .findFirst()
+                        .orElseThrow()
+                        .text()
         );
     }
 
@@ -84,20 +71,15 @@ public record MultipartConfig(
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.of(),
+                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
                 ImmutableList.<Node>builder()
                         .addAll(
-                                locationOption()
+                                descriptions()
                                         .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "location"), v))
+                                        .map(v -> v.toXml(new QName(ns, "description", prefix)))
                                         .toList()
                         )
-                        .addAll(
-                                maxFileSizeOption()
-                                        .stream()
-                                        .mapToObj(v -> nb.textElement(nb.name(prefix, "max-file-size"), String.valueOf(v)))
-                                        .toList()
-                        )
+                        .add(nb.textElement(nb.name(prefix, "role-name"), roleName()))
                         .build()
         );
     }

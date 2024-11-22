@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
+package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -24,56 +24,55 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
-import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Security-role-ref data.
+ * Param-value data.
  *
  * @author Chris de Vreeze
  */
-public record SecurityRoleRef(
+public record ParamValue(
         Optional<String> idOption,
         ImmutableList<Description> descriptions,
-        String roleName,
-        Optional<String> roleLinkOption
+        String paramName,
+        String paramValue
 ) implements ConvertibleToXml {
 
-    public static SecurityRoleRef parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(element.elementName().equals(new QName(NS, "security-role-ref")));
+    public static ParamValue parse(AncestryAwareElementApi<?> element) {
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
 
-        return new SecurityRoleRef(
+        String ns = element.elementName().getNamespaceURI();
+
+        return new ParamValue(
                 element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "description")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "description")))
                         .map(Description::parse)
                         .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "role-name")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "param-name")))
                         .findFirst()
                         .orElseThrow()
                         .text(),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "role-link")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "param-value")))
                         .findFirst()
-                        .map(ElementApi::text)
+                        .orElseThrow()
+                        .text()
         );
     }
 
     @Override
-    public Optional<Element> toXmlOption() {
-        return Optional.of(toXml(new QName(NS, "security-role-ref")));
-    }
-
-    @Override
     public Element toXml(QName elementName) {
-        Preconditions.checkArgument(elementName.getNamespaceURI().equals(NS));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
 
+        String ns = elementName.getNamespaceURI();
         String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, NS);
+        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
@@ -82,19 +81,12 @@ public record SecurityRoleRef(
                         .addAll(
                                 descriptions()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "description", prefix)))
+                                        .map(v -> v.toXml(new QName(ns, "description", prefix)))
                                         .toList()
                         )
-                        .add(nb.textElement(nb.name(prefix, "role-name"), roleName()))
-                        .addAll(
-                                roleLinkOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "role-link"), v))
-                                        .toList()
-                        )
+                        .add(nb.textElement(nb.name(prefix, "param-name"), paramName()))
+                        .add(nb.textElement(nb.name(prefix, "param-value"), paramValue()))
                         .build()
         );
     }
-
-    private static final String NS = "https://jakarta.ee/xml/ns/jakartaee";
 }

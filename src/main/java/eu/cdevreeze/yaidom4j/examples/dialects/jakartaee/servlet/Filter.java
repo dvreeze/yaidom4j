@@ -24,53 +24,53 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.ParamValue;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 /**
- * Multipart-config data.
+ * Filter data.
  *
  * @author Chris de Vreeze
  */
-public record MultipartConfig(
-        Optional<String> locationOption,
-        OptionalLong maxFileSizeOption,
-        OptionalLong maxRequestSizeOption,
-        OptionalInt fileSizeThresholdOption
+public record Filter(
+        Optional<String> idOption,
+        String filterName,
+        Optional<String> filterClassOption,
+        Optional<Boolean> asyncSupportedOption,
+        ImmutableList<ParamValue> initParams
 ) implements ConvertibleToXml {
 
-    public static MultipartConfig parse(AncestryAwareElementApi<?> element) {
+    public static Filter parse(AncestryAwareElementApi<?> element) {
         Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
-        Preconditions.checkArgument(element.elementName().getLocalPart().equals("multipart-config"));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("filter"));
 
         String ns = element.elementName().getNamespaceURI();
 
-        return new MultipartConfig(
+        return new Filter(
+                element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "location")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
+                        .findFirst()
+                        .orElseThrow()
+                        .text(),
+                element
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-class")))
                         .findFirst()
                         .map(ElementApi::text),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-file-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-request-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "file-size-threshold")))
-                        .map(ElementApi::text)
-                        .mapToInt(Integer::valueOf)
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "async-supported")))
                         .findFirst()
+                        .map(e -> Boolean.parseBoolean(e.text())),
+                element
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "init-param")))
+                        .map(ParamValue::parse)
+                        .collect(ImmutableList.toImmutableList())
         );
     }
 
@@ -84,18 +84,25 @@ public record MultipartConfig(
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.of(),
+                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
                 ImmutableList.<Node>builder()
+                        .add(nb.textElement(nb.name(prefix, "filter-name"), filterName()))
                         .addAll(
-                                locationOption()
+                                filterClassOption()
                                         .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "location"), v))
+                                        .map(v -> nb.textElement(nb.name(prefix, "filter-class"), v))
                                         .toList()
                         )
                         .addAll(
-                                maxFileSizeOption()
+                                asyncSupportedOption()
                                         .stream()
-                                        .mapToObj(v -> nb.textElement(nb.name(prefix, "max-file-size"), String.valueOf(v)))
+                                        .map(v -> nb.textElement(nb.name(prefix, "async-supported"), v.toString()))
+                                        .toList()
+                        )
+                        .addAll(
+                                initParams()
+                                        .stream()
+                                        .map(v -> v.toXml(new QName(ns, "init-param", prefix)))
                                         .toList()
                         )
                         .build()

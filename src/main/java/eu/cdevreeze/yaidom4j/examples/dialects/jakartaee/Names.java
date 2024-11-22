@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples.dialects;
-
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-
-import javax.xml.namespace.QName;
+package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 /**
- * Model object that is convertible to XML.
+ * Constants for names and namespaces.
  *
  * @author Chris de Vreeze
  */
-public interface ConvertibleToXml {
+public class Names {
 
-    Element toXml(QName elementName);
+    private Names() {
+    }
+
+    public static final String JAKARTAEE_NS = "https://jakarta.ee/xml/ns/jakartaee";
+    public static final String JAVAEE_NS = "http://java.sun.com/xml/ns/javaee";
 }

@@ -28,49 +28,53 @@ import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 /**
- * Multipart-config data.
+ * Filter-mapping data.
  *
  * @author Chris de Vreeze
  */
-public record MultipartConfig(
-        Optional<String> locationOption,
-        OptionalLong maxFileSizeOption,
-        OptionalLong maxRequestSizeOption,
-        OptionalInt fileSizeThresholdOption
+public record FilterMapping(
+        Optional<String> idOption,
+        String filterName,
+        ImmutableList<String> urlPatterns,
+        ImmutableList<String> servletNames,
+        ImmutableList<Dispatcher> dispatchers
 ) implements ConvertibleToXml {
 
-    public static MultipartConfig parse(AncestryAwareElementApi<?> element) {
+    enum Dispatcher {
+        FORWARD, INCLUDE, REQUEST, ASYNC, ERROR
+    }
+
+    public static FilterMapping parse(AncestryAwareElementApi<?> element) {
         Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
-        Preconditions.checkArgument(element.elementName().getLocalPart().equals("multipart-config"));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("filter-mapping"));
 
         String ns = element.elementName().getNamespaceURI();
 
-        return new MultipartConfig(
+        return new FilterMapping(
+                element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "location")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
                         .findFirst()
-                        .map(ElementApi::text),
+                        .orElseThrow()
+                        .text(),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-file-size")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
                         .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
+                        .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-request-size")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
                         .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
+                        .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "file-size-threshold")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "dispatcher")))
                         .map(ElementApi::text)
-                        .mapToInt(Integer::valueOf)
-                        .findFirst()
+                        .map(Dispatcher::valueOf)
+                        .collect(ImmutableList.toImmutableList())
         );
     }
 
@@ -84,18 +88,25 @@ public record MultipartConfig(
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.of(),
+                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
                 ImmutableList.<Node>builder()
+                        .add(nb.textElement(nb.name(prefix, "filter-name"), filterName()))
                         .addAll(
-                                locationOption()
+                                urlPatterns()
                                         .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "location"), v))
+                                        .map(v -> nb.textElement(nb.name(prefix, "url-pattern"), v))
                                         .toList()
                         )
                         .addAll(
-                                maxFileSizeOption()
+                                servletNames()
                                         .stream()
-                                        .mapToObj(v -> nb.textElement(nb.name(prefix, "max-file-size"), String.valueOf(v)))
+                                        .map(v -> nb.textElement(nb.name(prefix, "servlet-name"), v))
+                                        .toList()
+                        )
+                        .addAll(
+                                dispatchers()
+                                        .stream()
+                                        .map(v -> nb.textElement(nb.name(prefix, "dispatcher"), v.toString()))
                                         .toList()
                         )
                         .build()

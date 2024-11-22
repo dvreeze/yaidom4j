@@ -25,52 +25,46 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
-import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 /**
- * Multipart-config data.
+ * Web app data.
  *
  * @author Chris de Vreeze
  */
-public record MultipartConfig(
-        Optional<String> locationOption,
-        OptionalLong maxFileSizeOption,
-        OptionalLong maxRequestSizeOption,
-        OptionalInt fileSizeThresholdOption
+public record WebApp(
+        ImmutableList<Filter> filters,
+        ImmutableList<FilterMapping> filterMappings,
+        ImmutableList<Servlet> servlets,
+        ImmutableList<ServletMapping> servletMappings
 ) implements ConvertibleToXml {
 
-    public static MultipartConfig parse(AncestryAwareElementApi<?> element) {
+    public static WebApp parse(AncestryAwareElementApi<?> element) {
         Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
-        Preconditions.checkArgument(element.elementName().getLocalPart().equals("multipart-config"));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("web-app"));
 
         String ns = element.elementName().getNamespaceURI();
 
-        return new MultipartConfig(
+        // TODO
+        return new WebApp(
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "location")))
-                        .findFirst()
-                        .map(ElementApi::text),
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter")))
+                        .map(Filter::parse)
+                        .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-file-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-mapping")))
+                        .map(FilterMapping::parse)
+                        .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "max-request-size")))
-                        .map(ElementApi::text)
-                        .mapToLong(Long::valueOf)
-                        .findFirst(),
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet")))
+                        .map(Servlet::parse)
+                        .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "file-size-threshold")))
-                        .map(ElementApi::text)
-                        .mapToInt(Integer::valueOf)
-                        .findFirst()
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-mapping")))
+                        .map(ServletMapping::parse)
+                        .collect(ImmutableList.toImmutableList())
         );
     }
 
@@ -82,20 +76,33 @@ public record MultipartConfig(
         String prefix = elementName.getPrefix();
         var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
 
+        // TODO
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
                 ImmutableMap.of(),
                 ImmutableList.<Node>builder()
                         .addAll(
-                                locationOption()
+                                filters()
                                         .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "location"), v))
+                                        .map(v -> v.toXml(new QName(ns, "filter", prefix)))
                                         .toList()
                         )
                         .addAll(
-                                maxFileSizeOption()
+                                filterMappings()
                                         .stream()
-                                        .mapToObj(v -> nb.textElement(nb.name(prefix, "max-file-size"), String.valueOf(v)))
+                                        .map(v -> v.toXml(new QName(ns, "filter-mapping", prefix)))
+                                        .toList()
+                        )
+                        .addAll(
+                                servlets()
+                                        .stream()
+                                        .map(v -> v.toXml(new QName(ns, "servlet", prefix)))
+                                        .toList()
+                        )
+                        .addAll(
+                                servletMappings()
+                                        .stream()
+                                        .map(v -> v.toXml(new QName(ns, "servlet-mapping", prefix)))
                                         .toList()
                         )
                         .build()

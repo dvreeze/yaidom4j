@@ -23,6 +23,10 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.ParamValue;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.RunAs;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.SecurityRoleRef;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
@@ -30,6 +34,7 @@ import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Servlet data.
@@ -49,70 +54,70 @@ public record Servlet(
         ImmutableList<SecurityRoleRef> securityRoleRefs,
         Optional<MultipartConfig> multipartConfigOption
 ) implements ConvertibleToXml {
+
     public Servlet {
         Preconditions.checkArgument(servletClassOption.isEmpty() || jspFileTypeOption.isEmpty());
     }
 
     public static Servlet parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(element.elementName().equals(new QName(NS, "servlet")));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("servlet"));
+
+        String ns = element.elementName().getNamespaceURI();
 
         return new Servlet(
                 element.attributeOption(new QName("id")),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "servlet-name")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
                         .findFirst()
                         .orElseThrow()
                         .text(),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "servlet-class")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-class")))
                         .findFirst()
                         .map(ElementApi::text),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "jsp-file")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "jsp-file")))
                         .findFirst()
                         .map(ElementApi::text),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "init-param")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "init-param")))
                         .map(ParamValue::parse)
                         .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "load-on-startup")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "load-on-startup")))
                         .findFirst()
                         .map(ElementApi::text),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "enabled")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "enabled")))
                         .findFirst()
                         .map(e -> Boolean.parseBoolean(e.text())),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "async-supported")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "async-supported")))
                         .findFirst()
                         .map(e -> Boolean.parseBoolean(e.text())),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "run-as")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "run-as")))
                         .map(e -> Objects.requireNonNull(RunAs.parse(e)))
                         .findFirst(),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "security-role-ref")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "security-role-ref")))
                         .map(SecurityRoleRef::parse)
                         .collect(ImmutableList.toImmutableList()),
                 element
-                        .childElementStream(e -> e.elementName().equals(new QName(NS, "multipart-config")))
+                        .childElementStream(e -> e.elementName().equals(new QName(ns, "multipart-config")))
                         .map(e -> Objects.requireNonNull(MultipartConfig.parse(e)))
                         .findFirst()
         );
     }
 
     @Override
-    public Optional<Element> toXmlOption() {
-        return Optional.of(toXml(new QName(NS, "servlet")));
-    }
-
-    @Override
     public Element toXml(QName elementName) {
-        Preconditions.checkArgument(elementName.getNamespaceURI().equals(NS));
+        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
 
+        String ns = elementName.getNamespaceURI();
         String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, NS);
+        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
 
         return nb.element(
                 nb.name(prefix, elementName.getLocalPart()),
@@ -134,7 +139,7 @@ public record Servlet(
                         .addAll(
                                 initParams()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "init-param", prefix)))
+                                        .map(v -> v.toXml(new QName(ns, "init-param", prefix)))
                                         .toList()
                         )
                         .addAll(
@@ -158,24 +163,22 @@ public record Servlet(
                         .addAll(
                                 runAsOption()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "run-as", prefix)))
+                                        .map(v -> v.toXml(new QName(ns, "run-as", prefix)))
                                         .toList()
                         )
                         .addAll(
                                 securityRoleRefs()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "security-role-ref", prefix)))
+                                        .map(v -> v.toXml(new QName(ns, "security-role-ref", prefix)))
                                         .toList()
                         )
                         .addAll(
                                 multipartConfigOption()
                                         .stream()
-                                        .map(v -> v.toXml(new QName(NS, "multipart-config", prefix)))
+                                        .map(v -> v.toXml(new QName(ns, "multipart-config", prefix)))
                                         .toList()
                         )
                         .build()
         );
     }
-
-    private static final String NS = "https://jakarta.ee/xml/ns/jakartaee";
 }

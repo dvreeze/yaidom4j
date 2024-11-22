@@ -16,15 +16,15 @@
 
 package eu.cdevreeze.yaidom4j.examples.dialects;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.Servlet;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.ServletMapping;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.WebApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
@@ -54,35 +54,32 @@ public class ServletDialectTests {
     }
 
     @Test
-    public void testServletSectionParsing() {
+    public void testWebAppParsing() {
         Document doc = parseDocument();
-        ImmutableList<Servlet> servlets = doc.documentElement()
-                .childElementStream(e -> e.name().getLocalPart().equals("servlet"))
-                .map(Servlet::parse)
-                .collect(ImmutableList.toImmutableList());
+
+        WebApp webApp = WebApp.parse(doc.documentElement());
 
         assertEquals(
                 List.of("welcome", "ServletErrorPage", "IncludedServlet", "ForwardedServlet"),
-                servlets.stream().map(Servlet::name).toList()
+                webApp.servlets().stream().map(Servlet::name).toList()
         );
 
-        Element newDocElem = new Element(
-                new QName(NS, "web-app", "w"),
-                ImmutableMap.of(),
-                NamespaceScope.empty().resolve("w", NS),
-                servlets.stream().map(v -> v.toXml(new QName(NS, "servlet", "w"))).collect(ImmutableList.toImmutableList())
+        assertEquals(
+                List.of("welcome", "ServletErrorPage", "IncludedServlet", "ForwardedServlet"),
+                webApp.servletMappings().stream().map(ServletMapping::servletName).toList()
         );
+        assertEquals(
+                List.of("/hello.welcome", "/ServletErrorPage", "/IncludedServlet", "/ForwardedServlet"),
+                webApp.servletMappings().stream().flatMap(m -> m.urlPatterns().stream()).toList()
+        );
+
+        Element newDocElem = webApp.toXml(new QName(NS, "web-app", "w"));
 
         DocumentPrinter docPrinter = DocumentPrinters.instance();
 
         System.out.println(docPrinter.print(newDocElem));
 
-        Element newDocElem2 = new Element(
-                new QName(NS, "web-app", ""),
-                ImmutableMap.of(),
-                NamespaceScope.empty().resolve("", NS),
-                servlets.stream().map(v -> v.toXml(new QName(NS, "servlet"))).collect(ImmutableList.toImmutableList())
-        );
+        Element newDocElem2 = webApp.toXml(new QName(NS, "web-app"));
 
         System.out.println();
         System.out.println(docPrinter.print(newDocElem2));
@@ -90,5 +87,5 @@ public class ServletDialectTests {
         assertEquals(newDocElem2.toClarkNode(), newDocElem.toClarkNode());
     }
 
-    private static final String NS = "https://jakarta.ee/xml/ns/jakartaee";
+    private static final String NS = Names.JAKARTAEE_NS;
 }
