@@ -26,6 +26,8 @@ import javax.xml.namespace.QName;
 import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
  * Servlet mapping XML element wrapper.
  *
@@ -54,7 +56,7 @@ public final class ServletMapping {
     public String servletName() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
+                .childElementStream(hasName(ns, "servlet-name"))
                 .findFirst()
                 .orElseThrow()
                 .text();
@@ -63,7 +65,7 @@ public final class ServletMapping {
     public ImmutableList<String> urlPatterns() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
+                .childElementStream(hasName(ns, "url-pattern"))
                 .map(ElementApi::text)
                 .collect(ImmutableList.toImmutableList());
     }

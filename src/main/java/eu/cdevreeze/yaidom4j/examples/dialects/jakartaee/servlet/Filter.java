@@ -27,6 +27,8 @@ import javax.xml.namespace.QName;
 import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
  * Filter XML element wrapper.
  *
@@ -55,7 +57,7 @@ public final class Filter {
     public String filterName() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
+                .childElementStream(hasName(ns, "filter-name"))
                 .findFirst()
                 .orElseThrow()
                 .text();
@@ -64,7 +66,7 @@ public final class Filter {
     public Optional<String> filterClassOption() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-class")))
+                .childElementStream(hasName(ns, "filter-class"))
                 .findFirst()
                 .map(ElementApi::text);
     }
@@ -72,7 +74,7 @@ public final class Filter {
     public ImmutableList<ParamValue> initParams() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "init-param")))
+                .childElementStream(hasName(ns, "init-param"))
                 .map(ParamValue::new)
                 .collect(ImmutableList.toImmutableList());
     }

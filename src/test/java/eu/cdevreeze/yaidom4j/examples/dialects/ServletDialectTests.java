@@ -28,6 +28,7 @@ import org.xml.sax.InputSource;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -116,6 +117,19 @@ public class ServletDialectTests {
                         .stream()
                         .map(servletMapping -> List.of(servletMapping.servletName(), servletMapping.urlPatterns()))
                         .toList()
+        );
+
+        assertEquals(
+                List.of("hello.welcome"),
+                webApp.welcomeFileLists().stream().flatMap(v -> v.welcomeFiles().stream()).toList()
+        );
+
+        assertEquals(
+                List.of(
+                        List.of("/ServletErrorPage", Optional.empty(), Optional.of("java.lang.ArrayIndexOutOfBoundsException")),
+                        List.of("/error404.html", Optional.of("404"), Optional.empty())
+                ),
+                webApp.errorPages().stream().map(e -> List.of(e.location(), e.errorCodeOption(), e.exceptionTypeOption())).toList()
         );
     }
 }

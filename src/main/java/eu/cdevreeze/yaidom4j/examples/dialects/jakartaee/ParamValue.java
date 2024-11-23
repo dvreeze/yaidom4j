@@ -23,6 +23,8 @@ import javax.xml.namespace.QName;
 import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
  * Param-value XML element wrapper.
  *
@@ -50,7 +52,7 @@ public final class ParamValue {
     public String paramName() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "param-name")))
+                .childElementStream(hasName(ns, "param-name"))
                 .findFirst()
                 .orElseThrow()
                 .text();
@@ -59,7 +61,7 @@ public final class ParamValue {
     public String paramValue() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "param-value")))
+                .childElementStream(hasName(ns, "param-value"))
                 .findFirst()
                 .orElseThrow()
                 .text();

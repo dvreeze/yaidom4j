@@ -23,6 +23,8 @@ import javax.xml.namespace.QName;
 import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
  * Listener XML element wrapper.
  *
@@ -50,7 +52,7 @@ public final class Listener {
     public String listenerClass() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "listener-class")))
+                .childElementStream(hasName(ns, "listener-class"))
                 .findFirst()
                 .orElseThrow()
                 .text();

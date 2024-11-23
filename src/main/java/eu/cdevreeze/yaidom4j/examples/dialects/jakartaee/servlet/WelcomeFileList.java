@@ -20,8 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.ParamValue;
-import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
 import java.util.Optional;
@@ -30,18 +28,18 @@ import java.util.Set;
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
 
 /**
- * Servlet XML element wrapper.
+ * Welcome file list XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public final class Servlet {
+public final class WelcomeFileList {
 
     private final ElementTree.Element element;
 
-    public Servlet(ElementTree.Element element) {
+    public WelcomeFileList(ElementTree.Element element) {
         Preconditions.checkArgument(
                 Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
-        Preconditions.checkArgument(element.elementName().getLocalPart().equals("servlet"));
+        Preconditions.checkArgument(element.elementName().getLocalPart().equals("welcome-file-list"));
 
         this.element = element;
     }
@@ -54,28 +52,11 @@ public final class Servlet {
         return element.attributeOption(new QName("id"));
     }
 
-    public String servletName() {
+    public ImmutableList<String> welcomeFiles() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(hasName(ns, "servlet-name"))
-                .findFirst()
-                .orElseThrow()
-                .text();
-    }
-
-    public Optional<String> servletClassOption() {
-        String ns = element.elementName().getNamespaceURI();
-        return element
-                .childElementStream(hasName(ns, "servlet-class"))
-                .findFirst()
-                .map(ElementApi::text);
-    }
-
-    public ImmutableList<ParamValue> initParams() {
-        String ns = element.elementName().getNamespaceURI();
-        return element
-                .childElementStream(hasName(ns, "init-param"))
-                .map(ParamValue::new)
+                .childElementStream(hasName(ns, "welcome-file"))
+                .map(ElementTree.Element::text)
                 .collect(ImmutableList.toImmutableList());
     }
 }

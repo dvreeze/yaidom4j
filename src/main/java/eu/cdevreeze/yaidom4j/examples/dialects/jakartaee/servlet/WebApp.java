@@ -81,4 +81,18 @@ public final class WebApp {
                 .map(Listener::new)
                 .collect(ImmutableList.toImmutableList());
     }
+
+    public ImmutableList<WelcomeFileList> welcomeFileLists() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "welcome-file-list"))
+                .map(WelcomeFileList::new)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<ErrorPage> errorPages() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "error-page"))
+                .map(ErrorPage::new)
+                .collect(ImmutableList.toImmutableList());
+    }
 }

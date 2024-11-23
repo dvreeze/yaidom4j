@@ -26,6 +26,8 @@ import javax.xml.namespace.QName;
 import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
  * Filter mapping XML element wrapper.
  *
@@ -58,7 +60,7 @@ public final class FilterMapping {
     public String filterName() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
+                .childElementStream(hasName(ns, "filter-name"))
                 .findFirst()
                 .orElseThrow()
                 .text();
@@ -67,7 +69,7 @@ public final class FilterMapping {
     public ImmutableList<String> urlPatterns() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
+                .childElementStream(hasName(ns, "url-pattern"))
                 .map(ElementApi::text)
                 .collect(ImmutableList.toImmutableList());
     }
@@ -75,7 +77,7 @@ public final class FilterMapping {
     public ImmutableList<String> servletNames() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
+                .childElementStream(hasName(ns, "servlet-name"))
                 .map(ElementApi::text)
                 .collect(ImmutableList.toImmutableList());
     }
@@ -83,7 +85,7 @@ public final class FilterMapping {
     public ImmutableList<Dispatcher> dispatchers() {
         String ns = element.elementName().getNamespaceURI();
         return element
-                .childElementStream(e -> e.elementName().equals(new QName(ns, "dispatcher")))
+                .childElementStream(hasName(ns, "dispatcher"))
                 .map(ElementApi::text)
                 .map(Dispatcher::valueOf)
                 .collect(ImmutableList.toImmutableList());
