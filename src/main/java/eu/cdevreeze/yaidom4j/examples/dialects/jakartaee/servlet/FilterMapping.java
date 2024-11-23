@@ -18,98 +18,74 @@ package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
-import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Filter-mapping data.
+ * Filter mapping XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public record FilterMapping(
-        Optional<String> idOption,
-        String filterName,
-        ImmutableList<String> urlPatterns,
-        ImmutableList<String> servletNames,
-        ImmutableList<Dispatcher> dispatchers
-) implements ConvertibleToXml {
+public final class FilterMapping {
 
-    enum Dispatcher {
+    public enum Dispatcher {
         FORWARD, INCLUDE, REQUEST, ASYNC, ERROR
     }
 
-    public static FilterMapping parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+    private final ElementTree.Element element;
+
+    public FilterMapping(ElementTree.Element element) {
+        Preconditions.checkArgument(
+                Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
         Preconditions.checkArgument(element.elementName().getLocalPart().equals("filter-mapping"));
 
-        String ns = element.elementName().getNamespaceURI();
-
-        return new FilterMapping(
-                element.attributeOption(new QName("id")),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
-                        .map(ElementApi::text)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
-                        .map(ElementApi::text)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "dispatcher")))
-                        .map(ElementApi::text)
-                        .map(Dispatcher::valueOf)
-                        .collect(ImmutableList.toImmutableList())
-        );
+        this.element = element;
     }
 
-    @Override
-    public Element toXml(QName elementName) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+    public ElementTree.Element getElement() {
+        return element;
+    }
 
-        String ns = elementName.getNamespaceURI();
-        String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+    public Optional<String> idOption() {
+        return element.attributeOption(new QName("id"));
+    }
 
-        return nb.element(
-                nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
-                ImmutableList.<Node>builder()
-                        .add(nb.textElement(nb.name(prefix, "filter-name"), filterName()))
-                        .addAll(
-                                urlPatterns()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "url-pattern"), v))
-                                        .toList()
-                        )
-                        .addAll(
-                                servletNames()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "servlet-name"), v))
-                                        .toList()
-                        )
-                        .addAll(
-                                dispatchers()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "dispatcher"), v.toString()))
-                                        .toList()
-                        )
-                        .build()
-        );
+    public String filterName() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-name")))
+                .findFirst()
+                .orElseThrow()
+                .text();
+    }
+
+    public ImmutableList<String> urlPatterns() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "url-pattern")))
+                .map(ElementApi::text)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<String> servletNames() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
+                .map(ElementApi::text)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<Dispatcher> dispatchers() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "dispatcher")))
+                .map(ElementApi::text)
+                .map(Dispatcher::valueOf)
+                .collect(ImmutableList.toImmutableList());
     }
 }

@@ -17,23 +17,19 @@
 package eu.cdevreeze.yaidom4j.examples.dialects;
 
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Listener;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.Servlet;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.ServletMapping;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.Filter;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.FilterMapping;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet.WebApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
 
-import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -58,20 +54,37 @@ public class ServletDialectTests {
     public void testWebAppParsing() {
         Document doc = parseDocument();
 
-        WebApp webApp = WebApp.parse(doc.documentElement());
+        WebApp webApp = new WebApp(doc.documentElement());
+
+        String ns = webApp.getElement().elementName().getNamespaceURI();
 
         assertEquals(
-                List.of("welcome", "ServletErrorPage", "IncludedServlet", "ForwardedServlet"),
-                webApp.servlets().stream().map(Servlet::name).toList()
+                "Servlet 3.0 application",
+                webApp.getElement().childElementStream(hasName(ns, "display-name")).findFirst().orElseThrow().text()
+        );
+
+        assertEquals(1, webApp.filters().size());
+
+        Filter filter = webApp.filters().get(0);
+
+        assertEquals("ServletMappedDoFilter_Filter", filter.filterName());
+        assertEquals("tests.Filter.DoFilter_Filter", filter.filterClassOption().orElse(""));
+        assertEquals(
+                List.of(
+                        List.of("attribute", "tests.Filter.DoFilter_Filter.SERVLET_MAPPED")
+                ),
+                filter.initParams().stream().map(p -> List.of(p.paramName(), p.paramValue())).toList()
         );
 
         assertEquals(
-                List.of("welcome", "ServletErrorPage", "IncludedServlet", "ForwardedServlet"),
-                webApp.servletMappings().stream().map(ServletMapping::servletName).toList()
-        );
-        assertEquals(
-                List.of("/hello.welcome", "/ServletErrorPage", "/IncludedServlet", "/ForwardedServlet"),
-                webApp.servletMappings().stream().flatMap(m -> m.urlPatterns().stream()).toList()
+                List.of(
+                        List.of("ServletMappedDoFilter_Filter", List.of("/DoFilterTest"), List.of(FilterMapping.Dispatcher.REQUEST)),
+                        List.of("ServletMappedDoFilter_Filter", List.of("/IncludedServlet"), List.of(FilterMapping.Dispatcher.INCLUDE)),
+                        List.of("ServletMappedDoFilter_Filter", List.of("ForwardedServlet"), List.of(FilterMapping.Dispatcher.FORWARD))
+                ),
+                webApp.filterMappings().stream()
+                        .map(mapping -> List.of(mapping.filterName(), mapping.urlPatterns(), mapping.dispatchers()))
+                        .toList()
         );
 
         assertEquals(
@@ -79,19 +92,30 @@ public class ServletDialectTests {
                 webApp.listeners().stream().map(Listener::listenerClass).toList()
         );
 
-        Element newDocElem = webApp.toXml(new QName(NS, "web-app", "w"));
+        assertEquals(
+                List.of(
+                        List.of("welcome", "WelcomeServlet"),
+                        List.of("ServletErrorPage", "tests.Error.ServletErrorPage"),
+                        List.of("IncludedServlet", "tests.Filter.IncludedServlet"),
+                        List.of("ForwardedServlet", "tests.Filter.ForwardedServlet")
+                ),
+                webApp.servlets()
+                        .stream()
+                        .map(servlet -> List.of(servlet.servletName(), servlet.servletClassOption().orElse("")))
+                        .toList()
+        );
 
-        DocumentPrinter docPrinter = DocumentPrinters.instance();
-
-        System.out.println(docPrinter.print(newDocElem));
-
-        Element newDocElem2 = webApp.toXml(new QName(NS, "web-app"));
-
-        System.out.println();
-        System.out.println(docPrinter.print(newDocElem2));
-
-        assertEquals(newDocElem2.toClarkNode(), newDocElem.toClarkNode());
+        assertEquals(
+                List.of(
+                        List.of("welcome", List.of("/hello.welcome")),
+                        List.of("ServletErrorPage", List.of("/ServletErrorPage")),
+                        List.of("IncludedServlet", List.of("/IncludedServlet")),
+                        List.of("ForwardedServlet", List.of("/ForwardedServlet"))
+                ),
+                webApp.servletMappings()
+                        .stream()
+                        .map(servletMapping -> List.of(servletMapping.servletName(), servletMapping.urlPatterns()))
+                        .toList()
+        );
     }
-
-    private static final String NS = Names.JAKARTAEE_NS;
 }

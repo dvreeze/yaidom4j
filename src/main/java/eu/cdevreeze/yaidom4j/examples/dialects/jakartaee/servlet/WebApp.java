@@ -18,146 +18,67 @@ package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
-import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.*;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
-import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Listener;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 
-import javax.xml.namespace.QName;
-import java.util.Optional;
 import java.util.Set;
 
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+
 /**
- * Web app data. Some data in the original XML is lost, in particular most "description groups".
+ * Web app XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public record WebApp(
-        Optional<DescriptionGroup> firstDescriptionGroupOption,
-        ImmutableList<Filter> filters,
-        ImmutableList<FilterMapping> filterMappings,
-        ImmutableList<Listener> listeners,
-        ImmutableList<Servlet> servlets,
-        ImmutableList<ServletMapping> servletMappings
-) implements ConvertibleToXml {
+public final class WebApp {
 
-    public static WebApp parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+    private final ElementTree.Element element;
+
+    public WebApp(ElementTree.Element element) {
+        Preconditions.checkArgument(
+                Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
         Preconditions.checkArgument(element.elementName().getLocalPart().equals("web-app"));
 
-        String ns = element.elementName().getNamespaceURI();
-
-        ImmutableList<AncestryAwareElementApi<?>> descriptionGroupElements = element
-                .childElementStream()
-                .takeWhile(e ->
-                        Set.of(new QName(ns, "description"), new QName(ns, "display-name"), new QName(ns, "icon"))
-                                .contains(e.elementName())
-                )
-                .collect(ImmutableList.toImmutableList());
-
-        Optional<DescriptionGroup> descriptionGroupOption =
-                (descriptionGroupElements.isEmpty()) ?
-                        Optional.empty() :
-                        Optional.of(new DescriptionGroup(
-                                descriptionGroupElements
-                                        .stream()
-                                        .filter(e -> e.elementName().equals(new QName(ns, "description")))
-                                        .map(Description::parse)
-                                        .collect(ImmutableList.toImmutableList()),
-                                descriptionGroupElements
-                                        .stream()
-                                        .filter(e -> e.elementName().equals(new QName(ns, "display-name")))
-                                        .map(ElementApi::text)
-                                        .collect(ImmutableList.toImmutableList()),
-                                descriptionGroupElements
-                                        .stream()
-                                        .filter(e -> e.elementName().equals(new QName(ns, "icon")))
-                                        .map(Icon::parse)
-                                        .collect(ImmutableList.toImmutableList())
-                        ));
-
-        // TODO
-        return new WebApp(
-                descriptionGroupOption,
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter")))
-                        .map(Filter::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "filter-mapping")))
-                        .map(FilterMapping::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "listener")))
-                        .map(Listener::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet")))
-                        .map(Servlet::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-mapping")))
-                        .map(ServletMapping::parse)
-                        .collect(ImmutableList.toImmutableList())
-        );
+        this.element = element;
     }
 
-    @Override
-    public Element toXml(QName elementName) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+    public ElementTree.Element getElement() {
+        return element;
+    }
 
-        String ns = elementName.getNamespaceURI();
-        String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+    public ImmutableList<Servlet> servlets() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "servlet"))
+                .map(Servlet::new)
+                .collect(ImmutableList.toImmutableList());
+    }
 
-        // TODO
-        return nb.element(
-                nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.of(),
-                ImmutableList.<Node>builder()
-                        .addAll(
-                                firstDescriptionGroupOption()
-                                        .stream()
-                                        .flatMap(dg ->
-                                                dg.toXml(new QName(ns, "descriptionGroup", prefix)).childElementStream()
-                                        )
-                                        .toList()
-                        )
-                        .addAll(
-                                filters()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "filter", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                filterMappings()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "filter-mapping", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                listeners()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "listener", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                servlets()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "servlet", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                servletMappings()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "servlet-mapping", prefix)))
-                                        .toList()
-                        )
-                        .build()
-        );
+    public ImmutableList<ServletMapping> servletMappings() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "servlet-mapping"))
+                .map(ServletMapping::new)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<Filter> filters() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "filter"))
+                .map(Filter::new)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<FilterMapping> filterMappings() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "filter-mapping"))
+                .map(FilterMapping::new)
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    public ImmutableList<Listener> listeners() {
+        String ns = element.elementName().getNamespaceURI();
+        return element.childElementStream(hasName(ns, "listener"))
+                .map(Listener::new)
+                .collect(ImmutableList.toImmutableList());
     }
 }

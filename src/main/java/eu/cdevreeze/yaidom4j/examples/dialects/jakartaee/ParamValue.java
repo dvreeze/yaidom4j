@@ -17,76 +17,51 @@
 package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
-import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Param-value data.
+ * Param-value XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public record ParamValue(
-        Optional<String> idOption,
-        ImmutableList<Description> descriptions,
-        String paramName,
-        String paramValue
-) implements ConvertibleToXml {
+public final class ParamValue {
 
-    public static ParamValue parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+    private final ElementTree.Element element;
 
-        String ns = element.elementName().getNamespaceURI();
+    public ParamValue(ElementTree.Element element) {
+        Preconditions.checkArgument(
+                Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
 
-        return new ParamValue(
-                element.attributeOption(new QName("id")),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "description")))
-                        .map(Description::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "param-name")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "param-value")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text()
-        );
+        this.element = element;
     }
 
-    @Override
-    public Element toXml(QName elementName) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+    public ElementTree.Element getElement() {
+        return element;
+    }
 
-        String ns = elementName.getNamespaceURI();
-        String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+    public Optional<String> idOption() {
+        return element.attributeOption(new QName("id"));
+    }
 
-        return nb.element(
-                nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
-                ImmutableList.<Node>builder()
-                        .addAll(
-                                descriptions()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "description", prefix)))
-                                        .toList()
-                        )
-                        .add(nb.textElement(nb.name(prefix, "param-name"), paramName()))
-                        .add(nb.textElement(nb.name(prefix, "param-value"), paramValue()))
-                        .build()
-        );
+    public String paramName() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "param-name")))
+                .findFirst()
+                .orElseThrow()
+                .text();
+    }
+
+    public String paramValue() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "param-value")))
+                .findFirst()
+                .orElseThrow()
+                .text();
     }
 }

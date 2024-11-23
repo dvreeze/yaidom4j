@@ -17,58 +17,42 @@
 package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
-import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Listener data.
+ * Listener XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public record Listener(
-        Optional<String> idOption,
-        String listenerClass
-) implements ConvertibleToXml {
+public final class Listener {
 
-    public static Listener parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+    private final ElementTree.Element element;
 
-        String ns = element.elementName().getNamespaceURI();
+    public Listener(ElementTree.Element element) {
+        Preconditions.checkArgument(
+                Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
 
-        return new Listener(
-                element.attributeOption(new QName("id")),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "listener-class")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text()
-        );
+        this.element = element;
     }
 
-    @Override
-    public Element toXml(QName elementName) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+    public ElementTree.Element getElement() {
+        return element;
+    }
 
-        String ns = elementName.getNamespaceURI();
-        String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+    public Optional<String> idOption() {
+        return element.attributeOption(new QName("id"));
+    }
 
-        return nb.element(
-                nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
-                ImmutableList.<Node>builder()
-                        .add(nb.textElement(nb.name(prefix, "listener-class"), listenerClass()))
-                        .build()
-        );
+    public String listenerClass() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "listener-class")))
+                .findFirst()
+                .orElseThrow()
+                .text();
     }
 }

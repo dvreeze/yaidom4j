@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.examples.dialects;
-
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-
-import javax.xml.namespace.QName;
-
 /**
- * Model object that is convertible to XML.
+ * Very lightweight querying support for several XML dialects. These support class wrap underlying XML "DOM"
+ * elements, for some very common parts of the dialect. This support makes querying for a dialect a bit
+ * friendlier than plain XML querying (using the yaidom4j element query API).
  *
  * @author Chris de Vreeze
  */
-public interface ConvertibleToXml {
-
-    Element toXml(QName elementName);
-}
+package eu.cdevreeze.yaidom4j.examples.dialects;

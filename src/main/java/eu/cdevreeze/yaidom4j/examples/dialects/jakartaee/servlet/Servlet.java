@@ -18,167 +18,62 @@ package eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.servlet;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
-import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
 import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.ParamValue;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.RunAs;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.SecurityRoleRef;
-import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Servlet data.
+ * Servlet XML element wrapper.
  *
  * @author Chris de Vreeze
  */
-public record Servlet(
-        Optional<String> idOption,
-        String name,
-        Optional<String> servletClassOption,
-        Optional<String> jspFileTypeOption,
-        ImmutableList<ParamValue> initParams,
-        Optional<String> loadOnStartupOption,
-        Optional<Boolean> enabledOption,
-        Optional<Boolean> asyncSupportedOption,
-        Optional<RunAs> runAsOption,
-        ImmutableList<SecurityRoleRef> securityRoleRefs,
-        Optional<MultipartConfig> multipartConfigOption
-) implements ConvertibleToXml {
+public final class Servlet {
 
-    public Servlet {
-        Preconditions.checkArgument(servletClassOption.isEmpty() || jspFileTypeOption.isEmpty());
-    }
+    private final ElementTree.Element element;
 
-    public static Servlet parse(AncestryAwareElementApi<?> element) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
+    public Servlet(ElementTree.Element element) {
+        Preconditions.checkArgument(
+                Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(element.elementName().getNamespaceURI()));
         Preconditions.checkArgument(element.elementName().getLocalPart().equals("servlet"));
 
-        String ns = element.elementName().getNamespaceURI();
-
-        return new Servlet(
-                element.attributeOption(new QName("id")),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
-                        .findFirst()
-                        .orElseThrow()
-                        .text(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-class")))
-                        .findFirst()
-                        .map(ElementApi::text),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "jsp-file")))
-                        .findFirst()
-                        .map(ElementApi::text),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "init-param")))
-                        .map(ParamValue::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "load-on-startup")))
-                        .findFirst()
-                        .map(ElementApi::text),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "enabled")))
-                        .findFirst()
-                        .map(e -> Boolean.parseBoolean(e.text())),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "async-supported")))
-                        .findFirst()
-                        .map(e -> Boolean.parseBoolean(e.text())),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "run-as")))
-                        .map(e -> Objects.requireNonNull(RunAs.parse(e)))
-                        .findFirst(),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "security-role-ref")))
-                        .map(SecurityRoleRef::parse)
-                        .collect(ImmutableList.toImmutableList()),
-                element
-                        .childElementStream(e -> e.elementName().equals(new QName(ns, "multipart-config")))
-                        .map(e -> Objects.requireNonNull(MultipartConfig.parse(e)))
-                        .findFirst()
-        );
+        this.element = element;
     }
 
-    @Override
-    public Element toXml(QName elementName) {
-        Preconditions.checkArgument(Set.of(Names.JAKARTAEE_NS, Names.JAVAEE_NS).contains(elementName.getNamespaceURI()));
+    public ElementTree.Element getElement() {
+        return element;
+    }
 
-        String ns = elementName.getNamespaceURI();
-        String prefix = elementName.getPrefix();
-        var nb = NodeBuilder.ConciseApi.empty().resolve(prefix, ns);
+    public Optional<String> idOption() {
+        return element.attributeOption(new QName("id"));
+    }
 
-        return nb.element(
-                nb.name(prefix, elementName.getLocalPart()),
-                ImmutableMap.copyOf(idOption().stream().map(id -> Map.entry("id", id)).toList()),
-                ImmutableList.<Node>builder()
-                        .add(nb.textElement(nb.name(prefix, "servlet-name"), name()))
-                        .addAll(
-                                servletClassOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "servlet-class"), v))
-                                        .toList()
-                        )
-                        .addAll(
-                                jspFileTypeOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "jsp-file"), v))
-                                        .toList()
-                        )
-                        .addAll(
-                                initParams()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "init-param", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                loadOnStartupOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "load-on-startup"), v))
-                                        .toList()
-                        )
-                        .addAll(
-                                enabledOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "enabled"), v.toString()))
-                                        .toList()
-                        )
-                        .addAll(
-                                asyncSupportedOption()
-                                        .stream()
-                                        .map(v -> nb.textElement(nb.name(prefix, "async-supported"), v.toString()))
-                                        .toList()
-                        )
-                        .addAll(
-                                runAsOption()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "run-as", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                securityRoleRefs()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "security-role-ref", prefix)))
-                                        .toList()
-                        )
-                        .addAll(
-                                multipartConfigOption()
-                                        .stream()
-                                        .map(v -> v.toXml(new QName(ns, "multipart-config", prefix)))
-                                        .toList()
-                        )
-                        .build()
-        );
+    public String servletName() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-name")))
+                .findFirst()
+                .orElseThrow()
+                .text();
+    }
+
+    public Optional<String> servletClassOption() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "servlet-class")))
+                .findFirst()
+                .map(ElementApi::text);
+    }
+
+    public ImmutableList<ParamValue> initParams() {
+        String ns = element.elementName().getNamespaceURI();
+        return element
+                .childElementStream(e -> e.elementName().equals(new QName(ns, "init-param")))
+                .map(ParamValue::new)
+                .collect(ImmutableList.toImmutableList());
     }
 }
