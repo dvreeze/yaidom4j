@@ -23,19 +23,21 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
 import eu.cdevreeze.yaidom4j.examples.dialects.ConvertibleToXml;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Listener;
-import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.Names;
+import eu.cdevreeze.yaidom4j.examples.dialects.jakartaee.*;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 
 import javax.xml.namespace.QName;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Web app data.
+ * Web app data. Some data in the original XML is lost, in particular most "description groups".
  *
  * @author Chris de Vreeze
  */
 public record WebApp(
+        Optional<DescriptionGroup> firstDescriptionGroupOption,
         ImmutableList<Filter> filters,
         ImmutableList<FilterMapping> filterMappings,
         ImmutableList<Listener> listeners,
@@ -49,8 +51,38 @@ public record WebApp(
 
         String ns = element.elementName().getNamespaceURI();
 
+        ImmutableList<AncestryAwareElementApi<?>> descriptionGroupElements = element
+                .childElementStream()
+                .takeWhile(e ->
+                        Set.of(new QName(ns, "description"), new QName(ns, "display-name"), new QName(ns, "icon"))
+                                .contains(e.elementName())
+                )
+                .collect(ImmutableList.toImmutableList());
+
+        Optional<DescriptionGroup> descriptionGroupOption =
+                (descriptionGroupElements.isEmpty()) ?
+                        Optional.empty() :
+                        Optional.of(new DescriptionGroup(
+                                descriptionGroupElements
+                                        .stream()
+                                        .filter(e -> e.elementName().equals(new QName(ns, "description")))
+                                        .map(Description::parse)
+                                        .collect(ImmutableList.toImmutableList()),
+                                descriptionGroupElements
+                                        .stream()
+                                        .filter(e -> e.elementName().equals(new QName(ns, "display-name")))
+                                        .map(ElementApi::text)
+                                        .collect(ImmutableList.toImmutableList()),
+                                descriptionGroupElements
+                                        .stream()
+                                        .filter(e -> e.elementName().equals(new QName(ns, "icon")))
+                                        .map(Icon::parse)
+                                        .collect(ImmutableList.toImmutableList())
+                        ));
+
         // TODO
         return new WebApp(
+                descriptionGroupOption,
                 element
                         .childElementStream(e -> e.elementName().equals(new QName(ns, "filter")))
                         .map(Filter::parse)
@@ -87,6 +119,14 @@ public record WebApp(
                 nb.name(prefix, elementName.getLocalPart()),
                 ImmutableMap.of(),
                 ImmutableList.<Node>builder()
+                        .addAll(
+                                firstDescriptionGroupOption()
+                                        .stream()
+                                        .flatMap(dg ->
+                                                dg.toXml(new QName(ns, "descriptionGroup", prefix)).childElementStream()
+                                        )
+                                        .toList()
+                        )
                         .addAll(
                                 filters()
                                         .stream()
