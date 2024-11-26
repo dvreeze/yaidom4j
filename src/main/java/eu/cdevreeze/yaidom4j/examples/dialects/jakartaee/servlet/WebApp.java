@@ -27,7 +27,7 @@ import java.util.Set;
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
 
 /**
- * Web app XML element wrapper.
+ * Web app XML element wrapper. Corresponds to the contents of a web.xml file.
  *
  * @author Chris de Vreeze
  */
