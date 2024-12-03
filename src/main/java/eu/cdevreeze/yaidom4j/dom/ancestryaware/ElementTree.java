@@ -149,7 +149,8 @@ public final class ElementTree {
         @Override
         public boolean equals(Object other) {
             if (other instanceof Element otherElement) {
-                return this.navigationPath.equals(otherElement.navigationPath);
+                return this.navigationPath.equals(otherElement.navigationPath) &&
+                        this.containingElementTree().equals(otherElement.containingElementTree());
             } else {
                 return false;
             }
@@ -157,7 +158,7 @@ public final class ElementTree {
 
         @Override
         public int hashCode() {
-            return navigationPath.hashCode();
+            return List.of(navigationPath, containingElementTree()).hashCode();
         }
 
         @Override
