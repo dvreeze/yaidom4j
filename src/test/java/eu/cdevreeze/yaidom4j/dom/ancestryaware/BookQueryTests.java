@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +41,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
     private static Element rootElement;
 
-    private static final ElementPredicates.Factory epf = new ElementPredicates.Factory();
+    private static final AncestryAwareElementPredicates.Factory epf = new AncestryAwareElementPredicates.Factory();
 
     @BeforeAll
     protected static void parseRootElement() {
@@ -50,7 +50,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
         var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
-        var doc = Document.from(underlyingDoc);
+        var doc = AncestryAwareDocument.from(underlyingDoc);
         rootElement = doc.documentElement();
     }
 
@@ -60,7 +60,7 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
     }
 
     @Override
-    protected ElementPredicates.Factory epf() {
+    protected AncestryAwareElementPredicates.Factory epf() {
         return epf;
     }
 

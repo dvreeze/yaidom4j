@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree.Element;
 import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
 
 import javax.xml.namespace.QName;
@@ -26,73 +25,71 @@ import java.util.function.Predicate;
  * Several element predicates.
  *
  * @author Chris de Vreeze
- * @deprecated Use {@link AncestryAwareElementPredicates} instead.
  */
-@Deprecated(forRemoval = true, since = "0.10.0")
-public class ElementPredicates {
+public class AncestryAwareElementPredicates {
 
-    private ElementPredicates() {
+    private AncestryAwareElementPredicates() {
     }
 
     private static final Factory factory = new Factory();
 
-    public static Predicate<Element> hasName(QName name) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasName(QName name) {
         return factory.hasName(name);
     }
 
-    public static Predicate<Element> hasName(String namespace, String localName) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasName(String namespace, String localName) {
         return factory.hasName(namespace, localName);
     }
 
-    public static Predicate<Element> hasName(String noNamespaceName) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasName(String noNamespaceName) {
         return factory.hasName(noNamespaceName);
     }
 
-    public static Predicate<Element> hasAttributeWithName(QName attrName) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(QName attrName) {
         return factory.hasAttributeWithName(attrName);
     }
 
-    public static Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
         return factory.hasAttributeWithName(attrNamespace, attrLocalName);
     }
 
-    public static Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(String attrNoNamespaceName) {
         return factory.hasAttributeWithName(attrNoNamespaceName);
     }
 
-    public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
         return factory.hasAttributeValue(attrName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
         return factory.hasAttributeValue(attrNamespace, attrLocalName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
         return factory.hasAttributeValue(attrNoNamespaceName, attrValuePredicate);
     }
 
-    public static Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(QName attrName, String attrValue) {
         return factory.hasAttributeValue(attrName, attrValue);
     }
 
-    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
         return factory.hasAttributeValue(attrNamespace, attrLocalName, attrValue);
     }
 
-    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
         return factory.hasAttributeValue(attrNoNamespaceName, attrValue);
     }
 
-    public static Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyText(Predicate<String> textPredicate) {
         return factory.hasOnlyText(textPredicate);
     }
 
-    public static Predicate<Element> hasOnlyText(String text) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyText(String text) {
         return factory.hasOnlyText(text);
     }
 
-    public static Predicate<Element> hasOnlyStrippedText(String text) {
+    public static Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyStrippedText(String text) {
         return factory.hasOnlyStrippedText(text);
     }
 
@@ -100,83 +97,83 @@ public class ElementPredicates {
      * Element predicate factory, implementing a generic interface that is useful for yaidom4j querying code
      * that generalizes over element implementations.
      */
-    public static final class Factory implements ElementPredicateFactoryApi<Element> {
+    public static final class Factory implements ElementPredicateFactoryApi<AncestryAwareNodes.ElementTree.Element> {
 
         private final eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory underlyingFactory =
                 new eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory();
 
         @Override
-        public Predicate<Element> hasName(QName name) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasName(QName name) {
             return e -> underlyingFactory.hasName(name).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasName(String namespace, String localName) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasName(String namespace, String localName) {
             return e -> underlyingFactory.hasName(namespace, localName).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasName(String noNamespaceName) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasName(String noNamespaceName) {
             return e -> underlyingFactory.hasName(noNamespaceName).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeWithName(QName attrName) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(QName attrName) {
             return e -> underlyingFactory.hasAttributeWithName(attrName).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
             return e -> underlyingFactory.hasAttributeWithName(attrNamespace, attrLocalName).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeWithName(String attrNoNamespaceName) {
             return e -> underlyingFactory.hasAttributeWithName(attrNoNamespaceName).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
             return e -> underlyingFactory.hasAttributeValue(attrName, attrValuePredicate).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
             return e -> underlyingFactory.hasAttributeValue(attrNamespace, attrLocalName, attrValuePredicate).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
             return e -> underlyingFactory.hasAttributeValue(attrNoNamespaceName, attrValuePredicate).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(QName attrName, String attrValue) {
             return e -> underlyingFactory.hasAttributeValue(attrName, attrValue).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
             return e -> underlyingFactory.hasAttributeValue(attrNamespace, attrLocalName, attrValue).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
             return e -> underlyingFactory.hasAttributeValue(attrNoNamespaceName, attrValue).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyText(Predicate<String> textPredicate) {
             return e -> underlyingFactory.hasOnlyText(textPredicate).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasOnlyText(String text) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyText(String text) {
             return e -> underlyingFactory.hasOnlyText(text).test(e.underlyingElement());
         }
 
         @Override
-        public Predicate<Element> hasOnlyStrippedText(String text) {
+        public Predicate<AncestryAwareNodes.ElementTree.Element> hasOnlyStrippedText(String text) {
             return e -> underlyingFactory.hasOnlyStrippedText(text).test(e.underlyingElement());
         }
     }

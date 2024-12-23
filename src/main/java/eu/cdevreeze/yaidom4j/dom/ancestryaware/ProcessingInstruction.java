@@ -22,7 +22,9 @@ import java.util.Objects;
  * XML processing instruction node.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.ProcessingInstruction} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public record ProcessingInstruction(String target, String data) implements CanBeDocumentChild {
 
     public ProcessingInstruction {

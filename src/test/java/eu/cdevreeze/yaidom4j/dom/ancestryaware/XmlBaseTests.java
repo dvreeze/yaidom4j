@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -40,28 +40,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class XmlBaseTests {
 
-    private Document parseDocument(String nameOnClasspath) {
+    private AncestryAwareDocument parseDocument(String nameOnClasspath) {
         InputStream inputStream = BookQueryTests.class.getResourceAsStream(nameOnClasspath);
         var underlyingDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream));
-        return Document.from(underlyingDoc);
+        return AncestryAwareDocument.from(underlyingDoc);
     }
 
     @Test
     void testXmlBase() {
-        Document doc = parseDocument("/xml-base-example.xml");
+        AncestryAwareDocument doc = parseDocument("/xml-base-example.xml");
 
         assertEquals(Optional.empty(), doc.uriOption());
 
         assertEquals(Optional.of(URI.create("http://example.org/today/")), doc.documentElement().baseUriOption());
 
-        ElementTree.Element firstParagraph =
+        AncestryAwareNodes.ElementTree.Element firstParagraph =
                 doc.documentElement()
                         .elementStream(hasName("paragraph"))
                         .findFirst()
                         .orElseThrow();
 
-        ElementTree.Element firstSimpleLink =
+        AncestryAwareNodes.ElementTree.Element firstSimpleLink =
                 firstParagraph
                         .childElementStream(hasName("link"))
                         .findFirst()
@@ -78,7 +78,7 @@ class XmlBaseTests {
                         .map(b -> b.resolve(firstSimpleLink.attribute(new QName(xlinkNamespace, "href"))))
         );
 
-        ElementTree.Element olist =
+        AncestryAwareNodes.ElementTree.Element olist =
                 doc.documentElement()
                         .elementStream(hasName("olist"))
                         .findFirst()
@@ -86,7 +86,7 @@ class XmlBaseTests {
 
         assertEquals(Optional.of(URI.create("http://example.org/hotpicks/")), olist.baseUriOption());
 
-        List<ElementTree.Element> remainingSimpleLinks =
+        List<AncestryAwareNodes.ElementTree.Element> remainingSimpleLinks =
                 doc.documentElement()
                         .elementStream(hasName("link"))
                         .toList()
@@ -106,13 +106,13 @@ class XmlBaseTests {
 
     @Test
     void testXmlBaseWithoutEscaping() {
-        Document doc = parseDocument("/rose.xml");
+        AncestryAwareDocument doc = parseDocument("/rose.xml");
 
         assertEquals(Optional.empty(), doc.uriOption());
 
         assertEquals(URI.create("http://example.org/wine/"), doc.documentElement().baseUriOption().orElseThrow());
 
-        ElementTree.Element e2 =
+        AncestryAwareNodes.ElementTree.Element e2 =
                 doc.documentElement()
                         .childElementStream(hasName("e2"))
                         .findFirst()

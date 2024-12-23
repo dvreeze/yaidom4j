@@ -27,49 +27,47 @@ import java.util.Optional;
  * XML document.
  *
  * @author Chris de Vreeze
- * @deprecated Use {@link AncestryAwareDocument} instead.
  */
-@Deprecated(forRemoval = true, since = "0.10.0")
-public record Document(
+public record AncestryAwareDocument(
         Optional<URI> uriOption,
-        ImmutableList<CanBeDocumentChild> children
+        ImmutableList<AncestryAwareNodes.CanBeDocumentChild> children
 ) {
 
-    public Document {
+    public AncestryAwareDocument {
         Objects.requireNonNull(uriOption);
         Objects.requireNonNull(children);
 
         Preconditions.checkArgument(
-                children.stream().filter(n -> n instanceof ElementTree.Element).count() == 1
+                children.stream().filter(n -> n instanceof AncestryAwareNodes.ElementTree.Element).count() == 1
         );
     }
 
-    public ElementTree.Element documentElement() {
-        return children.stream().filter(n -> n instanceof ElementTree.Element).map(n -> (ElementTree.Element) n).findFirst().orElseThrow();
+    public AncestryAwareNodes.ElementTree.Element documentElement() {
+        return children.stream().filter(n -> n instanceof AncestryAwareNodes.ElementTree.Element).map(n -> (AncestryAwareNodes.ElementTree.Element) n).findFirst().orElseThrow();
     }
 
     public eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument() {
         return new eu.cdevreeze.yaidom4j.dom.immutabledom.Document(
                 uriOption,
-                children.stream().map(CanBeDocumentChild::underlyingNode).collect(ImmutableList.toImmutableList())
+                children.stream().map(AncestryAwareNodes.CanBeDocumentChild::underlyingNode).collect(ImmutableList.toImmutableList())
         );
     }
 
-    public Document withUri(URI uri) {
-        return new Document(Optional.of(uri), children);
+    public AncestryAwareDocument withUri(URI uri) {
+        return new AncestryAwareDocument(Optional.of(uri), children);
     }
 
-    public static Document from(eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument) {
-        return new Document(
+    public static AncestryAwareDocument from(eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument) {
+        return new AncestryAwareDocument(
                 underlyingDocument.uriOption(),
                 underlyingDocument.children().stream()
                         .map(n -> {
                             if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
-                                return ElementTree.create(underlyingDocument.uriOption(), e).rootElement();
+                                return AncestryAwareNodes.ElementTree.create(underlyingDocument.uriOption(), e).rootElement();
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
-                                return new Comment(c.value());
+                                return new AncestryAwareNodes.Comment(c.value());
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {
-                                return new ProcessingInstruction(pi.target(), pi.data());
+                                return new AncestryAwareNodes.ProcessingInstruction(pi.target(), pi.data());
                             } else {
                                 throw new RuntimeException("Unsupported document child node");
                             }

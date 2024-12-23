@@ -20,7 +20,9 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
  * Any XML node, whether an element, text node, comment or processing instruction.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.Node} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public sealed interface Node permits CanBeDocumentChild, Text {
 
     boolean isElement();

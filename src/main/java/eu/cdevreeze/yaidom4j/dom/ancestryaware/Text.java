@@ -22,7 +22,9 @@ import java.util.Objects;
  * XML text node.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.Text} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public record Text(String value, boolean isCData) implements Node {
 
     public Text {

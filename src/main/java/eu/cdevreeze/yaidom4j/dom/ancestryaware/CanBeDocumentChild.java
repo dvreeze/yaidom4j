@@ -20,7 +20,9 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
  * Any XML node that can be an immediate document child, whether an element, processing instruction or comment.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.CanBeDocumentChild} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public sealed interface CanBeDocumentChild extends Node permits ElementTree.Element, Comment, ProcessingInstruction {
 
     @Override

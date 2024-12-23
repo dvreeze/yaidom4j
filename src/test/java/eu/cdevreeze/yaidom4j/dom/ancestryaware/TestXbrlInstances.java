@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasName;
 
 /**
  * XBRL instance data model. Incorrect and incomplete, but good enough for the tests it is used in.
@@ -45,14 +45,14 @@ public class TestXbrlInstances {
 
     public interface XbrlInstancePart {
 
-        ElementTree.Element element();
+        AncestryAwareNodes.ElementTree.Element element();
     }
 
     public static final class Identifier implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Identifier(ElementTree.Element element) {
+        public Identifier(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "identifier")));
             Preconditions.checkArgument(
                     element.parentElementOption().stream().anyMatch(hasName(XBRLI_NS, "entity"))
@@ -61,7 +61,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -76,9 +76,9 @@ public class TestXbrlInstances {
 
     public static final class ExplicitMember implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public ExplicitMember(ElementTree.Element element) {
+        public ExplicitMember(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLDI_NS, "explicitMember")));
             Preconditions.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
@@ -87,7 +87,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -104,9 +104,9 @@ public class TestXbrlInstances {
 
     public static final class Segment implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Segment(ElementTree.Element element) {
+        public Segment(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "segment")));
             Preconditions.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
@@ -115,7 +115,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -128,9 +128,9 @@ public class TestXbrlInstances {
 
     public static final class Entity implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Entity(ElementTree.Element element) {
+        public Entity(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "entity")));
             Preconditions.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
@@ -139,7 +139,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -159,7 +159,7 @@ public class TestXbrlInstances {
 
     public interface Period extends XbrlInstancePart {
 
-        static Period fromElement(ElementTree.Element element) {
+        static Period fromElement(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
             Preconditions.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
@@ -175,16 +175,16 @@ public class TestXbrlInstances {
 
     public static final class InstantPeriod implements Period {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public InstantPeriod(ElementTree.Element element) {
+        public InstantPeriod(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
             Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "instant")).findAny().isPresent());
             this.element = element;
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -200,9 +200,9 @@ public class TestXbrlInstances {
 
     public static final class StartEndDatePeriod implements Period {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public StartEndDatePeriod(ElementTree.Element element) {
+        public StartEndDatePeriod(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
             Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "startDate")).findAny().isPresent());
             Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "endDate")).findAny().isPresent());
@@ -210,7 +210,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -235,15 +235,15 @@ public class TestXbrlInstances {
 
     public static final class Context implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Context(ElementTree.Element element) {
+        public Context(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "context")));
             this.element = element;
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -268,9 +268,9 @@ public class TestXbrlInstances {
 
     public static final class Measure implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Measure(ElementTree.Element element) {
+        public Measure(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "measure")));
             Preconditions.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "unit"))
@@ -279,7 +279,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -291,15 +291,15 @@ public class TestXbrlInstances {
 
     public static final class Unit implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public Unit(ElementTree.Element element) {
+        public Unit(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "unit")));
             this.element = element;
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -319,9 +319,9 @@ public class TestXbrlInstances {
 
     public static final class ItemFact implements Fact {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
 
-        public ItemFact(ElementTree.Element element) {
+        public ItemFact(AncestryAwareNodes.ElementTree.Element element) {
             Preconditions.checkArgument(!Set.of(XBRLI_NS, LINK_NS).contains(element.name().getNamespaceURI()));
             Preconditions.checkArgument(
                     element.ancestorElementStream()
@@ -335,7 +335,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -362,12 +362,12 @@ public class TestXbrlInstances {
 
     public static final class XbrlInstance implements XbrlInstancePart {
 
-        private final ElementTree.Element element;
+        private final AncestryAwareNodes.ElementTree.Element element;
         private final ImmutableMap<String, Context> contexts;
         private final ImmutableMap<String, Unit> units;
 
         private XbrlInstance(
-                ElementTree.Element element,
+                AncestryAwareNodes.ElementTree.Element element,
                 ImmutableMap<String, Context> contexts,
                 ImmutableMap<String, Unit> units
         ) {
@@ -378,7 +378,7 @@ public class TestXbrlInstances {
         }
 
         @Override
-        public ElementTree.Element element() {
+        public AncestryAwareNodes.ElementTree.Element element() {
             return element;
         }
 
@@ -404,7 +404,7 @@ public class TestXbrlInstances {
                     .collect(ImmutableList.toImmutableList());
         }
 
-        public static XbrlInstance from(ElementTree.Element element) {
+        public static XbrlInstance from(AncestryAwareNodes.ElementTree.Element element) {
             ImmutableMap<String, Context> contexts =
                     element.childElementStream(hasName(XBRLI_NS, "context"))
                             .map(Context::new)

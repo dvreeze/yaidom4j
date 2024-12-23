@@ -18,8 +18,8 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.Document;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementTree;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareDocument;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import net.sf.saxon.BasicTransformerFactory;
@@ -49,7 +49,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.ElementPredicates.*;
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.*;
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon.SaxonElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -66,9 +66,9 @@ class SaxonEquivalenceTests {
     private static final String NS = "http://bookstore";
 
     private static Processor processor;
-    private static ElementTree.Element rootElement;
+    private static AncestryAwareNodes.ElementTree.Element rootElement;
 
-    private static Document parseUsingSaxon(String classpathUri, Processor processor) throws SaxonApiException, TransformerException {
+    private static AncestryAwareDocument parseUsingSaxon(String classpathUri, Processor processor) throws SaxonApiException, TransformerException {
         DocumentBuilder docBuilder = processor.newDocumentBuilder();
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream(classpathUri);
@@ -82,10 +82,10 @@ class SaxonEquivalenceTests {
         tf.transform(xdmDoc.asSource(), new SAXResult(saxHandler));
 
         var underlyingDoc = saxHandler.resultingDocument().removeInterElementWhitespace();
-        return Document.from(underlyingDoc);
+        return AncestryAwareDocument.from(underlyingDoc);
     }
 
-    private static XdmNode convertToSaxon(Document doc, Processor processor) {
+    private static XdmNode convertToSaxon(AncestryAwareDocument doc, Processor processor) {
         // Copied and adapted from similar code in yaidom. I could not possibly have come up with this myself.
 
         PipelineConfiguration pipe = processor.getUnderlyingConfiguration().makePipelineConfiguration();
@@ -103,7 +103,7 @@ class SaxonEquivalenceTests {
         return new XdmNode(tinyBuilder.getTree().getRootNode());
     }
 
-    private ElementTree.Element rootElement() {
+    private AncestryAwareNodes.ElementTree.Element rootElement() {
         return rootElement;
     }
 
@@ -116,20 +116,20 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryNamespacesOfAllElements() {
         var namespaces = rootElement().elementStream()
-                .map(ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.ElementTree.Element::elementName)
                 .map(QName::getNamespaceURI)
                 .collect(Collectors.toSet());
 
         assertEquals(Set.of(NS), namespaces);
 
         var namespaces2 = rootElement().descendantElementOrSelfStream()
-                .map(ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.ElementTree.Element::elementName)
                 .map(QName::getNamespaceURI)
                 .collect(Collectors.toSet());
 
         assertEquals(namespaces, namespaces2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var namespaces3 = xdmDoc
@@ -143,7 +143,7 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryNamesOfAllElements() {
         var names = rootElement().elementStream()
-                .map(ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.ElementTree.Element::elementName)
                 .distinct()
                 .toList();
 
@@ -160,13 +160,13 @@ class SaxonEquivalenceTests {
         ), names);
 
         var names2 = rootElement().descendantElementOrSelfStream()
-                .map(ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.ElementTree.Element::elementName)
                 .distinct()
                 .toList();
 
         assertEquals(names, names2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var names3 = xdmDoc
@@ -182,7 +182,7 @@ class SaxonEquivalenceTests {
     void testQueryPrefixOfRootElement() {
         assertEquals("books", rootElement().elementName().getPrefix());
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         assertEquals(
@@ -199,13 +199,13 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryPrefixOfDescendantElements() {
         var prefixes = rootElement().descendantElementStream()
-                .map(ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.ElementTree.Element::elementName)
                 .map(QName::getPrefix)
                 .collect(Collectors.toSet());
 
         assertEquals(Set.of(""), prefixes);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var prefixes2 = xdmDoc
@@ -223,7 +223,7 @@ class SaxonEquivalenceTests {
     void testQueryChildElementNames() {
         Map<QName, Long> childElemCounts =
                 rootElement().childElementStream()
-                        .collect(Collectors.groupingBy(ElementTree.Element::elementName, Collectors.counting()));
+                        .collect(Collectors.groupingBy(AncestryAwareNodes.ElementTree.Element::elementName, Collectors.counting()));
 
         assertEquals(
                 Map.of(new QName(NS, "Book"), 4L, new QName(NS, "Magazine"), 4L),
@@ -234,11 +234,11 @@ class SaxonEquivalenceTests {
                 rootElement().topmostDescendantElementOrSelfStream(e ->
                                 hasName(NS, "Book").test(e) || hasName(NS, "Magazine").test(e)
                         )
-                        .collect(Collectors.groupingBy(ElementTree.Element::elementName, Collectors.counting()));
+                        .collect(Collectors.groupingBy(AncestryAwareNodes.ElementTree.Element::elementName, Collectors.counting()));
 
         assertEquals(childElemCounts, childElemCounts2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Map<QName, Long> childElemCounts3 = xdmDoc
@@ -275,7 +275,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(magazineMonths, magazineMonths2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineMonths3 = xdmDoc
@@ -293,7 +293,7 @@ class SaxonEquivalenceTests {
     void testQueryMagazineTitles() {
         List<String> magazineTitles = rootElement().childElementStream(hasName(NS, "Magazine"))
                 .flatMap(magazineElem -> magazineElem.childElementStream(hasName(NS, "Title")))
-                .map(ElementTree.Element::text)
+                .map(AncestryAwareNodes.ElementTree.Element::text)
                 .distinct()
                 .toList();
 
@@ -308,13 +308,13 @@ class SaxonEquivalenceTests {
 
         List<String> magazineTitles2 = rootElement().elementStream(hasName(NS, "Magazine"))
                 .flatMap(magazineElem -> magazineElem.elementStream(hasName(NS, "Title")))
-                .map(ElementTree.Element::text)
+                .map(AncestryAwareNodes.ElementTree.Element::text)
                 .distinct()
                 .toList();
 
         assertEquals(magazineTitles, magazineTitles2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineTitles3 = xdmDoc
@@ -334,14 +334,14 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryBooksCoauthoredByJenniferWidom() {
-        Predicate<ElementTree.Element> authorIsJenniferWidom = authorElem ->
+        Predicate<AncestryAwareNodes.ElementTree.Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
                                 .anyMatch(hasOnlyText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
                                 .anyMatch(hasOnlyText("Widom"));
 
-        Predicate<ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
+        Predicate<AncestryAwareNodes.ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
                         bookElem.descendantElementStream(hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
@@ -350,7 +350,7 @@ class SaxonEquivalenceTests {
                 rootElement().childElementStream(hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
-                        .map(ElementTree.Element::text)
+                        .map(AncestryAwareNodes.ElementTree.Element::text)
                         .collect(Collectors.toSet());
 
         assertEquals(
@@ -366,12 +366,12 @@ class SaxonEquivalenceTests {
                 rootElement().descendantElementOrSelfStream(hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .flatMap(e -> e.descendantElementOrSelfStream(hasName(NS, "Title")))
-                        .map(ElementTree.Element::text)
+                        .map(AncestryAwareNodes.ElementTree.Element::text)
                         .collect(Collectors.toSet());
 
         assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -413,17 +413,17 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryAuthorNames() {
-        Function<ElementTree.Element, String> getAuthorName = authorElem -> {
+        Function<AncestryAwareNodes.ElementTree.Element, String> getAuthorName = authorElem -> {
             Preconditions.checkArgument(hasName(NS, "Author").test(authorElem));
 
             String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
                     .findFirst()
-                    .map(ElementTree.Element::text)
+                    .map(AncestryAwareNodes.ElementTree.Element::text)
                     .orElse("");
 
             String lastName = authorElem.childElementStream(hasName(NS, "Last_Name"))
                     .findFirst()
-                    .map(ElementTree.Element::text)
+                    .map(AncestryAwareNodes.ElementTree.Element::text)
                     .orElse("");
 
             return String.format("%s %s", firstName, lastName).strip();
@@ -446,7 +446,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(authorNames, authorNames2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Function<XdmNode, String> getAuthorNameInSaxon = authorElem -> {
@@ -483,14 +483,14 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryBookIsbnsCoauthoredByJenniferWidom() {
-        Predicate<ElementTree.Element> authorIsJenniferWidom = authorElem ->
+        Predicate<AncestryAwareNodes.ElementTree.Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
                                 .anyMatch(hasOnlyStrippedText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
                                 .anyMatch(hasOnlyStrippedText("Widom"));
 
-        Predicate<ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
+        Predicate<AncestryAwareNodes.ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
                         bookElem.descendantElementStream(hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
@@ -514,7 +514,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(bookIsbnsCoauthoredByJenniferWidom, bookIsbnsCoauthoredByJenniferWidom2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -556,7 +556,7 @@ class SaxonEquivalenceTests {
                 .childElementStream(hasName(NS, "Magazine"))
                 .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
-                .map(ElementTree.Element::text)
+                .map(AncestryAwareNodes.ElementTree.Element::text)
                 .toList();
 
         assertEquals(
@@ -568,12 +568,12 @@ class SaxonEquivalenceTests {
                 .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
                 .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.elementStream(hasName(NS, "Title")))
-                .map(ElementTree.Element::text)
+                .map(AncestryAwareNodes.ElementTree.Element::text)
                 .toList();
 
         assertEquals(februaryMagazineTitles, februaryMagazineTitles2);
 
-        Document doc = new Document(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> februaryMagazineTitles3 = xdmDoc

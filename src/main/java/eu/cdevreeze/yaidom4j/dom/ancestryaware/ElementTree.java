@@ -33,7 +33,9 @@ import java.util.stream.Stream;
  * Element tree.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.ElementTree} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public final class ElementTree {
 
     private static final QName XML_BASE_QNAME = new QName(XMLConstants.XML_NS_URI, "base");

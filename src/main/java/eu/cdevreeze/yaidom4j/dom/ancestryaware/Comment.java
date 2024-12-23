@@ -22,7 +22,9 @@ import java.util.Objects;
  * XML comment node.
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link AncestryAwareNodes.Comment} instead.
  */
+@Deprecated(forRemoval = true, since = "0.10.0")
 public record Comment(String value) implements CanBeDocumentChild {
 
     public Comment {
