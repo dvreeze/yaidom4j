@@ -55,13 +55,13 @@ class XmlBaseTests {
 
         assertEquals(Optional.of(URI.create("http://example.org/today/")), doc.documentElement().baseUriOption());
 
-        AncestryAwareNodes.ElementTree.Element firstParagraph =
+        AncestryAwareNodes.Element firstParagraph =
                 doc.documentElement()
                         .elementStream(hasName("paragraph"))
                         .findFirst()
                         .orElseThrow();
 
-        AncestryAwareNodes.ElementTree.Element firstSimpleLink =
+        AncestryAwareNodes.Element firstSimpleLink =
                 firstParagraph
                         .childElementStream(hasName("link"))
                         .findFirst()
@@ -78,7 +78,7 @@ class XmlBaseTests {
                         .map(b -> b.resolve(firstSimpleLink.attribute(new QName(xlinkNamespace, "href"))))
         );
 
-        AncestryAwareNodes.ElementTree.Element olist =
+        AncestryAwareNodes.Element olist =
                 doc.documentElement()
                         .elementStream(hasName("olist"))
                         .findFirst()
@@ -86,7 +86,7 @@ class XmlBaseTests {
 
         assertEquals(Optional.of(URI.create("http://example.org/hotpicks/")), olist.baseUriOption());
 
-        List<AncestryAwareNodes.ElementTree.Element> remainingSimpleLinks =
+        List<AncestryAwareNodes.Element> remainingSimpleLinks =
                 doc.documentElement()
                         .elementStream(hasName("link"))
                         .toList()
@@ -112,7 +112,7 @@ class XmlBaseTests {
 
         assertEquals(URI.create("http://example.org/wine/"), doc.documentElement().baseUriOption().orElseThrow());
 
-        AncestryAwareNodes.ElementTree.Element e2 =
+        AncestryAwareNodes.Element e2 =
                 doc.documentElement()
                         .childElementStream(hasName("e2"))
                         .findFirst()

@@ -66,7 +66,7 @@ class SaxonEquivalenceTests {
     private static final String NS = "http://bookstore";
 
     private static Processor processor;
-    private static AncestryAwareNodes.ElementTree.Element rootElement;
+    private static AncestryAwareNodes.Element rootElement;
 
     private static AncestryAwareDocument parseUsingSaxon(String classpathUri, Processor processor) throws SaxonApiException, TransformerException {
         DocumentBuilder docBuilder = processor.newDocumentBuilder();
@@ -103,7 +103,7 @@ class SaxonEquivalenceTests {
         return new XdmNode(tinyBuilder.getTree().getRootNode());
     }
 
-    private AncestryAwareNodes.ElementTree.Element rootElement() {
+    private AncestryAwareNodes.Element rootElement() {
         return rootElement;
     }
 
@@ -116,14 +116,14 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryNamespacesOfAllElements() {
         var namespaces = rootElement().elementStream()
-                .map(AncestryAwareNodes.ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.Element::elementName)
                 .map(QName::getNamespaceURI)
                 .collect(Collectors.toSet());
 
         assertEquals(Set.of(NS), namespaces);
 
         var namespaces2 = rootElement().descendantElementOrSelfStream()
-                .map(AncestryAwareNodes.ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.Element::elementName)
                 .map(QName::getNamespaceURI)
                 .collect(Collectors.toSet());
 
@@ -143,7 +143,7 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryNamesOfAllElements() {
         var names = rootElement().elementStream()
-                .map(AncestryAwareNodes.ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.Element::elementName)
                 .distinct()
                 .toList();
 
@@ -160,7 +160,7 @@ class SaxonEquivalenceTests {
         ), names);
 
         var names2 = rootElement().descendantElementOrSelfStream()
-                .map(AncestryAwareNodes.ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.Element::elementName)
                 .distinct()
                 .toList();
 
@@ -199,7 +199,7 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryPrefixOfDescendantElements() {
         var prefixes = rootElement().descendantElementStream()
-                .map(AncestryAwareNodes.ElementTree.Element::elementName)
+                .map(AncestryAwareNodes.Element::elementName)
                 .map(QName::getPrefix)
                 .collect(Collectors.toSet());
 
@@ -223,7 +223,7 @@ class SaxonEquivalenceTests {
     void testQueryChildElementNames() {
         Map<QName, Long> childElemCounts =
                 rootElement().childElementStream()
-                        .collect(Collectors.groupingBy(AncestryAwareNodes.ElementTree.Element::elementName, Collectors.counting()));
+                        .collect(Collectors.groupingBy(AncestryAwareNodes.Element::elementName, Collectors.counting()));
 
         assertEquals(
                 Map.of(new QName(NS, "Book"), 4L, new QName(NS, "Magazine"), 4L),
@@ -234,7 +234,7 @@ class SaxonEquivalenceTests {
                 rootElement().topmostDescendantElementOrSelfStream(e ->
                                 hasName(NS, "Book").test(e) || hasName(NS, "Magazine").test(e)
                         )
-                        .collect(Collectors.groupingBy(AncestryAwareNodes.ElementTree.Element::elementName, Collectors.counting()));
+                        .collect(Collectors.groupingBy(AncestryAwareNodes.Element::elementName, Collectors.counting()));
 
         assertEquals(childElemCounts, childElemCounts2);
 
@@ -293,7 +293,7 @@ class SaxonEquivalenceTests {
     void testQueryMagazineTitles() {
         List<String> magazineTitles = rootElement().childElementStream(hasName(NS, "Magazine"))
                 .flatMap(magazineElem -> magazineElem.childElementStream(hasName(NS, "Title")))
-                .map(AncestryAwareNodes.ElementTree.Element::text)
+                .map(AncestryAwareNodes.Element::text)
                 .distinct()
                 .toList();
 
@@ -308,7 +308,7 @@ class SaxonEquivalenceTests {
 
         List<String> magazineTitles2 = rootElement().elementStream(hasName(NS, "Magazine"))
                 .flatMap(magazineElem -> magazineElem.elementStream(hasName(NS, "Title")))
-                .map(AncestryAwareNodes.ElementTree.Element::text)
+                .map(AncestryAwareNodes.Element::text)
                 .distinct()
                 .toList();
 
@@ -334,14 +334,14 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryBooksCoauthoredByJenniferWidom() {
-        Predicate<AncestryAwareNodes.ElementTree.Element> authorIsJenniferWidom = authorElem ->
+        Predicate<AncestryAwareNodes.Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
                                 .anyMatch(hasOnlyText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
                                 .anyMatch(hasOnlyText("Widom"));
 
-        Predicate<AncestryAwareNodes.ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
+        Predicate<AncestryAwareNodes.Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
                         bookElem.descendantElementStream(hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
@@ -350,7 +350,7 @@ class SaxonEquivalenceTests {
                 rootElement().childElementStream(hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
-                        .map(AncestryAwareNodes.ElementTree.Element::text)
+                        .map(AncestryAwareNodes.Element::text)
                         .collect(Collectors.toSet());
 
         assertEquals(
@@ -366,7 +366,7 @@ class SaxonEquivalenceTests {
                 rootElement().descendantElementOrSelfStream(hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .flatMap(e -> e.descendantElementOrSelfStream(hasName(NS, "Title")))
-                        .map(AncestryAwareNodes.ElementTree.Element::text)
+                        .map(AncestryAwareNodes.Element::text)
                         .collect(Collectors.toSet());
 
         assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom2);
@@ -413,17 +413,17 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryAuthorNames() {
-        Function<AncestryAwareNodes.ElementTree.Element, String> getAuthorName = authorElem -> {
+        Function<AncestryAwareNodes.Element, String> getAuthorName = authorElem -> {
             Preconditions.checkArgument(hasName(NS, "Author").test(authorElem));
 
             String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
                     .findFirst()
-                    .map(AncestryAwareNodes.ElementTree.Element::text)
+                    .map(AncestryAwareNodes.Element::text)
                     .orElse("");
 
             String lastName = authorElem.childElementStream(hasName(NS, "Last_Name"))
                     .findFirst()
-                    .map(AncestryAwareNodes.ElementTree.Element::text)
+                    .map(AncestryAwareNodes.Element::text)
                     .orElse("");
 
             return String.format("%s %s", firstName, lastName).strip();
@@ -483,14 +483,14 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryBookIsbnsCoauthoredByJenniferWidom() {
-        Predicate<AncestryAwareNodes.ElementTree.Element> authorIsJenniferWidom = authorElem ->
+        Predicate<AncestryAwareNodes.Element> authorIsJenniferWidom = authorElem ->
                 hasName(NS, "Author").test(authorElem) &&
                         authorElem.childElementStream(hasName(NS, "First_Name"))
                                 .anyMatch(hasOnlyStrippedText("Jennifer")) &&
                         authorElem.childElementStream(hasName(NS, "Last_Name"))
                                 .anyMatch(hasOnlyStrippedText("Widom"));
 
-        Predicate<AncestryAwareNodes.ElementTree.Element> bookCowrittenByJenniferWidom = bookElem ->
+        Predicate<AncestryAwareNodes.Element> bookCowrittenByJenniferWidom = bookElem ->
                 hasName(NS, "Book").test(bookElem) &&
                         bookElem.descendantElementStream(hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
@@ -556,7 +556,7 @@ class SaxonEquivalenceTests {
                 .childElementStream(hasName(NS, "Magazine"))
                 .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
-                .map(AncestryAwareNodes.ElementTree.Element::text)
+                .map(AncestryAwareNodes.Element::text)
                 .toList();
 
         assertEquals(
@@ -568,7 +568,7 @@ class SaxonEquivalenceTests {
                 .topmostDescendantElementOrSelfStream(hasName(NS, "Magazine"))
                 .filter(hasAttributeValue("Month", "February"))
                 .flatMap(e -> e.elementStream(hasName(NS, "Title")))
-                .map(AncestryAwareNodes.ElementTree.Element::text)
+                .map(AncestryAwareNodes.Element::text)
                 .toList();
 
         assertEquals(februaryMagazineTitles, februaryMagazineTitles2);

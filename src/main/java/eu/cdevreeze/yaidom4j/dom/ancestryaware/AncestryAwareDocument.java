@@ -38,12 +38,12 @@ public record AncestryAwareDocument(
         Objects.requireNonNull(children);
 
         Preconditions.checkArgument(
-                children.stream().filter(n -> n instanceof AncestryAwareNodes.ElementTree.Element).count() == 1
+                children.stream().filter(n -> n instanceof AncestryAwareNodes.Element).count() == 1
         );
     }
 
-    public AncestryAwareNodes.ElementTree.Element documentElement() {
-        return children.stream().filter(n -> n instanceof AncestryAwareNodes.ElementTree.Element).map(n -> (AncestryAwareNodes.ElementTree.Element) n).findFirst().orElseThrow();
+    public AncestryAwareNodes.Element documentElement() {
+        return children.stream().filter(n -> n instanceof AncestryAwareNodes.Element).map(n -> (AncestryAwareNodes.Element) n).findFirst().orElseThrow();
     }
 
     public eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument() {

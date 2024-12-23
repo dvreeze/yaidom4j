@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
-import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.ElementTree.Element;
+import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
