@@ -94,7 +94,9 @@ public class DocumentParsers {
 
         public Document parse(URI inputFile) {
             try {
-                return parse(new InputSource(inputFile.toURL().openStream()));
+                InputSource is = new InputSource(inputFile.toURL().openStream());
+                is.setSystemId(inputFile.toString());
+                return parse(is);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
