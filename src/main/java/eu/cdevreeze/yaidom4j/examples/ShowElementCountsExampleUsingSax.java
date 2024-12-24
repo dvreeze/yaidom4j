@@ -56,7 +56,7 @@ public class ShowElementCountsExampleUsingSax {
 
         SaxParsers.parse(inputFile, saxHandler);
 
-        Document doc = saxHandler.resultingDocument().withUri(inputFile).removeInterElementWhitespace();
+        Document doc = saxHandler.resultingDocument().removeInterElementWhitespace();
 
         logTime("Parsed \"immutable DOM\" document " + doc.uriOption().map(Object::toString).orElse(""));
 

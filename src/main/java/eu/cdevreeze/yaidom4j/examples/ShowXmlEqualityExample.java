@@ -41,6 +41,8 @@ public class ShowXmlEqualityExample {
         Document doc2 = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(inputFile2);
 
+        System.out.printf("Parsed documents %s and %s%n", doc1.uriOption().orElseThrow(), doc2.uriOption().orElseThrow());
+
         boolean areEqual = doc1.documentElement().toClarkNode().equals(doc2.documentElement().toClarkNode());
 
         System.out.printf("Both documents are equal (as \"Clark nodes\"): %b%n", areEqual);

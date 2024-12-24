@@ -53,7 +53,6 @@ public class ShowElementCountsExample {
         logTime("Going to parse document ...");
 
         var domDoc = DocumentBuilders.parse(inputFile);
-        domDoc.setDocumentURI(inputFile.toString());
 
         logTime("Parsed document " + domDoc.getDocumentURI());
 
