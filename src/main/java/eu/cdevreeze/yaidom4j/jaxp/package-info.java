@@ -15,7 +15,9 @@
  */
 
 /**
- * JAXP utilities, used by yaidom4j but not depending on it.
+ * JAXP utilities, used by yaidom4j but not depending on it. The utilities in this package can even be used
+ * without using anything else in yaidom4j, e.g. to create secure JAXP factory objects, or to make XML parsing
+ * and serialization slightly easier.
  * <p>
  * This package depends on no other packages in yaidom4j.
  *
