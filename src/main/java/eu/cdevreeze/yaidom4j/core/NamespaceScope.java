@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  * The empty namespace prefix is used to represent the default namespace. The namespace strings themselves
  * must not be empty strings.
  * <p>
- * This class does not implement interface NamespaceContext, because class NamespaceScope does not consider
- * "namespace declaration attributes" to be attributes.
+ * This class does not implement interface {@link javax.xml.namespace.NamespaceContext}, because class {@link NamespaceScope}
+ * does not consider "namespace declaration attributes" to be attributes.
  *
  * @author Chris de Vreeze
  */
@@ -73,7 +73,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
 
     /**
      * Returns true if this namespace scope and the parameter QName agree on the prefix-namespace
-     * binding, for an element name.
+     * binding, given the parameter QName is an element name.
      * <p>
      * If the QName has a non-empty prefix but no namespace, an exception is thrown.
      */
@@ -87,7 +87,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
 
     /**
      * Returns true if this namespace scope without default namespace and the parameter QName agree
-     * on the prefix-namespace binding, for an attribute name.
+     * on the prefix-namespace binding, given the parameter QName is an attribute name.
      * <p>
      * If the QName has a non-empty prefix but no namespace, an exception is thrown.
      */
@@ -145,10 +145,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     /**
-     * Returns the result of applying the overloaded "resolve" function for all prefix-namespace pairs
+     * Returns the result of applying the overloaded {@link NamespaceScope#resolve} function for all prefix-namespace pairs
      * in the parameter prefix-namespace map. This may include namespace un-declarations, but mind the
      * possibility that the result is not valid in XML 1.0 (in which case first calling method
-     * "withoutPrefixedNamespaceUndeclarations" on the parameter mapping helps to make the result valid in
+     * {@link NamespaceScope#withoutPrefixedNamespaceUndeclarations} on the parameter mapping helps to make the result valid in
      * XML 1.0).
      */
     public NamespaceScope resolve(ImmutableMap<String, String> prefixNamespaceMap) {
@@ -233,10 +233,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     /**
      * Resolves the given syntactic QName when used in "text content", given this namespace scope.
      * <p>
-     * With "text content" attribute values and element content text is meant. Usually an XML Schema
+     * In this context "text content" refers to attribute values or element content text. Usually an XML Schema
      * is used to recognize and make sense of such content.
      * <p>
-     * This method delegates to "resolveSyntacticElementQName".
+     * This method delegates to {@link NamespaceScope#resolveSyntacticElementQName}.
      */
     public QName resolveSyntacticQNameInContent(String syntacticQName) {
         return resolveSyntacticElementQName(syntacticQName);
@@ -251,8 +251,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     // TODO Other functional update methods and query methods
 
     /**
-     * Removes namespace un-declarations that are not allowed in XML 1.0. In XML 1.0 only the default
-     * namespace can be un-declared. Hence, this method makes the namespace (un-)declarations valid in XML 1.0.
+     * Removes namespace un-declarations for non-empty prefixes. They are not allowed in XML 1.0. In XML 1.0 only the
+     * default namespace can be un-declared. Hence, this method makes the namespace (un-)declarations valid in XML 1.0.
      */
     public static ImmutableMap<String, String> withoutPrefixedNamespaceUndeclarations(
             ImmutableMap<String, String> prefixNamespaceMap
@@ -268,7 +268,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
 
     /**
      * Factory method that removes the "xml" prefix from the parameter prefix-namespace map, if any
-     * (but nonetheless checking that prefix "xml" refers to the correct namespace).
+     * (but nonetheless checking that prefix "xml" refers to the correct namespace). Hence, this factory
+     * method is more lenient than the constructor, which does not allow the "xml" prefix to be passed.
      */
     public static NamespaceScope from(ImmutableMap<String, String> inScopeNamespaces) {
         Preconditions.checkArgument(

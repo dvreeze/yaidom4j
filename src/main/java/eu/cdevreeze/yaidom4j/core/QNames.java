@@ -29,6 +29,10 @@ public class QNames {
     private QNames() {
     }
 
+    /**
+     * {@link QName} correctness check, returning true if either the prefix is empty, or the namespace
+     * URI is non-empty.
+     */
     public static boolean hasNamespaceIfPrefixNonEmpty(QName name) {
         return name.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX) || !name.getNamespaceURI().equals(XMLConstants.NULL_NS_URI);
     }
