@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  * Element tree.
  *
  * @author Chris de Vreeze
- * @deprecated Use {@link AncestryAwareNodes.ElementTree} instead.
+ * @deprecated Without replacement.
  */
 @Deprecated(forRemoval = true, since = "0.10.0")
 public final class ElementTree {

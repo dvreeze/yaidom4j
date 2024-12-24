@@ -69,7 +69,7 @@ public class AncestryAwareNodes {
      *
      * @author Chris de Vreeze
      */
-    public static final class ElementTree {
+    private static final class ElementTree {
 
         private final Optional<URI> docUriOption;
         private final ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
@@ -82,11 +82,11 @@ public class AncestryAwareNodes {
             this.elementMap = Objects.requireNonNull(elementMap);
         }
 
-        public Element rootElement() {
+        Element rootElement() {
             return new Element(this, docUriOption, ImmutableList.of());
         }
 
-        public static ElementTree create(
+        static ElementTree create(
                 Optional<URI> docUriOption,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
         ) {
@@ -123,7 +123,7 @@ public class AncestryAwareNodes {
     }
 
     /**
-     * Element in an element tree.
+     * Element node.
      *
      * @author Chris de Vreeze
      */
@@ -141,10 +141,6 @@ public class AncestryAwareNodes {
 
         public ImmutableList<Integer> navigationPath() {
             return navigationPath;
-        }
-
-        public ElementTree containingElementTree() {
-            return elementTree;
         }
 
         @Override
@@ -226,7 +222,7 @@ public class AncestryAwareNodes {
         public boolean equals(Object other) {
             if (other instanceof Element otherElement) {
                 return this.navigationPath.equals(otherElement.navigationPath) &&
-                        this.containingElementTree().equals(otherElement.containingElementTree());
+                        this.elementTree.equals(otherElement.elementTree);
             } else {
                 return false;
             }
@@ -234,7 +230,7 @@ public class AncestryAwareNodes {
 
         @Override
         public int hashCode() {
-            return List.of(navigationPath, containingElementTree()).hashCode();
+            return List.of(navigationPath, elementTree).hashCode();
         }
 
         @Override
@@ -380,6 +376,16 @@ public class AncestryAwareNodes {
             Objects.requireNonNull(predicate);
 
             return childElementStream().flatMap(e -> e.topmostDescendantElementOrSelfStream(predicate));
+        }
+
+        /**
+         * Factory method for Element creation
+         */
+        public static Element create(
+                Optional<URI> docUriOption,
+                eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
+        ) {
+            return ElementTree.create(docUriOption, underlyingRootElement).rootElement();
         }
 
         private static Optional<ImmutableList<Integer>> parentPathOption(ImmutableList<Integer> path) {
