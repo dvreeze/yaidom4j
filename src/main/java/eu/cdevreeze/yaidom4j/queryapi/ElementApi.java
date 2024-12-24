@@ -56,17 +56,17 @@ public interface ElementApi<E extends ElementApi<E>> {
     Optional<NamespaceScope> namespaceScopeOption();
 
     /**
-     * Alias of descendantElementOrSelfStream
+     * Alias of {@link ElementApi#descendantElementOrSelfStream()}
      */
     Stream<E> elementStream();
 
     /**
-     * Alias of descendantElementOrSelfStream
+     * Alias of {@link ElementApi#descendantElementOrSelfStream(Predicate)}
      */
     Stream<E> elementStream(Predicate<? super E> predicate);
 
     /**
-     * Alias of topmostDescendantElementOrSelfStream
+     * Alias of {@link ElementApi#topmostDescendantElementOrSelfStream(Predicate)}
      */
     Stream<E> topmostElementStream(Predicate<? super E> predicate);
 

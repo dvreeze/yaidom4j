@@ -65,7 +65,7 @@ public interface ElementPredicateFactoryApi<E> {
     Predicate<E> hasOnlyText(String text);
 
     /**
-     * Returns the same as method "hasText" (taking a String parameter), except that the
+     * Returns the same as method {@link ElementPredicateFactoryApi#hasOnlyText(String)}, except that the
      * concatenated text of the child text nodes is stripped before comparing it with the
      * parameter text.
      */

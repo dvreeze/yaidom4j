@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Ancestry-aware element query API, extending ElementApi.
+ * Ancestry-aware element query API, extending {@link ElementApi}.
  *
  * @param <E> The specific element type itself
  * @author Chris de Vreeze

@@ -39,7 +39,7 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     E withChildren(ImmutableList<N> newChildren);
 
     /**
-     * Calls method "withChildren" to functionally add one child node at the end
+     * Calls method {@link TransformableElementApi#withChildren} to functionally add one child node at the end
      */
     E plusChild(N newChild);
 
@@ -49,7 +49,7 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     E withAttributes(ImmutableMap<QName, String> newAttributes);
 
     /**
-     * Calls method "withAttributes" to functionally add or update one attribute
+     * Calls method {@link TransformableElementApi#withAttributes} to functionally add or update one attribute
      */
     E plusAttribute(QName attrName, String attrValue);
 
@@ -70,8 +70,8 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     E transformChildElementsToNodeLists(Function<E, List<N>> f);
 
     /**
-     * Like "transformChildElementsToNodeLists", but mapping each element to just one element instead
-     * of a node list. Hence, this method leaves the number of child nodes the same, and child nodes other
+     * Like {@link TransformableElementApi#transformChildElementsToNodeLists}, but mapping each element to just one element
+     * instead of a node list. Hence, this method leaves the number of child nodes the same, and child nodes other
      * than element nodes also stay the same.
      * <p>
      * Often this method is useful in combination with a recursive top-down transformation.

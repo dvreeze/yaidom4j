@@ -55,6 +55,13 @@ public final class ElementTree {
         return new Element(docUriOption, ImmutableList.of());
     }
 
+    /**
+     * Element node.
+     *
+     * @author Chris de Vreeze
+     * @deprecated Use {@link AncestryAwareNodes.Element} instead.
+     */
+    @Deprecated(forRemoval = true, since = "0.10.0")
     public final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
 
         private final Optional<URI> docUriOption;
