@@ -88,7 +88,9 @@ public class SaxParsers {
 
     public static void parse(URI inputFile, DefaultHandler saxHandler, SAXParserFactory saxParserFactory) {
         try {
-            parse(new InputSource(inputFile.toURL().openStream()), saxHandler, saxParserFactory);
+            InputSource is = new InputSource(inputFile.toURL().openStream());
+            is.setSystemId(inputFile.toString());
+            parse(is, saxHandler, saxParserFactory);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

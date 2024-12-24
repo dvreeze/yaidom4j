@@ -22,12 +22,14 @@ import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ import java.util.stream.Stream;
  */
 public class ImmutableDomProducingSaxHandler extends DefaultHandler implements LexicalHandler {
 
+    private Optional<URI> docUriOption = Optional.empty();
+
     private final List<InternalNodes.InternalCanBeDocumentChild> docChildren = new ArrayList<>();
 
     private InternalNodes.InternalElement currentRootElement;
@@ -53,6 +57,13 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
     private boolean currentlyInCData = false;
 
     private final NamespaceSupport namespaceSupport = new NamespaceSupport();
+
+    @Override
+    public void setDocumentLocator(Locator locator) {
+        Optional.ofNullable(locator.getSystemId()).ifPresent(u -> {
+            docUriOption = Optional.of(URI.create(u));
+        });
+    }
 
     @Override
     public void startDocument() {
@@ -219,9 +230,8 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
     }
 
     public Document resultingDocument() {
-        // TODO Document URI
         return new Document(
-                Optional.empty(),
+                docUriOption,
                 docChildren.stream()
                         .map(InternalNodes.InternalCanBeDocumentChild::toNode)
                         .collect(ImmutableList.toImmutableList())

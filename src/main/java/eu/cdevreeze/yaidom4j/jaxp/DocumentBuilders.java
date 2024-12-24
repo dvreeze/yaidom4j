@@ -89,7 +89,9 @@ public class DocumentBuilders {
 
     public static Document parse(URI inputFile, DocumentBuilderFactory documentBuilderFactory) {
         try {
-            return parse(new InputSource(inputFile.toURL().openStream()), documentBuilderFactory);
+            InputSource is = new InputSource(inputFile.toURL().openStream());
+            is.setSystemId(inputFile.toString());
+            return parse(is, documentBuilderFactory);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
