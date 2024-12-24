@@ -16,13 +16,16 @@
 
 /**
  * Concrete yaidom4j element implementations, implementing the abstract query API and/or transformation
- * API in packages "queryapi" and "transformationapi", respectively.
+ * API in packages {@link eu.cdevreeze.yaidom4j.queryapi} and {@link eu.cdevreeze.yaidom4j.transformationapi}, respectively.
  * <p>
- * This package and its subpackages directly depend on the "queryapi", "transformationapi" and "jaxp" Java packages.
+ * This package and its subpackages directly depend on the {@link eu.cdevreeze.yaidom4j.queryapi},
+ * {@link eu.cdevreeze.yaidom4j.transformationapi} and {@link eu.cdevreeze.yaidom4j.jaxp} Java packages.
  * <p>
- * The "clark" subpackage does not depend on the other "dom" subpackages. The "immutabledom" subpackage
- * depends on the "clark" subpackage, due to conversions to "Clark nodes". Similarly, the "ancestryaware"
- * subpackage depends both on the "clark" and "immutabledom" subpackages.
+ * The {@link eu.cdevreeze.yaidom4j.dom.clark} subpackage does not depend on the other {@link eu.cdevreeze.yaidom4j.dom}
+ * subpackages. The {@link eu.cdevreeze.yaidom4j.dom.immutabledom} subpackage depends on the
+ * {@link eu.cdevreeze.yaidom4j.dom.clark} subpackage, due to conversions to "Clark nodes". Similarly, the
+ * {@link eu.cdevreeze.yaidom4j.dom.ancestryaware} subpackage depends both on the {@link eu.cdevreeze.yaidom4j.dom.clark}
+ * and {@link eu.cdevreeze.yaidom4j.dom.immutabledom} subpackages.
  *
  * @author Chris de Vreeze
  */

@@ -17,7 +17,8 @@
 /**
  * Purely abstract element transformation API, implemented by node implementations in other packages.
  * <p>
- * This package depends on no other packages in yaidom4j, with the possible exception of the "core" Java package.
+ * This package depends on no other packages in yaidom4j, with the possible exception of the {@link eu.cdevreeze.yaidom4j.core}
+ * Java package.
  *
  * @author Chris de Vreeze
  */

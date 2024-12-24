@@ -17,7 +17,7 @@
 /**
  * Purely abstract element query API, implemented by node implementations in other packages.
  * <p>
- * This package depends on no other packages in yaidom4j, except for the "core" Java package.
+ * This package depends on no other packages in yaidom4j, except for the {@link eu.cdevreeze.yaidom4j.core} Java package.
  *
  * @author Chris de Vreeze
  */
