@@ -33,7 +33,7 @@ import java.net.URI;
  * Utility to create W3C DOM parsers and use them.
  * <p>
  * The parsed DOM tree can be converted to an immutable DOM tree native to yaidom4j, using class
- * "JaxpDomToImmutableDomConverter".
+ * {@link eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter}.
  *
  * @author Chris de Vreeze
  */
@@ -43,7 +43,7 @@ public class DocumentBuilders {
     }
 
     /**
-     * Creates a namespace-aware non-(DTD-)validating DocumentBuilderFactory.
+     * Creates a namespace-aware non-(DTD-)validating {@link DocumentBuilderFactory}.
      * The factory is aware of XXE attacks and tries to protect against them.
      */
     public static DocumentBuilderFactory newNonValidatingDocumentBuilderFactory() {
@@ -65,7 +65,7 @@ public class DocumentBuilders {
     }
 
     /**
-     * Creates a DocumentBuilderFactory that uses the passed Schema for schema validation.
+     * Creates a {@link DocumentBuilderFactory} that uses the passed {@link Schema} for schema validation.
      * The factory is aware of XXE attacks and tries to protect against them.
      */
     public static DocumentBuilderFactory newDocumentBuilderFactory(Schema schema) {

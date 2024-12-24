@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 /**
  * Producer of SAX events, taking an immutable DOM as input.
  * <p>
- * This class can be used to serialize an immutable DOM document, by passing a TransformerHandler
- * as the parameter ContentHandler in the constructor, followed by calling method "processDocument"
+ * This class can be used to serialize an immutable DOM document, by passing a {@link javax.xml.transform.sax.TransformerHandler}
+ * as the parameter {@link ContentHandler} in the constructor, followed by calling method {@link ImmutableDomConsumingSaxEventGenerator#processDocument}
  * on the created instance of this class.
  *
  * @author Chris de Vreeze

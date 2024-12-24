@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Replaces the default namespace by a prefix for that namespace, but only if the same default
  * namespace is used throughout the XML. It is assumed that default namespace is no longer needed
- * afterward, once we use a prefix for it. Note that this script must be tweaked if XML edits are
+ * afterward, once we use a prefix for it. Note that "this script must be tweaked" if XML edits are
  * needed for attribute values or element text.
  *
  * @author Chris de Vreeze

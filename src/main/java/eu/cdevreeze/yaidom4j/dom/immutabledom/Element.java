@@ -207,9 +207,6 @@ public record Element(
         );
     }
 
-    /**
-     * Calls method "withChildren" to functionally add one child node at the end
-     */
     @Override
     public Element plusChild(Node newChild) {
         return withChildren(
@@ -232,9 +229,6 @@ public record Element(
         );
     }
 
-    /**
-     * Calls method "withAttributes" to functionally add or update one attribute
-     */
     @Override
     public Element plusAttribute(QName attrName, String attrValue) {
         return withAttributes(

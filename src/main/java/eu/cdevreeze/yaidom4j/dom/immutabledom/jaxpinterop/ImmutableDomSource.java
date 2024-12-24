@@ -29,15 +29,15 @@ import javax.xml.transform.sax.TransformerHandler;
 import java.util.Objects;
 
 /**
- * Immutable DOM document as Source. Inspired by class JAXBSource.
+ * Immutable DOM document as {@link javax.xml.transform.Source}. Inspired by class JAXBSource.
  * <p>
- * This class extends class SAXSource, which is an implementation detail, but needed in order to plug into
- * the Transformer API. SAXSource methods such as setXMLReader and setInputSource should never be called.
- * Methods of the contained XMLReader should not be called either.
+ * This class extends class {@link SAXSource}, which is an implementation detail, but needed in order to plug into
+ * the Transformer API. {@link SAXSource} methods such as {@link SAXSource#setXMLReader} and {@link SAXSource#setInputSource}
+ * should never be called. Methods of the contained {@link XMLReader} should not be called either.
  * <p>
- * Code using this "SAXSource" and expecting it to return proper XMLReader objects will fail, so in those
- * cases this class is not useful. For example, this class may be of little use when offering a Source
- * to factory method "SchemaFactory.newSchema()" (using the JAXP stack in the JDK).
+ * Code using this "SAXSource" and expecting it to return proper {@link XMLReader} objects will fail, so in those
+ * cases this class is not useful. For example, this class may be of little use when offering a {@link javax.xml.transform.Source}
+ * to factory method {@link javax.xml.validation.SchemaFactory#newSchema()} (using the JAXP stack in the JDK).
  *
  * @author Chris de Vreeze
  */

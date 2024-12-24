@@ -32,7 +32,8 @@ import java.net.URI;
 /**
  * Utility to create SAX parsers and use them.
  * <p>
- * If the SAX handler is an "ImmutableDomProducingSaxHandler", the SAX parser creates an immutable DOM tree.
+ * If the SAX handler is an {@link eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler},
+ * the SAX parser creates an immutable DOM tree.
  *
  * @author Chris de Vreeze
  */
@@ -42,7 +43,7 @@ public class SaxParsers {
     }
 
     /**
-     * Creates a namespace-aware non-(DTD-)validating SAXParserFactory.
+     * Creates a namespace-aware non-(DTD-)validating {@link SAXParserFactory}.
      * The factory is aware of XXE attacks and tries to protect against them.
      */
     public static SAXParserFactory newNonValidatingSaxParserFactory() {
@@ -63,7 +64,7 @@ public class SaxParsers {
     }
 
     /**
-     * Creates a SAXParserFactory that uses the passed Schema for schema validation.
+     * Creates a {@link SAXParserFactory} that uses the passed {@link Schema} for schema validation.
      * The factory is aware of XXE attacks and tries to protect against them.
      */
     public static SAXParserFactory newSaxParserFactory(Schema schema) {

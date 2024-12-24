@@ -23,7 +23,7 @@ import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
 
 /**
- * Utility to create SchemaFactory instances.
+ * Utility to create {@link SchemaFactory} instances.
  *
  * @author Chris de Vreeze
  */
@@ -33,7 +33,7 @@ public class SchemaFactories {
     }
 
     /**
-     * Creates a SchemaFactory. The factory is aware of XXE attacks and tries to protect against them.
+     * Creates a {@link SchemaFactory}. The factory is aware of XXE attacks and tries to protect against them.
      */
     public static SchemaFactory newSchemaFactory() {
         SchemaFactory sf = SchemaFactory.newDefaultInstance();

@@ -27,11 +27,11 @@ import javax.xml.transform.sax.TransformerHandler;
 import java.util.function.Consumer;
 
 /**
- * Utility to create TransformerHandler instances.
+ * Utility to create {@link TransformerHandler} instances.
  * <p>
- * The created TransformerHandler instances can be used with class "ImmutableDomConsumingSaxEventGenerator"
- * to output an immutable DOM tree. The idea is to first set a Result on the TransformerHandler (which
- * is a SAX handler), and then to generate SAX events on that TransformerHandler.
+ * The created {@link TransformerHandler} instances can be used with class {@link eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator}
+ * to output an immutable DOM tree. The idea is to first set a {@link javax.xml.transform.Result} on the {@link TransformerHandler} (which
+ * is a SAX handler), and then to generate SAX events on that {@link TransformerHandler}.
  *
  * @author Chris de Vreeze
  */
@@ -41,7 +41,7 @@ public class TransformerHandlers {
     }
 
     /**
-     * Creates a SAXTransformerFactory. The factory is aware of XXE attacks and tries to protect against them.
+     * Creates a {@link SAXTransformerFactory}. The factory is aware of XXE attacks and tries to protect against them.
      */
     public static SAXTransformerFactory newSaxTransformerFactory() {
         TransformerFactory tf = TransformerFactory.newDefaultInstance();

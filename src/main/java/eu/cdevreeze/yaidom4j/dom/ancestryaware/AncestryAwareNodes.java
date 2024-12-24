@@ -123,7 +123,7 @@ public class AncestryAwareNodes {
     }
 
     /**
-     * Element node.
+     * XML element node.
      *
      * @author Chris de Vreeze
      */
@@ -379,7 +379,7 @@ public class AncestryAwareNodes {
         }
 
         /**
-         * Factory method for Element creation
+         * Factory method for {@link Element} creation
          */
         public static Element create(
                 Optional<URI> docUriOption,

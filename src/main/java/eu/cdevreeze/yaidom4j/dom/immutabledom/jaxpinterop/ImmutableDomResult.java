@@ -21,10 +21,11 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import javax.xml.transform.sax.SAXResult;
 
 /**
- * Immutable DOM document producing Result.
+ * Immutable DOM document producing {@link javax.xml.transform.Result}.
  * <p>
- * This class extends class SAXResult, which is an implementation detail, but needed in order to plug into
- * the Transformer API. SAXResult methods such as setHandler and setLexicalHandler should never be called.
+ * This class extends class {@link SAXResult}, which is an implementation detail, but needed in order to plug into
+ * the Transformer API. {@link SAXResult} methods such as {@link SAXResult#setHandler} and {@link SAXResult#setLexicalHandler}
+ * should never be called.
  *
  * @author Chris de Vreeze
  */

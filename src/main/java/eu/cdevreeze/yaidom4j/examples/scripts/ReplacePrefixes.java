@@ -39,7 +39,7 @@ import java.util.Optional;
  * elements may refer to the same namespace. After all, a namespace can be referred to by more than
  * one namespace prefix.
  * <p>
- * Requirements/limitations of programs ReplacePrefix and ReplaceDefaultNamespaceByPrefix also apply
+ * Requirements/limitations of programs {@link ReplacePrefix} and {@link ReplaceDefaultNamespaceByPrefix} also apply
  * to this program.
  *
  * @author Chris de Vreeze
