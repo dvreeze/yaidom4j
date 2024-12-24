@@ -99,7 +99,11 @@ public class ElementPredicates {
     /**
      * Element predicate factory, implementing a generic interface that is useful for yaidom4j querying code
      * that generalizes over element implementations.
+     *
+     * @author Chris de Vreeze
+     * @deprecated Use {@link AncestryAwareElementPredicates.Factory} instead.
      */
+    @Deprecated(forRemoval = true, since = "0.10.0")
     public static final class Factory implements ElementPredicateFactoryApi<Element> {
 
         private final eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.Factory underlyingFactory =
