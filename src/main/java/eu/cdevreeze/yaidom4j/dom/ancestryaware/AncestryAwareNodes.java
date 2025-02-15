@@ -139,6 +139,12 @@ public class AncestryAwareNodes {
             this.navigationPath = Objects.requireNonNull(navigationPath);
         }
 
+        /**
+         * Returns the element node navigation path relative to the root element. That is,
+         * the root element itself has an empty list as element navigation path, its child elements
+         * each have a single-entry navigation path, with the single entry ranging from 0 (inclusive)
+         * to the number of child element nodes (exclusive), and so on.
+         */
         public ImmutableList<Integer> navigationPath() {
             return navigationPath;
         }

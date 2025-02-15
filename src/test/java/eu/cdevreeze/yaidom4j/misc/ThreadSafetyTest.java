@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
@@ -30,15 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -54,30 +55,48 @@ class ThreadSafetyTest {
 
     private static final Logger logger = Logger.getGlobal();
 
-    private record IndexedElement(Element element, int index) {
-
-        IndexedElement withElement(Element newElement) {
-            return new IndexedElement(newElement, index());
-        }
-    }
+    private static final int NUMBER_OF_UPDATES = 20;
 
     @Test
-    void testThreadSafety() {
+    void testThreadSafety() throws ExecutionException, InterruptedException {
         Element startElement = createElement();
-        Element updatedElement = updateElement(startElement);
+        final AtomicReference<Element> elementHolder = new AtomicReference<>(startElement);
+
+        ImmutableList<ImmutableList<Integer>> elemNavigationPaths =
+                AncestryAwareNodes.Element.create(Optional.empty(), startElement)
+                        .descendantElementOrSelfStream()
+                        .map(AncestryAwareNodes.Element::navigationPath)
+                        .collect(ImmutableList.toImmutableList());
+
+        List<CompletableFuture<Void>> updateFutures =
+                IntStream.range(0, NUMBER_OF_UPDATES)
+                        .mapToObj(e -> CompletableFuture.runAsync(() -> {
+                            logger.info("Current thread (start): " + Thread.currentThread());
+
+                            updateAllElements(elementHolder, elemNavigationPaths);
+                        }))
+                        .toList();
+
+        CompletableFuture<Void> resultFuture = CompletableFuture.allOf(
+                updateFutures.toArray(CompletableFuture[]::new)
+        );
+
+        resultFuture.get();
+
+        Element endElement = elementHolder.get();
 
         DocumentPrinter docPrinter = DocumentPrinters.instance();
 
-        // Thread-safe, without any memory visibility problems; all numbers are now 2 after the update
+        // Thread-safe, without any memory visibility problems; all numbers are now NUMBER_OF_UPDATES + 1 after the update
         assertEquals(
-                Set.of(2),
-                updatedElement.descendantElementOrSelfStream()
+                Set.of(NUMBER_OF_UPDATES + 1),
+                endElement.descendantElementOrSelfStream()
                         .filter(e -> !e.text().isBlank())
                         .map(e -> Integer.parseInt(e.text()))
                         .collect(Collectors.toSet())
         );
 
-        System.out.println(docPrinter.print(updatedElement));
+        System.out.println(docPrinter.print(endElement));
     }
 
     private Element createElement() {
@@ -86,66 +105,89 @@ class ThreadSafetyTest {
         return docParser.parse(new InputSource(is)).documentElement();
     }
 
-    private Element updateElement(Element element) {
-        AtomicInteger index = new AtomicInteger(0);
-
-        List<CompletableFuture<IndexedElement>> indexedChildElementFutures =
-                element.childElementStream()
-                        .map(e -> createUpdateElementFuture(new IndexedElement(e, index.getAndIncrement())))
-                        .toList();
-
-        List<IndexedElement> indexedChildElements = indexedChildElementFutures
-                .stream()
-                .map(f -> {
-                    try {
-                        return f.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new RuntimeException(e);
+    private void updateAllElements(
+            AtomicReference<Element> elementHolder,
+            ImmutableList<ImmutableList<Integer>> elementNavigationPaths
+    ) {
+        updateAllElements(
+                elementHolder,
+                elementNavigationPaths,
+                elem -> {
+                    if (elem.text().isBlank()) {
+                        return elem;
+                    } else {
+                        logger.fine("Current thread (updating element): " + Thread.currentThread());
+                        return elem.withChildren(
+                                ImmutableList.of(
+                                        new Text(
+                                                String.valueOf(Integer.parseInt(elem.text()) + 1),
+                                                false
+                                        )
+                                )
+                        );
                     }
-                })
-                .toList();
-
-        ImmutableList<Node> childElementNodes = indexedChildElements.stream()
-                .sorted(Comparator.comparingInt(IndexedElement::index))
-                .map(IndexedElement::element)
-                .collect(ImmutableList.toImmutableList());
-
-        return element.withChildren(childElementNodes);
+                }
+        );
     }
 
-    private CompletableFuture<IndexedElement> createUpdateElementFuture(IndexedElement indexedElement) {
-        return CompletableFuture.supplyAsync(() -> indexedElement.withElement(
-                doUpdateElement(indexedElement.element())
-        ));
+    private void updateAllElements(
+            AtomicReference<Element> elementHolder,
+            ImmutableList<ImmutableList<Integer>> elementNavigationPaths,
+            UnaryOperator<Element> f
+    ) {
+        if (!elementNavigationPaths.isEmpty()) {
+            ImmutableList<Integer> lastPath = elementNavigationPaths.get(elementNavigationPaths.size() - 1);
+            ImmutableList<ImmutableList<Integer>> pathsButLast =
+                    elementNavigationPaths.subList(0, elementNavigationPaths.size() - 1);
+
+            elementHolder.updateAndGet(e ->
+                    updateElement(e, lastPath, f)
+            );
+            // Recursive call
+            updateAllElements(elementHolder, pathsButLast, f);
+        }
     }
 
-    private Element doUpdateElement(Element element) {
-        logger.info("Current thread (start): " + Thread.currentThread());
+    private Element updateElement(
+            Element element,
+            ImmutableList<Integer> elementNavigationPath,
+            UnaryOperator<Element> f) {
+        // Very expensive recursive function
 
-        Element resultElement = element.transformDescendantElementsOrSelf(elem -> {
-            ImmutableList<Node> newChildren = elem.children()
-                    .stream()
-                    .map(ch -> {
-                        // Somewhat expensive computation, to trigger parallelism
+        if (elementNavigationPath.isEmpty()) {
+            return f.apply(element);
+        } else {
+            int firstNavigationPathEntry = elementNavigationPath.get(0);
 
-                        boolean propertyHolds = AncestryAwareNodes.Element.create(Optional.empty(), element)
-                                .descendantElementOrSelfStream()
-                                .anyMatch(e -> !(ch instanceof Element che) || e.underlyingElement().name().equals(che.name()));
-                        Preconditions.checkArgument(propertyHolds);
+            AtomicInteger elemIndex = new AtomicInteger(0);
+            return element.withChildren(
+                    element.children()
+                            .stream()
+                            .map(ch -> {
+                                if (ch instanceof Element che) {
+                                    int currElemIndex = elemIndex.getAndIncrement();
 
-                        if ((ch instanceof Text text) && !text.value().isBlank()) {
-                            return new Text(String.valueOf(Integer.parseInt(text.value()) + 1), false);
-                        } else {
-                            return ch;
-                        }
-                    })
-                    .collect(ImmutableList.toImmutableList());
+                                    if (currElemIndex == firstNavigationPathEntry) {
+                                        // Recursive call
+                                        return updateElement(
+                                                che,
+                                                removeFirstEntry(elementNavigationPath),
+                                                f
+                                        );
+                                    } else {
+                                        return che;
+                                    }
+                                } else {
+                                    return ch;
+                                }
+                            })
+                            .collect(ImmutableList.toImmutableList())
+            );
+        }
+    }
 
-            return elem.withChildren(newChildren);
-        });
-
-        logger.info("Current thread (finish): " + Thread.currentThread());
-
-        return resultElement;
+    private static ImmutableList<Integer> removeFirstEntry(ImmutableList<Integer> elementNavigationPath) {
+        Preconditions.checkArgument(!elementNavigationPath.isEmpty());
+        return elementNavigationPath.subList(1, elementNavigationPath.size());
     }
 }
