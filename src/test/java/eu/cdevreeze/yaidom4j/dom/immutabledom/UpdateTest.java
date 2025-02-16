@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.Test;
@@ -114,6 +115,25 @@ class UpdateTest {
         );
 
         assertEquals(updatedElement1.toClarkNode(), updatedElement2.toClarkNode());
+
+        ClarkNodes.Element updatedClarkElement2 = element.toClarkNode().updateElement(
+                IntStream.range(0, (int) element.childElementStream().count())
+                        .mapToObj(i -> ElementNavigationPath.empty().appendEntry(i))
+                        .collect(Collectors.toSet()),
+                (path, elem) -> {
+                    if (path.entries().size() == 1) {
+                        return new ClarkNodes.Element(
+                                new QName("onesChild"),
+                                elem.attributes(),
+                                elem.children()
+                        );
+                    } else {
+                        return elem;
+                    }
+                }
+        );
+
+        assertEquals(updatedElement2.toClarkNode(), updatedClarkElement2);
     }
 
     @Test
