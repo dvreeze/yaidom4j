@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.misc;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
@@ -70,10 +71,10 @@ class ThreadSafetyTest {
     void testThreadSafety() throws ExecutionException, InterruptedException {
         final AtomicReference<Element> elementHolder = new AtomicReference<>(createElement());
 
-        ImmutableList<ImmutableList<Integer>> elemNavigationPaths =
+        ImmutableList<ElementNavigationPath> elemNavigationPaths =
                 AncestryAwareNodes.Element.create(Optional.empty(), elementHolder.get())
                         .descendantElementOrSelfStream()
-                        .map(AncestryAwareNodes.Element::navigationPath)
+                        .map(AncestryAwareNodes.Element::elementNavigationPath)
                         .collect(ImmutableList.toImmutableList());
 
         List<CompletableFuture<Void>> updateFutures =
@@ -115,7 +116,7 @@ class ThreadSafetyTest {
 
     private void updateAllElements(
             AtomicReference<Element> elementHolder,
-            ImmutableList<ImmutableList<Integer>> elementNavigationPaths
+            ImmutableList<ElementNavigationPath> elementNavigationPaths
     ) {
         updateAllElements(
                 elementHolder,
@@ -140,12 +141,12 @@ class ThreadSafetyTest {
 
     private void updateAllElements(
             AtomicReference<Element> elementHolder,
-            ImmutableList<ImmutableList<Integer>> elementNavigationPaths,
+            ImmutableList<ElementNavigationPath> elementNavigationPaths,
             UnaryOperator<Element> f
     ) {
         if (!elementNavigationPaths.isEmpty()) {
-            ImmutableList<Integer> lastPath = elementNavigationPaths.get(elementNavigationPaths.size() - 1);
-            ImmutableList<ImmutableList<Integer>> pathsButLast =
+            ElementNavigationPath lastPath = elementNavigationPaths.get(elementNavigationPaths.size() - 1);
+            ImmutableList<ElementNavigationPath> pathsButLast =
                     elementNavigationPaths.subList(0, elementNavigationPaths.size() - 1);
 
             elementHolder.updateAndGet(e ->
@@ -158,14 +159,14 @@ class ThreadSafetyTest {
 
     private Element updateElement(
             Element element,
-            ImmutableList<Integer> elementNavigationPath,
+            ElementNavigationPath elementNavigationPath,
             UnaryOperator<Element> f) {
         // Very expensive recursive function
 
         if (elementNavigationPath.isEmpty()) {
             return f.apply(element);
         } else {
-            int firstNavigationPathEntry = elementNavigationPath.get(0);
+            int firstNavigationPathEntry = elementNavigationPath.getEntry(0);
 
             AtomicInteger elemIndex = new AtomicInteger(0);
             return element.withChildren(
@@ -177,7 +178,7 @@ class ThreadSafetyTest {
 
                                     if (currElemIndex == firstNavigationPathEntry) {
                                         // Recursive call
-                                        return updateElement(che, removeFirstEntry(elementNavigationPath), f);
+                                        return updateElement(che, elementNavigationPath.withoutFirstEntry(), f);
                                     } else {
                                         return che;
                                     }

@@ -19,15 +19,15 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
 import javax.xml.namespace.QName;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -279,6 +279,39 @@ public record Element(
         return transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
     }
 
+    @Override
+    public Element updateElement(
+            Set<ElementNavigationPath> elementNavigationPaths,
+            BiFunction<ElementNavigationPath, Element, Element> f
+    ) {
+        Map<Integer, Set<ElementNavigationPath>> pathsByFirstChildElemIndex =
+                elementNavigationPaths
+                        .stream()
+                        .filter(p -> !p.isEmpty())
+                        .collect(Collectors.groupingBy(
+                                p -> p.getEntry(0),
+                                Collectors.toSet()
+                        ));
+
+        // Recursive
+        Element descendantUpdateResult =
+                updateChildElements(
+                        pathsByFirstChildElemIndex.keySet(),
+                        (childElemIdx, che) ->
+                                che.updateElement(
+                                        pathsByFirstChildElemIndex.get(childElemIdx)
+                                                .stream()
+                                                .map(ElementNavigationPath::withoutFirstEntry)
+                                                .collect(Collectors.toSet()),
+                                        (path, elem) -> f.apply(path.prependEntry(childElemIdx), elem)
+                                )
+                );
+
+        return elementNavigationPaths.contains(ElementNavigationPath.empty()) ?
+                f.apply(ElementNavigationPath.empty(), descendantUpdateResult) :
+                descendantUpdateResult;
+    }
+
     // Custom element transformations
 
     @Override
@@ -324,5 +357,34 @@ public record Element(
         // Recursion
         return new Element(name(), attributes(), newScope, children())
                 .transformChildElements(che -> che.notUndeclaringPrefixes(newScope));
+    }
+
+    // Private methods
+
+    private Element updateChildElements(Set<Integer> childElementIndices, BiFunction<Integer, Element, Element> f) {
+        if (childElementIndices.isEmpty()) {
+            return this;
+        } else {
+            int childNodeIndex = 0;
+            int childElementIndex = 0;
+            List<Node> updatedChildren = new ArrayList<>();
+
+            while (childNodeIndex < this.children().size()) {
+                if (this.children().get(childNodeIndex) instanceof Element elem) {
+                    if (childElementIndices.contains(childElementIndex)) {
+                        updatedChildren.add(f.apply(childElementIndex, elem));
+                    } else {
+                        updatedChildren.add(elem);
+                    }
+                    childElementIndex += 1;
+                } else {
+                    updatedChildren.add(this.children().get(childNodeIndex));
+                }
+                childNodeIndex += 1;
+            }
+            Preconditions.checkArgument(updatedChildren.size() == this.children().size());
+
+            return this.withChildren(ImmutableList.copyOf(updatedChildren));
+        }
     }
 }

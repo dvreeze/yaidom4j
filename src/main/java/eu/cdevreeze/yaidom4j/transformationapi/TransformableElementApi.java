@@ -18,9 +18,12 @@ package eu.cdevreeze.yaidom4j.transformationapi;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 
 import javax.xml.namespace.QName;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -87,6 +90,17 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
      * Bottom-up transformation of all descendant elements.
      */
     E transformDescendantElements(UnaryOperator<E> f);
+
+    /**
+     * Functionally updates this element, by applying the given function to the elements found
+     * at the given element navigation paths relative to this element.
+     * <p>
+     * Note that an empty element navigation path refers to this element itself.
+     */
+    E updateElement(
+            Set<ElementNavigationPath> elementNavigationPaths,
+            BiFunction<ElementNavigationPath, E, E> f
+    );
 
     // Custom element transformations
 

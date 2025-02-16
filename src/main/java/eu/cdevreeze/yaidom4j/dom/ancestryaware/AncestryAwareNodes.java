@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 
@@ -72,35 +73,35 @@ public class AncestryAwareNodes {
     private static final class ElementTree {
 
         private final Optional<URI> docUriOption;
-        private final ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
+        private final ImmutableMap<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
         private ElementTree(
                 Optional<URI> docUriOption,
-                ImmutableMap<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
+                ImmutableMap<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
         ) {
             this.docUriOption = docUriOption;
             this.elementMap = Objects.requireNonNull(elementMap);
         }
 
         Element rootElement() {
-            return new Element(this, docUriOption, ImmutableList.of());
+            return new Element(this, docUriOption, ElementNavigationPath.empty());
         }
 
         static ElementTree create(
                 Optional<URI> docUriOption,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
         ) {
-            ImmutableList<Integer> navigationPath = ImmutableList.of();
-            Map<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap = new HashMap<>();
+            ElementNavigationPath navigationPath = ElementNavigationPath.empty();
+            Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap = new HashMap<>();
             buildElementCache(docUriOption, navigationPath, underlyingRootElement, elementMap);
             return new ElementTree(docUriOption, ImmutableMap.copyOf(elementMap));
         }
 
         private static void buildElementCache(
                 Optional<URI> docUriOption,
-                ImmutableList<Integer> elementNavigationPath,
+                ElementNavigationPath elementNavigationPath,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element element,
-                Map<ImmutableList<Integer>, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
+                Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
         ) {
             elementMap.put(elementNavigationPath, element);
 
@@ -109,16 +110,12 @@ public class AncestryAwareNodes {
                 // Recursion
                 buildElementCache(
                         docUriOption,
-                        addToPath(idx, elementNavigationPath),
+                        elementNavigationPath.appendEntry(idx),
                         childElement,
                         elementMap
                 );
                 idx += 1;
             }
-        }
-
-        private static ImmutableList<Integer> addToPath(int nextIndex, ImmutableList<Integer> path) {
-            return ImmutableList.<Integer>builder().addAll(path).add(nextIndex).build();
         }
     }
 
@@ -131,9 +128,9 @@ public class AncestryAwareNodes {
 
         private final ElementTree elementTree;
         private final Optional<URI> docUriOption;
-        private final ImmutableList<Integer> navigationPath;
+        private final ElementNavigationPath navigationPath;
 
-        private Element(ElementTree elementTree, Optional<URI> docUriOption, ImmutableList<Integer> navigationPath) {
+        private Element(ElementTree elementTree, Optional<URI> docUriOption, ElementNavigationPath navigationPath) {
             this.elementTree = elementTree;
             this.docUriOption = docUriOption;
             this.navigationPath = Objects.requireNonNull(navigationPath);
@@ -144,8 +141,18 @@ public class AncestryAwareNodes {
          * the root element itself has an empty list as element navigation path, its child elements
          * each have a single-entry navigation path, with the single entry ranging from 0 (inclusive)
          * to the number of child element nodes (exclusive), and so on.
+         *
+         * @deprecated Use {@link #elementNavigationPath()} instead
          */
+        @Deprecated(forRemoval = true)
         public ImmutableList<Integer> navigationPath() {
+            return navigationPath.entries();
+        }
+
+        /**
+         * Returns the element node navigation path relative to the root element.
+         */
+        public ElementNavigationPath elementNavigationPath() {
             return navigationPath;
         }
 
@@ -270,7 +277,7 @@ public class AncestryAwareNodes {
 
         @Override
         public Optional<Element> parentElementOption() {
-            return parentPathOption(navigationPath()).map(e -> new Element(elementTree, docUriOption, e));
+            return navigationPath.withoutLastEntryOption().map(p -> new Element(elementTree, docUriOption, p));
         }
 
         @Override
@@ -307,7 +314,7 @@ public class AncestryAwareNodes {
 
             for (var underlyingChildNode : underlyingElement().children()) {
                 if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element) {
-                    children.add(new Element(elementTree, docUriOption, ElementTree.addToPath(elementIdx, navigationPath)));
+                    children.add(new Element(elementTree, docUriOption, navigationPath.appendEntry(elementIdx)));
                     elementIdx += 1;
                 } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {
                     children.add(new Text(t.value(), t.isCData()));
@@ -323,10 +330,8 @@ public class AncestryAwareNodes {
 
         @Override
         public Stream<Element> childElementStream() {
-            var navigationPath = navigationPath();
-
             return IntStream.range(0, (int) underlyingElement().childElementStream().count())
-                    .mapToObj(i -> ElementTree.addToPath(i, navigationPath))
+                    .mapToObj(navigationPath::appendEntry)
                     .map(e -> new Element(elementTree, docUriOption, e));
         }
 
@@ -392,11 +397,6 @@ public class AncestryAwareNodes {
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
         ) {
             return ElementTree.create(docUriOption, underlyingRootElement).rootElement();
-        }
-
-        private static Optional<ImmutableList<Integer>> parentPathOption(ImmutableList<Integer> path) {
-            return Optional.of(path).flatMap(p ->
-                    (p.isEmpty()) ? Optional.empty() : Optional.of(p.subList(0, p.size() - 1)));
         }
     }
 
