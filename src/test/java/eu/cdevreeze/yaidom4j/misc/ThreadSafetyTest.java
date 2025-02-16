@@ -48,6 +48,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * corruption, illustrating the thread-safety of yaidom4j immutable DOM trees.
  * <p>
  * This is not a unit test.
+ * <p>
+ * I tried out a similar test for org.w3c.dom, to show that those mutable node trees are not thread-safe.
+ * It was even worse than that, multithreaded access to the same node tree led to data corruption.
+ * See for example
+ * <a href="https://issues.apache.org/jira/browse/FOP-2970?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=17623155">this issue</a>.
+ * I got a very similar exception, namely an NPE with the following message:
+ * <quote>Cannot assign field "fChildIndex" because "this.fNodeListCache" is null</quote>.
+ * <p>
+ * In all fairness, functional updates for immutable yaidom4j element trees are quite expensive at runtime.
  *
  * @author Chris de Vreeze
  */
@@ -59,11 +68,10 @@ class ThreadSafetyTest {
 
     @Test
     void testThreadSafety() throws ExecutionException, InterruptedException {
-        Element startElement = createElement();
-        final AtomicReference<Element> elementHolder = new AtomicReference<>(startElement);
+        final AtomicReference<Element> elementHolder = new AtomicReference<>(createElement());
 
         ImmutableList<ImmutableList<Integer>> elemNavigationPaths =
-                AncestryAwareNodes.Element.create(Optional.empty(), startElement)
+                AncestryAwareNodes.Element.create(Optional.empty(), elementHolder.get())
                         .descendantElementOrSelfStream()
                         .map(AncestryAwareNodes.Element::navigationPath)
                         .collect(ImmutableList.toImmutableList());
