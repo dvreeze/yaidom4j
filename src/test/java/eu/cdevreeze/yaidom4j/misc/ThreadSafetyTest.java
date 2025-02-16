@@ -177,11 +177,7 @@ class ThreadSafetyTest {
 
                                     if (currElemIndex == firstNavigationPathEntry) {
                                         // Recursive call
-                                        return updateElement(
-                                                che,
-                                                removeFirstEntry(elementNavigationPath),
-                                                f
-                                        );
+                                        return updateElement(che, removeFirstEntry(elementNavigationPath), f);
                                     } else {
                                         return che;
                                     }
