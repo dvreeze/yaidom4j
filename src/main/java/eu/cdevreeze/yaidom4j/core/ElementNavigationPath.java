@@ -28,6 +28,14 @@ import java.util.Optional;
  * <p>
  * Note that element navigation paths are stable under (functional) updates where single elements are
  * replaced by single elements, regardless of element name changes.
+ * <p>
+ * There are 2 important differences with
+ * <a href="https://www.w3.org/TR/xptr-element/">XPointer element() scheme</a>, limited to a child
+ * sequence element() scheme XPointer alone. First of all, the child indices in these XPointers are
+ * 1-based instead of 0-based. Secondly, the first index in the XPointer points to some root element,
+ * whereas the first entry in yaidom4j element navigation paths is a child element index relative to
+ * some "root element", which is unknown to the element navigation path. The element() scheme XPointers
+ * and element navigation paths have in common that indices refer to element nodes, not arbitrary nodes.
  *
  * @author Chris de Vreeze
  */
