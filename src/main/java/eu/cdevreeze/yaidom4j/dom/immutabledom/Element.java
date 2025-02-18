@@ -190,6 +190,26 @@ public record Element(
 
     // Functional updates
 
+    /**
+     * Functionally adds or updates a namespace binding. This is sometimes needed, for example when
+     * (functionally) updating the name where a new namespace binding is needed for the prefix in the
+     * name.
+     * <p>
+     * On the other hand, be careful when calling this method, because this may cause a prefix to
+     * be bound to another namespace than before. Especially, be careful with default namespaces.
+     * <p>
+     * Also, adding a (non-empty) namespace binding requires all descendant elements to get this extra
+     * namespace binding as well, or else the result will not be valid XML 1.0.
+     */
+    public Element plusNamespaceBinding(String prefix, String namespace) {
+        return new Element(name(), attributes(), namespaceScope().resolve(prefix, namespace), children());
+    }
+
+    /**
+     * Functionally updates the name of this element.
+     * <p>
+     * When calling this function, make sure to first add a namespace binding if needed.
+     */
     @Override
     public Element withName(QName newName) {
         return new Element(newName, attributes(), namespaceScope(), children());
