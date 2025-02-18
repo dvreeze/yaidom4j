@@ -190,6 +190,11 @@ public record Element(
 
     // Functional updates
 
+    @Override
+    public Element withName(QName newName) {
+        return new Element(newName, attributes(), namespaceScope(), children());
+    }
+
     /**
      * Functionally updates this element by replacing the collection of child nodes.
      * <p>
@@ -211,6 +216,18 @@ public record Element(
     public Element plusChild(Node newChild) {
         return withChildren(
                 ImmutableList.<Node>builder().addAll(children).add(newChild).build()
+        );
+    }
+
+    @Override
+    public Element plusChildOption(Optional<Node> newChildOption) {
+        return newChildOption.map(this::plusChild).orElse(this);
+    }
+
+    @Override
+    public Element plusChildren(ImmutableList<Node> newChildren) {
+        return withChildren(
+                ImmutableList.<Node>builder().addAll(children).addAll(newChildren).build()
         );
     }
 

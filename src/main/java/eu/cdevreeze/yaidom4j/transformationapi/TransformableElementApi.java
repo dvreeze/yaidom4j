@@ -22,6 +22,7 @@ import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 
 import javax.xml.namespace.QName;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -37,6 +38,11 @@ import java.util.function.UnaryOperator;
 public interface TransformableElementApi<E extends TransformableElementApi<E, N>, N> {
 
     /**
+     * Functionally updates the name of this element.
+     */
+    E withName(QName newName);
+
+    /**
      * Functionally updates the list of children of this element.
      */
     E withChildren(ImmutableList<N> newChildren);
@@ -45,6 +51,16 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
      * Calls method {@link TransformableElementApi#withChildren} to functionally add one child node at the end
      */
     E plusChild(N newChild);
+
+    /**
+     * Calls method {@link TransformableElementApi#withChildren} to functionally add at most one child node at the end
+     */
+    E plusChildOption(Optional<N> newChildOption);
+
+    /**
+     * Calls method {@link TransformableElementApi#withChildren} to functionally add zero or more child nodes at the end
+     */
+    E plusChildren(ImmutableList<N> newChildren);
 
     /**
      * Functionally updates this element by replacing the collection of attributes.

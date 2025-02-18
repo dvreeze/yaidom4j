@@ -200,6 +200,11 @@ public class ClarkNodes {
         // Functional updates
 
         @Override
+        public Element withName(QName newName) {
+            return new Element(newName, attributes(), children());
+        }
+
+        @Override
         public Element withChildren(ImmutableList<Node> newChildren) {
             return new Element(
                     name(),
@@ -212,6 +217,18 @@ public class ClarkNodes {
         public Element plusChild(Node newChild) {
             return withChildren(
                     ImmutableList.<Node>builder().addAll(children).add(newChild).build()
+            );
+        }
+
+        @Override
+        public Element plusChildOption(Optional<Node> newChildOption) {
+            return newChildOption.map(this::plusChild).orElse(this);
+        }
+
+        @Override
+        public Element plusChildren(ImmutableList<Node> newChildren) {
+            return withChildren(
+                    ImmutableList.<Node>builder().addAll(children).addAll(newChildren).build()
             );
         }
 
