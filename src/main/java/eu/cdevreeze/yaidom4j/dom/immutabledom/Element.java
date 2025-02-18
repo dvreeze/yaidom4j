@@ -196,7 +196,7 @@ public record Element(
      * name.
      * <p>
      * On the other hand, be careful when calling this method, because this may cause a prefix to
-     * be bound to another namespace than before. Especially, be careful with default namespaces.
+     * be bound to another namespace than before. In particular, be careful with default namespaces.
      * <p>
      * Also, adding a (non-empty) namespace binding requires all descendant elements to get this extra
      * namespace binding as well, or else the result will not be valid XML 1.0.
