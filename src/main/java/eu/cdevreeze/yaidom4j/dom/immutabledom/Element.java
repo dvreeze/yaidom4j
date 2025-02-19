@@ -54,7 +54,10 @@ public record Element(
         Objects.requireNonNull(namespaceScope);
         Objects.requireNonNull(children);
 
-        Preconditions.checkArgument(namespaceScope.allowsElementName(name));
+        Preconditions.checkArgument(
+                namespaceScope.allowsElementName(name),
+                String.format("Name '%s' not allowed by NamespaceScope %s", name, namespaceScope)
+        );
 
         Preconditions.checkArgument(attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName));
     }

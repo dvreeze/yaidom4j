@@ -125,4 +125,11 @@ class JaxpInteropTests {
                 () -> schema.newValidator().validate(new ImmutableDomSource(invalidInstanceDoc), null)
         );
     }
+
+    @Test
+    void testParsingOfDocumentWithNamespaceUndeclaration() {
+        Document feed4Doc = parseDocument("/feed4.xml");
+
+        assertEquals(doc.documentElement().toClarkNode(), feed4Doc.documentElement().toClarkNode());
+    }
 }
