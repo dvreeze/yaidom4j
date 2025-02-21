@@ -155,6 +155,10 @@ public class JaxpDomToImmutableDomConverter {
 
     private static boolean isNamespaceDeclaration(org.w3c.dom.Attr attr) {
         String name = attr.getName();
+        if (name.equals(":")) {
+            // Corner-case, where the local name is a colon, and the prefix is empty
+            return false;
+        }
         String[] parts = name.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
@@ -162,6 +166,7 @@ public class JaxpDomToImmutableDomConverter {
 
     private static Map.Entry<String, String> extractNamespaceDeclaration(org.w3c.dom.Attr attr) {
         String name = attr.getName();
+        Preconditions.checkArgument(!name.equals(":"));
         String[] parts = name.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         Preconditions.checkArgument(parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE));

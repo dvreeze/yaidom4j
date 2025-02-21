@@ -163,9 +163,11 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
             docChildren.add(pi);
         } else {
-            Preconditions.checkArgument(currentElement != null);
-
-            currentElement.addChild(pi);
+            if (currentElement == null) {
+                docChildren.add(pi);
+            } else {
+                currentElement.addChild(pi);
+            }
         }
     }
 
@@ -211,9 +213,11 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
             docChildren.add(comment);
         } else {
-            Preconditions.checkArgument(currentElement != null);
-
-            currentElement.addChild(comment);
+            if (currentElement == null) {
+                docChildren.add(comment);
+            } else {
+                currentElement.addChild(comment);
+            }
         }
     }
 
@@ -249,6 +253,10 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
     }
 
     private String extractPrefix(String qname) {
+        if (qname.equals(":")) {
+            // Corner-case, where the local name is a colon, and the prefix is empty
+            return "";
+        }
         String[] parts = qname.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts.length == 2 ? parts[0] : "";
@@ -272,6 +280,10 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
     }
 
     private static boolean isNamespaceDeclaration(String attrName) {
+        if (attrName.equals(":")) {
+            // Corner-case, where the local name is a colon, and the prefix is empty
+            return false;
+        }
         String[] parts = attrName.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
