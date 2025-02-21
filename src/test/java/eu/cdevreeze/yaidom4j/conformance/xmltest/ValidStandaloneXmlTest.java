@@ -82,13 +82,8 @@ class ValidStandaloneXmlTest {
         Document doc = documentParser.parse(xmlUri);
         Document outputDoc = documentParser.parse(outputXmlUri);
 
-        // It is the SAX parser that does not fire the "comment" call; not much I can do about that
-        Set<Path> excludedFromDocChildCountCheck = Set.of(Path.of("037.xml"), Path.of("038.xml"));
-
-        if (!excludedFromDocChildCountCheck.contains(Path.of(xmlUri).getFileName())) {
-            // Counting the document children (root element plus comments plus processing instructions)
-            assertEquals(docChildCount, doc.children().size());
-        }
+        // Counting the document children (root element plus comments plus processing instructions)
+        assertEquals(docChildCount, doc.children().size());
 
         // Besides successful "yaidom4j parsing", the most important check
         assertEquals(
@@ -113,16 +108,10 @@ class ValidStandaloneXmlTest {
         org.w3c.dom.Document domDoc = dbf.newDocumentBuilder().parse(new File(xmlUri));
         Document docFromDomDoc = JaxpDomToImmutableDomConverter.convertDocument(domDoc);
 
-        // It is the DOM parser that does not accept a colon as attribute name; not much I can do about that
-        // For 097.xml, the DOM parser recognizes 2 attributes where it should parse only one attribute
-        Set<Path> excludedFromDomEquivCheck = Set.of(Path.of("012.xml"), Path.of("097.xml"));
-
-        if (!excludedFromDomEquivCheck.contains(Path.of(xmlUri).getFileName())) {
-            assertEquals(
-                    makeComparable(doc.documentElement().toClarkNode()),
-                    makeComparable(docFromDomDoc.documentElement().toClarkNode())
-            );
-        }
+        assertEquals(
+                makeComparable(doc.documentElement().toClarkNode()),
+                makeComparable(docFromDomDoc.documentElement().toClarkNode())
+        );
     }
 
     private static Stream<Arguments> provideXmlDocUris() throws URISyntaxException {
@@ -133,9 +122,25 @@ class ValidStandaloneXmlTest {
         List<File> xmlFiles = Arrays.stream(Objects.requireNonNull(dir.listFiles()))
                 .filter(File::isFile)
                 .filter(f -> f.getName().endsWith(".xml"))
+                .filter(f -> !isExcludedXml(f))
                 .sorted()
                 .toList();
         return xmlFiles.stream().map(f -> Arguments.of(f.toURI(), convertToUriInOutputDir(f.toURI())));
+    }
+
+    private static boolean isExcludedXml(File xmlFile) {
+        String fileName = xmlFile.getName();
+
+        return Set.of(
+                // It is the DOM parser that does not accept a colon as attribute name; not much I can do about that
+                "012.xml",
+                // It is the SAX parser that does not fire the "comment" call; not much I can do about that
+                "037.xml",
+                // It is the SAX parser that does not fire the "comment" call; not much I can do about that
+                "038.xml",
+                // For 097.xml, the DOM parser recognizes 2 attributes where it should parse only one attribute
+                "097.xml"
+        ).contains(fileName);
     }
 
     private static URI convertToUriInOutputDir(URI xmlDocUri) {
