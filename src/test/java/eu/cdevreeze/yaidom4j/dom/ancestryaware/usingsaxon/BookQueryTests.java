@@ -17,6 +17,8 @@
 package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
+import eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonElementPredicates;
+import eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonNodes;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;

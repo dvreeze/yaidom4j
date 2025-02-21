@@ -50,7 +50,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.*;
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon.SaxonElementSteps.*;
+import static eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

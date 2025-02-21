@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
+package eu.cdevreeze.yaidom4j.testsupport.saxon;
 
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;

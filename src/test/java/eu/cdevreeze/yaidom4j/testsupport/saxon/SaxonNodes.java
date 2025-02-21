@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
+package eu.cdevreeze.yaidom4j.testsupport.saxon;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;

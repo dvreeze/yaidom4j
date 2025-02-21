@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
+package eu.cdevreeze.yaidom4j.testsupport.saxon;
 
 import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
 
@@ -22,8 +22,8 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.util.function.Predicate;
 
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon.SaxonNodes.Element;
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon.SaxonNodes.Text;
+import static eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonNodes.Element;
+import static eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonNodes.Text;
 
 /**
  * Several element predicates.
