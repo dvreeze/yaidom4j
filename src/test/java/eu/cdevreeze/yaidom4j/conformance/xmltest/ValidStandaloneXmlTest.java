@@ -41,6 +41,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,10 +98,10 @@ class ValidStandaloneXmlTest {
                         .orElseThrow()
         );
 
-        // Comparing at least the structure. This should probably be improved.
+        // Comparing with Saxon-originated document element.
         assertEquals(
-                removeProcessingInstructions(removeText(makeComparable(saxonDocElement.toClarkNode()))),
-                removeProcessingInstructions(removeText(makeComparable(doc.documentElement().toClarkNode())))
+                removeCommentNodes(combineAdjacentTextNodes(saxonDocElement.toClarkNode())),
+                removeCommentNodes(combineAdjacentTextNodes(doc.documentElement().toClarkNode()))
         );
 
         // W3C DOM
@@ -150,26 +151,47 @@ class ValidStandaloneXmlTest {
         return path.getParent().resolve("out").resolve(simpleName).toUri();
     }
 
-    // Lenient comparison with Saxon
+    // Comparing with Saxon
 
-    private static ClarkNodes.Element removeProcessingInstructions(ClarkNodes.Element element) {
+    // Alas, the SAX parser seems to lose comment nodes, so let's skip them for comparisons.
+
+    private static ClarkNodes.Element removeCommentNodes(ClarkNodes.Element element) {
         return element.transformDescendantElementsOrSelf(elem ->
                 elem.withChildren(
                         elem.children().stream()
-                                .filter(c -> !(c instanceof ClarkNodes.ProcessingInstruction))
+                                .filter(n -> !(n instanceof ClarkNodes.Comment))
                                 .collect(ImmutableList.toImmutableList())
                 )
         );
     }
 
-    private static ClarkNodes.Element removeText(ClarkNodes.Element element) {
+    private static ClarkNodes.Element combineAdjacentTextNodes(ClarkNodes.Element element) {
         return element.transformDescendantElementsOrSelf(elem ->
-                elem.withChildren(
-                        elem.children().stream()
-                                .filter(c -> !(c instanceof ClarkNodes.Text))
-                                .collect(ImmutableList.toImmutableList())
-                )
+                elem.withChildren(ImmutableList.copyOf(combineAdjacentTextNodes(elem.children())))
         );
+    }
+
+    private static List<ClarkNodes.Node> combineAdjacentTextNodes(List<ClarkNodes.Node> nodes) {
+        if (nodes.stream().noneMatch(n -> (n instanceof ClarkNodes.Text))) {
+            return nodes;
+        }
+        List<ClarkNodes.Node> adjacentTextNodes = nodes.stream().takeWhile(n -> (n instanceof ClarkNodes.Text)).toList();
+        List<ClarkNodes.Node> remainder = nodes.stream().dropWhile(n -> (n instanceof ClarkNodes.Text)).toList();
+        List<ClarkNodes.Node> combinedTextNodes = adjacentTextNodes.isEmpty() ?
+                List.of() :
+                List.of(new ClarkNodes.Text(
+                        adjacentTextNodes.stream()
+                                .map(n -> ((ClarkNodes.Text) n).value())
+                                .collect(Collectors.joining())
+                ));
+
+        // Recursion
+        List<ClarkNodes.Node> remainderWithCombinedTextNodes =
+                combineAdjacentTextNodes(remainder);
+
+        List<ClarkNodes.Node> result = new ArrayList<>(combinedTextNodes);
+        result.addAll(remainderWithCombinedTextNodes);
+        return List.copyOf(result);
     }
 
     // Comparing XML (with canonical XML)
@@ -201,7 +223,7 @@ class ValidStandaloneXmlTest {
     }
 
     private static ClarkNodes.Text normalizeWhitespace(ClarkNodes.Text text) {
-        return new ClarkNodes.Text(normalizeWhitespace(normalizeWhitespace(text.value())));
+        return new ClarkNodes.Text(normalizeWhitespace(text.value()));
     }
 
     private static String normalizeWhitespace(String str) {

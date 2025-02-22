@@ -46,7 +46,7 @@ public class SaxonNodes {
     private SaxonNodes() {
     }
 
-    public static Optional<? extends Node> optionallyFrom(XdmNode xdmNode) {
+    public static Optional<? extends Node> optionalNodeFrom(XdmNode xdmNode) {
         return switch (xdmNode.getNodeKind()) {
             case ELEMENT -> Optional.of(new Element(xdmNode));
             case TEXT -> Optional.of(new Text(xdmNode));
@@ -165,7 +165,7 @@ public class SaxonNodes {
         public Stream<Node> childNodeStream() {
             return xdmNode.axisIterator(Axis.CHILD)
                     .stream()
-                    .flatMap(n -> optionallyFrom(n).stream());
+                    .flatMap(n -> SaxonNodes.optionalNodeFrom(n).stream());
         }
 
         @Override
