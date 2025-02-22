@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.xml.sax.InputSource;
 
+import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
- * Node builder tests against sample XML files from
+ * Node creation tests against sample XML files from
  * <a href="https://www.lenzconsulting.com/namespaces/">Understanding XML Namespaces</a>.
  * These files are equal, except that they use different namespace prefixes and have the namespace
  * declarations in different elements.
@@ -43,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * @author Chris de Vreeze
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class NodeBuilderTests {
+class NodesTests {
 
     private Document doc1;
     private Document doc2;
@@ -57,7 +58,7 @@ class NodeBuilderTests {
     }
 
     private Document parseDocument(String xmlClasspathResource) {
-        InputStream inputStream = NodeBuilderTests.class.getResourceAsStream(xmlClasspathResource);
+        InputStream inputStream = NodesTests.class.getResourceAsStream(xmlClasspathResource);
         return DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream));
     }
@@ -92,50 +93,46 @@ class NodeBuilderTests {
         assertEquals(docRootElement2.toClarkNode(), rootElement2.toClarkNode());
     }
 
-    private static final NodeBuilder.ConciseApi nb1 = new NodeBuilder.ConciseApi(
-            NamespaceScope.from(ImmutableMap.of(
-                    "", "http://www.w3.org/2005/Atom",
-                    "xhtml", "http://www.w3.org/1999/xhtml",
-                    "my", "http://xmlportfolio.com/xmlguild-examples"
-            ))
+    private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
+
+    private static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
+
+    private static final String EXAMPLE_NS = "http://xmlportfolio.com/xmlguild-examples";
+
+    private static final NamespaceScope parentScope = NamespaceScope.from(ImmutableMap.of(
+                    "", ATOM_NS,
+                    "xhtml", XHTML_NS,
+                    "my", EXAMPLE_NS
+            )
     );
 
     private static Element rootElement1(String innerText) {
-        return nb1.element("feed")
-                .plusChild(nb1.textElement("title", "Example Feed"))
+        return Nodes.elem(new QName(ATOM_NS, "feed", ""), parentScope)
+                .plusChild(Nodes.elem(new QName(ATOM_NS, "title", "")).plusText("Example Feed"))
                 .plusChild(
-                        nb1.element(
-                                        "rights",
-                                        ImmutableMap.of("type", "xhtml", "my:type", "silly")
-                                )
+                        Nodes.elem(new QName(ATOM_NS, "rights", ""), parentScope)
+                                .plusAttribute(new QName("type"), "xhtml")
+                                .plusAttribute(new QName(EXAMPLE_NS, "type", "my"), "silly")
                                 .plusChild(
-                                        nb1.textElement("xhtml:div", innerText)
+                                        Nodes.elem(new QName(XHTML_NS, "div", "xhtml")).plusText(innerText)
                                 )
                 );
     }
 
-    private static final String ATOM_NS = "http://www.w3.org/2005/Atom";
-
-    private static final NodeBuilder.ConciseApi nb2 =
-            NodeBuilder.ConciseApi.empty().resolve("", ATOM_NS);
-
-    private static final String EXAMPLE_NS = "http://xmlportfolio.com/xmlguild-examples";
-
-    private static final String XHTML_NS = "http://www.w3.org/1999/xhtml";
+    private static final NamespaceScope parentScope2 = NamespaceScope.empty().resolve("", ATOM_NS);
 
     private static Element rootElement2(String innerText) {
-        return nb2.element("feed")
-                .plusChild(nb2.textElement("title", "Example Feed"))
+        return Nodes.elem(new QName(ATOM_NS, "feed", ""))
+                .plusChild(Nodes.elem(new QName(ATOM_NS, "title", "")).plusText("Example Feed"))
                 .plusChild(
-                        nb2.resolve("example", EXAMPLE_NS)
-                                .element(
-                                        "rights",
-                                        ImmutableMap.of("type", "xhtml", "example:type", "silly")
-                                )
+                        Nodes.elem(new QName(ATOM_NS, "rights", ""))
+                                .plusNamespaceBinding("example", EXAMPLE_NS)
+                                .plusAttribute(new QName("type"), "xhtml")
+                                .plusAttribute(new QName(EXAMPLE_NS, "type", "example"), "silly")
                                 .plusChild(
-                                        nb2.resolve("example", EXAMPLE_NS)
-                                                .resolve("", XHTML_NS)
-                                                .textElement("div", innerText)
+                                        Nodes.elem(new QName(XHTML_NS, "div", ""), parentScope2)
+                                                .plusNamespaceBinding("example", EXAMPLE_NS)
+                                                .plusText(innerText)
                                 )
                 );
     }

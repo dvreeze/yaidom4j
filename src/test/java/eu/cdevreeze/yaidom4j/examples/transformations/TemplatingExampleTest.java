@@ -19,11 +19,10 @@ package eu.cdevreeze.yaidom4j.examples.transformations;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.NodeBuilder;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Nodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
@@ -66,12 +65,10 @@ class TemplatingExampleTest {
         System.out.println();
         System.out.println(docPrinter.print(htmlElement));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
         Element tableExtractedFromCatalog =
                 doc.documentElement().withName(new QName("table"))
                         .transformChildElements(cdElem ->
-                                nb.element("tr")
+                                Nodes.elem("tr")
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")))
@@ -111,12 +108,10 @@ class TemplatingExampleTest {
         System.out.println();
         System.out.println(docPrinter.print(htmlElement));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
         Element tableExtractedFromCatalog =
                 doc.documentElement().withName(new QName("table"))
                         .transformChildElements(cdElem ->
-                                nb.element("tr")
+                                Nodes.elem("tr")
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")))
@@ -177,17 +172,17 @@ class TemplatingExampleTest {
     Element transform(Element catalogElement) {
         Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
-        return nb.element("html")
-                .plusChild(nb.element("body")
-                        .plusChild(nb.textElement("h2", "My CD Collection"))
+        return Nodes.elem("html")
+                .plusChild(Nodes.elem("body")
+                        .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
                         .plusChild(
-                                nb.element("table", ImmutableMap.of("border", "1"))
+                                Nodes.elem("table")
+                                        .plusAttribute(new QName("border"), "1")
                                         .plusChild(
-                                                nb.element("tr", ImmutableMap.of("bgcolor", "#9acd32"))
-                                                        .plusChild(nb.textElement("th", "Title"))
-                                                        .plusChild(nb.textElement("th", "Artist"))
+                                                Nodes.elem("tr")
+                                                        .plusAttribute(new QName("bgcolor"), "#9acd32")
+                                                        .plusChild(Nodes.elem("th").plusText("Title"))
+                                                        .plusChild(Nodes.elem("th").plusText("Artist"))
                                         )
                                         .plusChildren(
                                                 catalogElement.childElementStream(hasName("cd"))
@@ -201,17 +196,17 @@ class TemplatingExampleTest {
     Element transformSortingOnArtist(Element catalogElement) {
         Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
-        return nb.element("html")
-                .plusChild(nb.element("body")
-                        .plusChild(nb.textElement("h2", "My CD Collection"))
+        return Nodes.elem("html")
+                .plusChild(Nodes.elem("body")
+                        .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
                         .plusChild(
-                                nb.element("table", ImmutableMap.of("border", "1"))
+                                Nodes.elem("table")
+                                        .plusAttribute(new QName("border"), "1")
                                         .plusChild(
-                                                nb.element("tr", ImmutableMap.of("bgcolor", "#9acd32"))
-                                                        .plusChild(nb.textElement("th", "Title"))
-                                                        .plusChild(nb.textElement("th", "Artist"))
+                                                Nodes.elem("tr")
+                                                        .plusAttribute(new QName("bgcolor"), "#9acd32")
+                                                        .plusChild(Nodes.elem("th").plusText("Title"))
+                                                        .plusChild(Nodes.elem("th").plusText("Artist"))
                                         )
                                         .plusChildren(
                                                 catalogElement.childElementStream(hasName("cd"))
@@ -229,12 +224,10 @@ class TemplatingExampleTest {
     Element transformToParagraphs(Element catalogElement) {
         Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
-        return nb.element("html")
+        return Nodes.elem("html")
                 .plusChild(
-                        nb.element("body")
-                                .plusChild(nb.textElement("h2", "My CD Collection"))
+                        Nodes.elem("body")
+                                .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
                                 .plusChildren(
                                         catalogElement.childElementStream(hasName("cd"))
                                                 .map(this::mapCdElemToParagraph)
@@ -246,27 +239,23 @@ class TemplatingExampleTest {
     private Element transformCdElement(Element cdElement) {
         Preconditions.checkArgument(cdElement.name().equals(new QName("cd")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
         String title = cdElement.childElementStream(hasName("title"))
                 .findFirst().orElseThrow().text();
         String artist = cdElement.childElementStream(hasName("artist"))
                 .findFirst().orElseThrow().text();
-        return nb.element("tr")
+        return Nodes.elem("tr")
                 .plusChild(
-                        nb.textElement("td", title)
+                        Nodes.elem("td").plusText(title)
                 )
                 .plusChild(
-                        nb.textElement("td", artist)
+                        Nodes.elem("td").plusText(artist)
                 );
     }
 
     private Element mapCdElemToParagraph(Element cdElement) {
         Preconditions.checkArgument(cdElement.name().equals(new QName("cd")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
-        return nb.element("p")
+        return Nodes.elem("p")
                 .plusChildren(
                         cdElement.transformChildElementsToNodeLists(e -> {
                             if (hasName("title").test(e)) {
@@ -283,32 +272,24 @@ class TemplatingExampleTest {
     private List<Node> mapTitleElemToNodes(Element titleElement) {
         Preconditions.checkArgument(titleElement.name().equals(new QName("title")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
         return List.of(
-                nb.text("Title: "),
-                nb.textElement(
-                        "span",
-                        ImmutableMap.of("style", "color:#ff0000"),
-                        titleElement.text()
-                ),
-                nb.element("br")
+                Nodes.text("Title: "),
+                Nodes.elem("span")
+                        .plusText(titleElement.text())
+                        .plusAttribute(new QName("style"), "color:#ff0000"),
+                Nodes.elem("br")
         );
     }
 
     private List<Node> mapArtistElemToNodes(Element artistElement) {
         Preconditions.checkArgument(artistElement.name().equals(new QName("artist")));
 
-        NodeBuilder.ConciseApi nb = new NodeBuilder.ConciseApi(NamespaceScope.empty());
-
         return List.of(
-                nb.text("Artist: "),
-                nb.textElement(
-                        "span",
-                        ImmutableMap.of("style", "color:#00ff00"),
-                        artistElement.text()
-                ),
-                nb.element("br")
+                Nodes.text("Artist: "),
+                Nodes.elem("span")
+                        .plusText(artistElement.text())
+                        .plusAttribute(new QName("style"), "color:#00ff00"),
+                Nodes.elem("br")
         );
     }
 }

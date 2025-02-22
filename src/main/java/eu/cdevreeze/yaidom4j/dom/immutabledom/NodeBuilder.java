@@ -33,7 +33,9 @@ import java.util.Map;
  * XML 1.0).
  *
  * @author Chris de Vreeze
+ * @deprecated Use {@link Nodes} instead.
  */
+@Deprecated
 public class NodeBuilder {
 
     private final NamespaceScope namespaceScope;
@@ -92,7 +94,10 @@ public class NodeBuilder {
 
     /**
      * Concise API that uses syntactic names for elements and attributes.
+     *
+     * @deprecated Use {@link Nodes} instead.
      */
+    @Deprecated
     public static final class ConciseApi {
 
         private final NamespaceScope namespaceScope;

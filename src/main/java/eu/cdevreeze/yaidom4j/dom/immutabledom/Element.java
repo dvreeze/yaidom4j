@@ -255,6 +255,13 @@ public record Element(
     }
 
     /**
+     * Convenience method to add a Text child
+     */
+    public Element plusText(String textValue) {
+        return plusChild(new Text(textValue, false));
+    }
+
+    /**
      * Functionally updates this element by replacing the collection of attributes.
      * <p>
      * For prefixed attributes, take care to use only prefixes that are in scope.
