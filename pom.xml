@@ -120,6 +120,26 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <phase>generate-test-resources</phase>
+            <configuration>
+              <target>
+                <unzip src="${project.basedir}/conformancesuite/xmlts20130923.zip" dest="${project.build.testOutputDirectory}/xmlconformancesuite" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
   <!-- Release a new non-snapshot version with command "mvn clean deploy -Prelease" -->
   <profiles>
