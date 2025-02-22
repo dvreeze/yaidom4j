@@ -88,8 +88,8 @@ class ValidStandaloneXmlTest {
 
         // Besides successful "yaidom4j parsing", the most important check
         assertEquals(
-                makeComparable(outputDoc.documentElement().toClarkNode()),
-                makeComparable(doc.documentElement().toClarkNode())
+                makeComparableWithCanonicalXml(outputDoc.documentElement().toClarkNode()),
+                makeComparableWithCanonicalXml(doc.documentElement().toClarkNode())
         );
 
         SaxonNodes.Element saxonDocElement = new SaxonNodes.Element(
@@ -100,8 +100,8 @@ class ValidStandaloneXmlTest {
 
         // Comparing with Saxon-originated document element.
         assertEquals(
-                removeCommentNodes(combineAdjacentTextNodes(saxonDocElement.toClarkNode())),
-                removeCommentNodes(combineAdjacentTextNodes(doc.documentElement().toClarkNode()))
+                combineAdjacentTextNodes(saxonDocElement.toClarkNode()),
+                combineAdjacentTextNodes(doc.documentElement().toClarkNode())
         );
 
         // W3C DOM
@@ -110,8 +110,8 @@ class ValidStandaloneXmlTest {
         Document docFromDomDoc = JaxpDomToImmutableDomConverter.convertDocument(domDoc);
 
         assertEquals(
-                makeComparable(doc.documentElement().toClarkNode()),
-                makeComparable(docFromDomDoc.documentElement().toClarkNode())
+                combineAdjacentTextNodes(doc.documentElement().toClarkNode().removeInterElementWhitespace()),
+                combineAdjacentTextNodes(docFromDomDoc.documentElement().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -135,10 +135,8 @@ class ValidStandaloneXmlTest {
         return Set.of(
                 // It is the DOM parser that does not accept a colon as attribute name; not much I can do about that
                 "012.xml",
-                // It is the SAX parser that does not fire the "comment" call; not much I can do about that
-                "037.xml",
-                // It is the SAX parser that does not fire the "comment" call; not much I can do about that
-                "038.xml",
+                // Document child (comment) found which really isn't a document child. Saxon gets it right, though.
+                "066.xml",
                 // For 097.xml, the DOM parser recognizes 2 attributes where it should parse only one attribute
                 "097.xml"
         ).contains(fileName);
@@ -153,18 +151,6 @@ class ValidStandaloneXmlTest {
 
     // Comparing with Saxon
 
-    // Alas, the SAX parser seems to lose comment nodes, so let's skip them for comparisons.
-
-    private static ClarkNodes.Element removeCommentNodes(ClarkNodes.Element element) {
-        return element.transformDescendantElementsOrSelf(elem ->
-                elem.withChildren(
-                        elem.children().stream()
-                                .filter(n -> !(n instanceof ClarkNodes.Comment))
-                                .collect(ImmutableList.toImmutableList())
-                )
-        );
-    }
-
     private static ClarkNodes.Element combineAdjacentTextNodes(ClarkNodes.Element element) {
         return element.transformDescendantElementsOrSelf(elem ->
                 elem.withChildren(ImmutableList.copyOf(combineAdjacentTextNodes(elem.children())))
@@ -172,9 +158,22 @@ class ValidStandaloneXmlTest {
     }
 
     private static List<ClarkNodes.Node> combineAdjacentTextNodes(List<ClarkNodes.Node> nodes) {
-        if (nodes.stream().noneMatch(n -> (n instanceof ClarkNodes.Text))) {
+        if (nodes.isEmpty()) {
             return nodes;
         }
+        if (!(nodes.get(0) instanceof ClarkNodes.Text)) {
+            ClarkNodes.Node firstNode = nodes.get(0);
+            List<ClarkNodes.Node> remainder = nodes.subList(1, nodes.size());
+
+            // Recursion
+            List<ClarkNodes.Node> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
+
+            List<ClarkNodes.Node> result = new ArrayList<>();
+            result.add(firstNode);
+            result.addAll(remainderWithCombinedTextNodes);
+            return List.copyOf(result);
+        }
+
         List<ClarkNodes.Node> adjacentTextNodes = nodes.stream().takeWhile(n -> (n instanceof ClarkNodes.Text)).toList();
         List<ClarkNodes.Node> remainder = nodes.stream().dropWhile(n -> (n instanceof ClarkNodes.Text)).toList();
         List<ClarkNodes.Node> combinedTextNodes = adjacentTextNodes.isEmpty() ?
@@ -186,8 +185,7 @@ class ValidStandaloneXmlTest {
                 ));
 
         // Recursion
-        List<ClarkNodes.Node> remainderWithCombinedTextNodes =
-                combineAdjacentTextNodes(remainder);
+        List<ClarkNodes.Node> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
 
         List<ClarkNodes.Node> result = new ArrayList<>(combinedTextNodes);
         result.addAll(remainderWithCombinedTextNodes);
@@ -196,16 +194,14 @@ class ValidStandaloneXmlTest {
 
     // Comparing XML (with canonical XML)
 
-    private static ClarkNodes.Element makeComparable(ClarkNodes.Element element) {
+    private static ClarkNodes.Element makeComparableWithCanonicalXml(ClarkNodes.Element element) {
         return element.transformDescendantElementsOrSelf(elem -> {
             List<ClarkNodes.Node> childrenWithoutComments = elem.children()
                     .stream()
                     .filter(n -> !(n instanceof ClarkNodes.Comment))
                     .toList();
             List<ClarkNodes.Node> childrenWithCombinedTextNodes =
-                    childrenWithoutComments.stream().allMatch(n -> n instanceof ClarkNodes.Text) ?
-                            List.of(new ClarkNodes.Text(elem.text())) :
-                            childrenWithoutComments;
+                    combineAdjacentTextNodes(childrenWithoutComments);
             // Normalize whitespace in element text child nodes
             List<ClarkNodes.Node> children = childrenWithCombinedTextNodes.stream()
                     .map(n -> (n instanceof ClarkNodes.Text t) ? normalizeWhitespace(t) : n)

@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.jaxp;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.XMLConstants;
@@ -76,6 +77,12 @@ public class SaxParsers {
     public static void parse(InputSource inputSource, DefaultHandler saxHandler, SAXParserFactory saxParserFactory) {
         try {
             SAXParser parser = saxParserFactory.newSAXParser();
+            if (saxHandler instanceof LexicalHandler) {
+                // See API documentation of LexicalHandler
+                // This will cause comments etc. to be retained
+                // Normally this property should be both recognized and accepted
+                parser.setProperty("http://xml.org/sax/properties/lexical-handler", saxHandler);
+            }
             parser.parse(inputSource, saxHandler);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new RuntimeException(e);
