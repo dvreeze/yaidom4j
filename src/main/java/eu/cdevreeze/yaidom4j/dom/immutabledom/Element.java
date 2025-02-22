@@ -210,13 +210,15 @@ public record Element(
 
     /**
      * Returns the same element, except that the namespace scope is enhanced by resolving it against the
-     * given parent scope. This implies that this element's namespace scope "is in the lead".
+     * given parent scope, without the default namespace, if any. This implies that this element's
+     * namespace scope "is in the lead", and that the default namespace is not introduced by the
+     * parent scope, even if the parent scope has a default namespace.
      */
-    public Element usingParentScope(NamespaceScope parentScope) {
+    public Element usingParentAttributeScope(NamespaceScope parentScope) {
         return new Element(
                 name(),
                 attributes(),
-                parentScope.resolve(namespaceScope().inScopeNamespaces()),
+                parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces()),
                 children()
         );
     }
