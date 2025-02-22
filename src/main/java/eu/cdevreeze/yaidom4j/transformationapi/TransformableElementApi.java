@@ -108,6 +108,12 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     E transformDescendantElements(UnaryOperator<E> f);
 
     /**
+     * Transformation of this element itself. This method can be handy for setting "parent scopes"
+     * on elements to be inserted somewhere in an XML tree.
+     */
+    E transformSelf(UnaryOperator<E> f);
+
+    /**
      * Functionally updates this element, by applying the given function to the elements found
      * at the given element navigation paths relative to this element.
      * <p>

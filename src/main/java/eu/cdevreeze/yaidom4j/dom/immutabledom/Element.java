@@ -209,6 +209,19 @@ public record Element(
     }
 
     /**
+     * Returns the same element, except that the namespace scope is enhanced by resolving it against the
+     * given parent scope. This implies that this element's namespace scope "is in the lead".
+     */
+    public Element usingParentScope(NamespaceScope parentScope) {
+        return new Element(
+                name(),
+                attributes(),
+                parentScope.resolve(namespaceScope().inScopeNamespaces()),
+                children()
+        );
+    }
+
+    /**
      * Functionally updates the name of this element.
      * <p>
      * When calling this function, make sure to first add a namespace binding if needed.
@@ -324,6 +337,11 @@ public record Element(
     @Override
     public Element transformDescendantElements(UnaryOperator<Element> f) {
         return transformChildElements(che -> che.transformDescendantElementsOrSelf(f));
+    }
+
+    @Override
+    public Element transformSelf(UnaryOperator<Element> f) {
+        return f.apply(this);
     }
 
     @Override

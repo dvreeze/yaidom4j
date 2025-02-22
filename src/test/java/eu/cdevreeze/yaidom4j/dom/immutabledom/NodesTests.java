@@ -107,15 +107,27 @@ class NodesTests {
     );
 
     private static Element rootElement1(String innerText) {
-        return Nodes.elem(new QName(ATOM_NS, "feed", ""), parentScope)
-                .plusChild(Nodes.elem(new QName(ATOM_NS, "title", "")).plusText("Example Feed"))
-                .plusChild(
-                        Nodes.elem(new QName(ATOM_NS, "rights", ""), parentScope)
-                                .plusAttribute(new QName("type"), "xhtml")
-                                .plusAttribute(new QName(EXAMPLE_NS, "type", "my"), "silly")
-                                .plusChild(
-                                        Nodes.elem(new QName(XHTML_NS, "div", "xhtml")).plusText(innerText)
-                                )
+        return Nodes.elem(new QName(ATOM_NS, "feed", "")).usingParentScope(parentScope)
+                .transformSelf(e ->
+                        e.plusChild(
+                                Nodes.elem(new QName(ATOM_NS, "title", ""))
+                                        .usingParentScope(e.namespaceScope())
+                                        .plusText("Example Feed"))
+                )
+                .transformSelf(e ->
+                        e.plusChild(
+                                Nodes.elem(new QName(ATOM_NS, "rights", ""))
+                                        .usingParentScope(e.namespaceScope())
+                                        .plusAttribute(new QName("type"), "xhtml")
+                                        .plusAttribute(new QName(EXAMPLE_NS, "type", "my"), "silly")
+                                        .transformSelf(e2 ->
+                                                e2.plusChild(
+                                                        Nodes.elem(new QName(XHTML_NS, "div", "xhtml"))
+                                                                .usingParentScope(e2.namespaceScope())
+                                                                .plusText(innerText)
+                                                )
+                                        )
+                        )
                 );
     }
 
@@ -123,17 +135,27 @@ class NodesTests {
 
     private static Element rootElement2(String innerText) {
         return Nodes.elem(new QName(ATOM_NS, "feed", ""))
-                .plusChild(Nodes.elem(new QName(ATOM_NS, "title", "")).plusText("Example Feed"))
-                .plusChild(
-                        Nodes.elem(new QName(ATOM_NS, "rights", ""))
-                                .plusNamespaceBinding("example", EXAMPLE_NS)
-                                .plusAttribute(new QName("type"), "xhtml")
-                                .plusAttribute(new QName(EXAMPLE_NS, "type", "example"), "silly")
-                                .plusChild(
-                                        Nodes.elem(new QName(XHTML_NS, "div", ""), parentScope2)
-                                                .plusNamespaceBinding("example", EXAMPLE_NS)
-                                                .plusText(innerText)
-                                )
+                .transformSelf(e ->
+                        e.plusChild(Nodes.elem(new QName(ATOM_NS, "title", ""))
+                                .usingParentScope(e.namespaceScope())
+                                .plusText("Example Feed"))
+                )
+                .transformSelf(e ->
+                        e.plusChild(
+                                Nodes.elem(new QName(ATOM_NS, "rights", ""))
+                                        .usingParentScope(e.namespaceScope())
+                                        .plusNamespaceBinding("example", EXAMPLE_NS)
+                                        .plusAttribute(new QName("type"), "xhtml")
+                                        .plusAttribute(new QName(EXAMPLE_NS, "type", "example"), "silly")
+                                        .transformSelf(e2 ->
+                                                e2.plusChild(
+                                                        Nodes.elem(new QName(XHTML_NS, "div", ""), parentScope2)
+                                                                .usingParentScope(e2.namespaceScope())
+                                                                .plusNamespaceBinding("example", EXAMPLE_NS)
+                                                                .plusText(innerText)
+                                                )
+                                        )
+                        )
                 );
     }
 

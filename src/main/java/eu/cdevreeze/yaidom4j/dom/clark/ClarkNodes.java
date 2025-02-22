@@ -292,6 +292,11 @@ public class ClarkNodes {
         }
 
         @Override
+        public Element transformSelf(UnaryOperator<Element> f) {
+            return f.apply(this);
+        }
+
+        @Override
         public Element updateElement(
                 Set<ElementNavigationPath> elementNavigationPaths,
                 BiFunction<ElementNavigationPath, Element, Element> f
