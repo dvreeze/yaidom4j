@@ -64,8 +64,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 class ValidStandaloneXmlTest {
 
-    // TODO similar test for directory eduni/namespaces/1.0
-
     private final Processor processor = new Processor(false);
 
     @ParameterizedTest

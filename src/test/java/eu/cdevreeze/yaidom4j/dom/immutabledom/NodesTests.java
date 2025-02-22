@@ -131,8 +131,6 @@ class NodesTests {
                 );
     }
 
-    private static final NamespaceScope parentScope2 = NamespaceScope.empty().resolve("", ATOM_NS);
-
     private static Element rootElement2(String innerText) {
         return Nodes.elem(new QName(ATOM_NS, "feed", ""))
                 .transformSelf(e ->
@@ -149,9 +147,8 @@ class NodesTests {
                                         .plusAttribute(new QName(EXAMPLE_NS, "type", "example"), "silly")
                                         .transformSelf(e2 ->
                                                 e2.plusChild(
-                                                        Nodes.elem(new QName(XHTML_NS, "div", ""), parentScope2)
+                                                        Nodes.elem(new QName(XHTML_NS, "div", ""))
                                                                 .usingParentAttributeScope(e2.namespaceScope())
-                                                                .plusNamespaceBinding("example", EXAMPLE_NS)
                                                                 .plusText(innerText)
                                                 )
                                         )
