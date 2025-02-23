@@ -285,6 +285,10 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         );
     }
 
+    public static NamespaceScope of(String prefix, String namespace) {
+        return NamespaceScope.EMPTY.resolve(prefix, namespace);
+    }
+
     private static final NamespaceScope EMPTY = new NamespaceScope(ImmutableMap.of());
 
     public static NamespaceScope empty() {

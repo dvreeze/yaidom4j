@@ -203,7 +203,10 @@ public record Element(
      * <p>
      * Also, adding a (non-empty) namespace binding requires all descendant elements to get this extra
      * namespace binding as well, or else the result will not be valid XML 1.0.
+     *
+     * @deprecated If feasible, prefer {@link Element#notUndeclaringPrefixes(NamespaceScope)} instead
      */
+    @Deprecated
     public Element plusNamespaceBinding(String prefix, String namespace) {
         return new Element(name(), attributes(), namespaceScope().resolve(prefix, namespace), children());
     }
@@ -214,7 +217,10 @@ public record Element(
      * namespace scope "is in the lead", and that the default namespace is not introduced by the
      * parent scope, even if the parameter parent scope has a default namespace. Hence, this is a safe
      * operation that only adds still unused prefix-namespace bindings (without default namespace).
+     *
+     * @deprecated Use {@link Element#notUndeclaringPrefixes(NamespaceScope)} instead
      */
+    @Deprecated
     public Element usingParentAttributeScope(NamespaceScope parentScope) {
         return new Element(
                 name(),
@@ -228,6 +234,8 @@ public record Element(
      * Functionally updates the name of this element.
      * <p>
      * When calling this function, make sure to first add a namespace binding if needed.
+     * The safest way to do that is calling method {@link Element#notUndeclaringPrefixes(NamespaceScope)},
+     * if the parameter name's prefix has not already been bound to another namespace.
      */
     @Override
     public Element withName(QName newName) {

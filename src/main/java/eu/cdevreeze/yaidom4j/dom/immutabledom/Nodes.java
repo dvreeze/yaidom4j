@@ -47,12 +47,11 @@ public class Nodes {
     }
 
     /**
-     * Creates an empty Element node. If the parameter QName has a namespace, its prefix-namespace
-     * binding is added to (and possibly overrides) the provided parent scope. The returned element gets
-     * this result scope as its namespace scope. Keep in mind that if the name has a namespace, it is quite
-     * possible that this affects the in-scope namespaces in an unexpected way, especially when using
-     * the default namespace.
+     * Creates an empty Element node, taking the passed parent scope into consideration.
+     *
+     * @deprecated Use {@link Nodes#elem(QName)} instead
      */
+    @Deprecated
     public static Element elem(QName name, NamespaceScope parentScope) {
         return new Element(
                 name,
@@ -65,10 +64,22 @@ public class Nodes {
     }
 
     /**
-     * Invokes {@link Nodes#elem(QName, NamespaceScope)}, passing an empty parent namespace scope.
+     * Creates an empty Element node. If the element name has a namespace, the prefix and namespace
+     * make up the one-element namespace scope of the created element. Otherwise, the namespace scope
+     * of the element is empty.
+     * <p>
+     * Consider calling {@link Element#notUndeclaringPrefixes(NamespaceScope)} to safely add
+     * prefix-namespace bindings.
      */
     public static Element elem(QName name) {
-        return elem(name, NamespaceScope.empty());
+        return new Element(
+                name,
+                ImmutableMap.of(),
+                name.getNamespaceURI().isEmpty() ?
+                        NamespaceScope.empty() :
+                        NamespaceScope.of(name.getPrefix(), name.getNamespaceURI()),
+                ImmutableList.of()
+        );
     }
 
     public static Element elem(String noNamespaceName) {

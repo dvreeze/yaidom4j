@@ -166,11 +166,11 @@ class XmlWithNamespacesTest {
         );
         expectations.put(
                 Path.of("018.xml"),
-                element -> element.namespaceScope().equals(NamespaceScope.empty().resolve("", "http://example.org/namespace"))
+                element -> element.namespaceScope().equals(NamespaceScope.of("", "http://example.org/namespace"))
         );
         expectations.put(
                 Path.of("019.xml"),
-                element -> element.namespaceScope().equals(NamespaceScope.empty().resolve("a", "http://example.org/namespace"))
+                element -> element.namespaceScope().equals(NamespaceScope.of("a", "http://example.org/namespace"))
         );
         expectations.put(
                 Path.of("020.xml"),
@@ -184,7 +184,7 @@ class XmlWithNamespacesTest {
                         .collect(Collectors.toSet())
                         .equals(Set.of(
                                 NamespaceScope.empty(),
-                                NamespaceScope.empty().resolve("", "http://example.org/namespace")
+                                NamespaceScope.of("", "http://example.org/namespace")
                         ))
         );
         expectations.put(
@@ -193,8 +193,8 @@ class XmlWithNamespacesTest {
                         .map(Element::namespaceScope)
                         .collect(Collectors.toSet())
                         .equals(Set.of(
-                                NamespaceScope.empty().resolve("", "http://example.org/namespace"),
-                                NamespaceScope.empty().resolve("", "http://example.org/other-namespace")
+                                NamespaceScope.of("", "http://example.org/namespace"),
+                                NamespaceScope.of("", "http://example.org/other-namespace")
                         ))
         );
         // 023.xml is not namespace-well-formed (in XML 1.0) and therefore rejected by the parser
@@ -205,8 +205,8 @@ class XmlWithNamespacesTest {
                         .map(Element::namespaceScope)
                         .collect(Collectors.toSet())
                         .equals(Set.of(
-                                NamespaceScope.empty().resolve("a", "http://example.org/namespace"),
-                                NamespaceScope.empty().resolve("a", "http://example.org/other-namespace")
+                                NamespaceScope.of("a", "http://example.org/namespace"),
+                                NamespaceScope.of("a", "http://example.org/other-namespace")
                         ))
         );
         // 025.xml is not namespace-well-formed and therefore rejected by the parser
@@ -230,7 +230,7 @@ class XmlWithNamespacesTest {
         expectations.put(
                 Path.of("034.xml"),
                 element -> element.namespaceScope()
-                        .equals(NamespaceScope.empty().resolve("xml2", "http://example.org/namespace"))
+                        .equals(NamespaceScope.of("xml2", "http://example.org/namespace"))
         );
         // 035.xml is not namespace-well-formed and therefore rejected by the parser
         // 036.xml is not namespace-well-formed and therefore rejected by the parser
