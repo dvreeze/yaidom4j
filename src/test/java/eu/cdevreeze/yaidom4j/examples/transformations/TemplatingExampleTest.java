@@ -61,9 +61,11 @@ class TemplatingExampleTest {
 
         Element htmlElement = transform(doc.documentElement());
 
-        DocumentPrinter docPrinter = DocumentPrinters.instance();
-        System.out.println();
-        System.out.println(docPrinter.print(htmlElement));
+        if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
+            DocumentPrinter docPrinter = DocumentPrinters.instance();
+            System.out.println();
+            System.out.println(docPrinter.print(htmlElement));
+        }
 
         Element tableExtractedFromCatalog =
                 doc.documentElement().withName(new QName("table"))
@@ -104,9 +106,11 @@ class TemplatingExampleTest {
 
         Element htmlElement = transformSortingOnArtist(doc.documentElement());
 
-        DocumentPrinter docPrinter = DocumentPrinters.instance();
-        System.out.println();
-        System.out.println(docPrinter.print(htmlElement));
+        if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
+            DocumentPrinter docPrinter = DocumentPrinters.instance();
+            System.out.println();
+            System.out.println(docPrinter.print(htmlElement));
+        }
 
         Element tableExtractedFromCatalog =
                 doc.documentElement().withName(new QName("table"))
@@ -150,9 +154,11 @@ class TemplatingExampleTest {
 
         Element htmlElement = transformToParagraphs(doc.documentElement());
 
-        DocumentPrinter docPrinter = DocumentPrinters.instance();
-        System.out.println();
-        System.out.println(docPrinter.print(htmlElement));
+        if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
+            DocumentPrinter docPrinter = DocumentPrinters.instance();
+            System.out.println();
+            System.out.println(docPrinter.print(htmlElement));
+        }
 
         Set<String> titlesFromCatalog =
                 doc.documentElement().descendantElementStream(hasName("title"))

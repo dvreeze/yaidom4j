@@ -105,7 +105,9 @@ class ThreadSafetyTest {
                         .collect(Collectors.toSet())
         );
 
-        System.out.println(docPrinter.print(endElement));
+        if (Boolean.parseBoolean(System.getProperty("debugThreadSafetyTest"))) {
+            System.out.println(docPrinter.print(endElement));
+        }
     }
 
     private Element createElement() {
