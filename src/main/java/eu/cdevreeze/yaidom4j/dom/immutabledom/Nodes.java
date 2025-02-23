@@ -25,11 +25,11 @@ import java.net.URI;
 import java.util.Optional;
 
 /**
- * Friendly Node creation API. Shamelessly copied and adapted and enhanced from
+ * Friendly Node creation API. Shamelessly copied, adapted and enhanced from
  * <a href="https://www.saxonica.com/html/documentation12/javadoc/net/sf/saxon/sapling/Saplings.html">Saxon Sapling</a>.
  * So credits go to <a href="https://www.saxonica.com">Saxonica</a> for this API. On the other hand,
- * yaidom4j already fits this API perfectly, because in essence it is based on the XPath Data Model
- * information items (slightly adapted), which deeply underlies the Saxon XML processor library.
+ * yaidom4j already fits this API perfectly, because in essence it is roughly based on the XPath Data Model
+ * information items (slightly simplified), which deeply underlies the Saxon XML processor library.
  *
  * @author Chris de Vreeze
  */
@@ -47,9 +47,11 @@ public class Nodes {
     }
 
     /**
-     * Creates an empty Element node. Keep in mind that if the name has a namespace, it is quite
-     * possible that this affects the in-scope namespaces (and possibly even in an unexpected way,
-     * especially when using the default namespace).
+     * Creates an empty Element node. If the parameter QName has a namespace, its prefix-namespace
+     * binding is added to (and possibly overrides) the provided parent scope. The returned element gets
+     * this result scope as its namespace scope. Keep in mind that if the name has a namespace, it is quite
+     * possible that this affects the in-scope namespaces in an unexpected way, especially when using
+     * the default namespace.
      */
     public static Element elem(QName name, NamespaceScope parentScope) {
         return new Element(
@@ -63,9 +65,7 @@ public class Nodes {
     }
 
     /**
-     * Creates an empty Element node. Keep in mind that if the name has a namespace, it is quite
-     * possible that this affects the in-scope namespaces (and possibly even in an unexpected way,
-     * especially when using the default namespace).
+     * Invokes {@link Nodes#elem(QName, NamespaceScope)}, passing an empty parent namespace scope.
      */
     public static Element elem(QName name) {
         return elem(name, NamespaceScope.empty());

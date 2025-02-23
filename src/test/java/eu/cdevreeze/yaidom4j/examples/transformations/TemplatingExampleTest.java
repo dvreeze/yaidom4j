@@ -174,15 +174,15 @@ class TemplatingExampleTest {
 
         return Nodes.elem("html")
                 .plusChild(Nodes.elem("body")
-                        .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
+                        .plusChild(Nodes.elem("h2").withText("My CD Collection"))
                         .plusChild(
                                 Nodes.elem("table")
                                         .plusAttribute(new QName("border"), "1")
                                         .plusChild(
                                                 Nodes.elem("tr")
                                                         .plusAttribute(new QName("bgcolor"), "#9acd32")
-                                                        .plusChild(Nodes.elem("th").plusText("Title"))
-                                                        .plusChild(Nodes.elem("th").plusText("Artist"))
+                                                        .plusChild(Nodes.elem("th").withText("Title"))
+                                                        .plusChild(Nodes.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
                                                 catalogElement.childElementStream(hasName("cd"))
@@ -198,15 +198,15 @@ class TemplatingExampleTest {
 
         return Nodes.elem("html")
                 .plusChild(Nodes.elem("body")
-                        .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
+                        .plusChild(Nodes.elem("h2").withText("My CD Collection"))
                         .plusChild(
                                 Nodes.elem("table")
                                         .plusAttribute(new QName("border"), "1")
                                         .plusChild(
                                                 Nodes.elem("tr")
                                                         .plusAttribute(new QName("bgcolor"), "#9acd32")
-                                                        .plusChild(Nodes.elem("th").plusText("Title"))
-                                                        .plusChild(Nodes.elem("th").plusText("Artist"))
+                                                        .plusChild(Nodes.elem("th").withText("Title"))
+                                                        .plusChild(Nodes.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
                                                 catalogElement.childElementStream(hasName("cd"))
@@ -227,7 +227,7 @@ class TemplatingExampleTest {
         return Nodes.elem("html")
                 .plusChild(
                         Nodes.elem("body")
-                                .plusChild(Nodes.elem("h2").plusText("My CD Collection"))
+                                .plusChild(Nodes.elem("h2").withText("My CD Collection"))
                                 .plusChildren(
                                         catalogElement.childElementStream(hasName("cd"))
                                                 .map(this::mapCdElemToParagraph)
@@ -245,10 +245,10 @@ class TemplatingExampleTest {
                 .findFirst().orElseThrow().text();
         return Nodes.elem("tr")
                 .plusChild(
-                        Nodes.elem("td").plusText(title)
+                        Nodes.elem("td").withText(title)
                 )
                 .plusChild(
-                        Nodes.elem("td").plusText(artist)
+                        Nodes.elem("td").withText(artist)
                 );
     }
 
@@ -275,7 +275,7 @@ class TemplatingExampleTest {
         return List.of(
                 Nodes.text("Title: "),
                 Nodes.elem("span")
-                        .plusText(titleElement.text())
+                        .withText(titleElement.text())
                         .plusAttribute(new QName("style"), "color:#ff0000"),
                 Nodes.elem("br")
         );
@@ -287,7 +287,7 @@ class TemplatingExampleTest {
         return List.of(
                 Nodes.text("Artist: "),
                 Nodes.elem("span")
-                        .plusText(artistElement.text())
+                        .withText(artistElement.text())
                         .plusAttribute(new QName("style"), "color:#00ff00"),
                 Nodes.elem("br")
         );

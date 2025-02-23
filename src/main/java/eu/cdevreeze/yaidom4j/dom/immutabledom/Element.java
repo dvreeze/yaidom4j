@@ -212,7 +212,8 @@ public record Element(
      * Returns the same element, except that the namespace scope is enhanced by resolving it against the
      * given parent scope, without the default namespace, if any. This implies that this element's
      * namespace scope "is in the lead", and that the default namespace is not introduced by the
-     * parent scope, even if the parent scope has a default namespace.
+     * parent scope, even if the parameter parent scope has a default namespace. Hence, this is a safe
+     * operation that only adds still unused prefix-namespace bindings (without default namespace).
      */
     public Element usingParentAttributeScope(NamespaceScope parentScope) {
         return new Element(
@@ -267,6 +268,13 @@ public record Element(
         return withChildren(
                 ImmutableList.<Node>builder().addAll(children).addAll(newChildren).build()
         );
+    }
+
+    /**
+     * Convenience method to set a Text child as the only child node
+     */
+    public Element withText(String textValue) {
+        return withChildren(ImmutableList.of(new Text(textValue, false)));
     }
 
     /**

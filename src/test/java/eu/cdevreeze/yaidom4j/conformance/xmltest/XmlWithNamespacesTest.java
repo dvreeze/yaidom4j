@@ -237,53 +237,48 @@ class XmlWithNamespacesTest {
         // 037.xml till 041.xml are considered invalid ("simple legal case"), but are technically fine
         expectations.put(
                 Path.of("037.xml"),
-                element -> element.descendantElementOrSelfStream()
-                        .anyMatch(e -> e.name().equals(new QName("bar")) &&
-                                e.attributes().keySet().equals(
-                                        Set.of(
-                                                new QName("http://example.org/~wilbur", "attr"),
-                                                new QName("http://example.org/~kipper", "attr")
-                                        )))
+                element -> element.descendantElementOrSelfStream(hasName("bar"))
+                        .anyMatch(e -> e.attributes().keySet().equals(
+                                Set.of(
+                                        new QName("http://example.org/~wilbur", "attr"),
+                                        new QName("http://example.org/~kipper", "attr")
+                                )))
         );
         expectations.put(
                 Path.of("038.xml"),
-                element -> element.descendantElementOrSelfStream()
-                        .anyMatch(e -> e.name().equals(new QName("bar")) &&
-                                e.attributes().keySet().equals(
-                                        Set.of(
-                                                new QName("http://example.org/~wilbur", "attr"),
-                                                new QName("attr")
-                                        )))
+                element -> element.descendantElementOrSelfStream(hasName("bar"))
+                        .anyMatch(e -> e.attributes().keySet().equals(
+                                Set.of(
+                                        new QName("http://example.org/~wilbur", "attr"),
+                                        new QName("attr")
+                                )))
         );
         expectations.put(
                 Path.of("039.xml"),
-                element -> element.descendantElementOrSelfStream()
-                        .anyMatch(e -> e.name().equals(new QName("http://example.org/~kipper", "bar")) &&
-                                e.attributes().keySet().equals(
-                                        Set.of(
-                                                new QName("http://example.org/~wilbur", "attr"),
-                                                new QName("attr")
-                                        )))
+                element -> element.descendantElementOrSelfStream(hasName("http://example.org/~kipper", "bar"))
+                        .anyMatch(e -> e.attributes().keySet().equals(
+                                Set.of(
+                                        new QName("http://example.org/~wilbur", "attr"),
+                                        new QName("attr")
+                                )))
         );
         expectations.put(
                 Path.of("040.xml"),
-                element -> element.descendantElementOrSelfStream()
-                        .anyMatch(e -> e.name().equals(new QName("http://example.org/~wilbur", "bar")) &&
-                                e.attributes().keySet().equals(
-                                        Set.of(
-                                                new QName("http://example.org/~wilbur", "attr"),
-                                                new QName("attr")
-                                        )))
+                element -> element.descendantElementOrSelfStream(hasName("http://example.org/~wilbur", "bar"))
+                        .anyMatch(e -> e.attributes().keySet().equals(
+                                Set.of(
+                                        new QName("http://example.org/~wilbur", "attr"),
+                                        new QName("attr")
+                                )))
         );
         expectations.put(
                 Path.of("041.xml"),
-                element -> element.descendantElementOrSelfStream()
-                        .anyMatch(e -> e.name().equals(new QName("http://example.org/~wilbur", "bar")) &&
-                                e.attributes().keySet().equals(
-                                        Set.of(
-                                                new QName("http://example.org/~wilbur", "attr"),
-                                                new QName("attr")
-                                        )))
+                element -> element.descendantElementOrSelfStream(hasName("http://example.org/~wilbur", "bar"))
+                        .anyMatch(e -> e.attributes().keySet().equals(
+                                Set.of(
+                                        new QName("http://example.org/~wilbur", "attr"),
+                                        new QName("attr")
+                                )))
         );
         // 042.xml is not namespace-well-formed and therefore rejected by the parser
         // 043.xml is not namespace-well-formed yet accepted by Saxon (or the underlying XML parser)
