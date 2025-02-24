@@ -68,7 +68,7 @@ public class Nodes {
      * make up the one-element namespace scope of the created element. Otherwise, the namespace scope
      * of the element is empty.
      * <p>
-     * Consider calling {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)} on the result
+     * Consider calling {@link Element#withParentAttributeScope(NamespaceScope)} on the result
      * to safely add prefix-namespace bindings.
      */
     public static Element elem(QName name) {

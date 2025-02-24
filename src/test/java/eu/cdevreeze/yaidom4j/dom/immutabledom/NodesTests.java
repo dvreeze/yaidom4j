@@ -107,23 +107,23 @@ class NodesTests {
     );
 
     private static Element rootElement1(String innerText) {
-        return Nodes.elem(new QName(ATOM_NS, "feed", "")).deeplyUsingParentAttributeScope(parentScope)
+        return Nodes.elem(new QName(ATOM_NS, "feed", "")).withParentAttributeScope(parentScope)
                 .transformSelf(e ->
                         e.plusChild(
                                 Nodes.elem(new QName(ATOM_NS, "title", ""))
-                                        .deeplyUsingParentAttributeScope(e.namespaceScope())
+                                        .withParentAttributeScope(e.namespaceScope())
                                         .plusText("Example Feed"))
                 )
                 .transformSelf(e ->
                         e.plusChild(
                                 Nodes.elem(new QName(ATOM_NS, "rights", ""))
-                                        .deeplyUsingParentAttributeScope(e.namespaceScope())
+                                        .withParentAttributeScope(e.namespaceScope())
                                         .plusAttribute(new QName("type"), "xhtml")
                                         .plusAttribute(new QName(EXAMPLE_NS, "type", "my"), "silly")
                                         .transformSelf(e2 ->
                                                 e2.plusChild(
                                                         Nodes.elem(new QName(XHTML_NS, "div", "xhtml"))
-                                                                .deeplyUsingParentAttributeScope(e2.namespaceScope())
+                                                                .withParentAttributeScope(e2.namespaceScope())
                                                                 .plusText(innerText)
                                                 )
                                         )
@@ -135,13 +135,13 @@ class NodesTests {
         return Nodes.elem(new QName(ATOM_NS, "feed", ""))
                 .transformSelf(e ->
                         e.plusChild(Nodes.elem(new QName(ATOM_NS, "title", ""))
-                                .deeplyUsingParentAttributeScope(e.namespaceScope())
+                                .withParentAttributeScope(e.namespaceScope())
                                 .plusText("Example Feed"))
                 )
                 .transformSelf(e ->
                         e.plusChild(
                                 Nodes.elem(new QName(ATOM_NS, "rights", ""))
-                                        .deeplyUsingParentAttributeScope(
+                                        .withParentAttributeScope(
                                                 e.namespaceScope().resolve("example", EXAMPLE_NS)
                                         )
                                         .plusAttribute(new QName("type"), "xhtml")
@@ -149,7 +149,7 @@ class NodesTests {
                                         .transformSelf(e2 ->
                                                 e2.plusChild(
                                                         Nodes.elem(new QName(XHTML_NS, "div", ""))
-                                                                .deeplyUsingParentAttributeScope(e2.namespaceScope())
+                                                                .withParentAttributeScope(e2.namespaceScope())
                                                                 .plusText(innerText)
                                                 )
                                         )

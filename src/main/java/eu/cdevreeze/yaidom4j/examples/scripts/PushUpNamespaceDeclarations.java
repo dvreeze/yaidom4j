@@ -51,7 +51,7 @@ public class PushUpNamespaceDeclarations {
         // A parsed XML 1.0 document element has no prefixed namespace undeclarations
         Preconditions.checkArgument(
                 doc.documentElement().equals(
-                        doc.documentElement().deeplyUsingParentAttributeScope(NamespaceScope.empty())
+                        doc.documentElement().withParentAttributeScope(NamespaceScope.empty())
                 )
         );
 
@@ -95,7 +95,7 @@ public class PushUpNamespaceDeclarations {
 
         NamespaceScope startScope = NamespaceScope.from(stablePrefixNamespaces);
 
-        Element resultElement = element.deeplyUsingParentAttributeScope(startScope);
+        Element resultElement = element.withParentAttributeScope(startScope);
 
         Preconditions.checkArgument(element.toClarkNode().equals(resultElement.toClarkNode()));
 

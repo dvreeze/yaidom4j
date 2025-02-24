@@ -204,7 +204,7 @@ public record Element(
      * Also, adding a (non-empty) namespace binding requires all descendant elements to get this extra
      * namespace binding as well, or else the result will not be valid XML 1.0.
      *
-     * @deprecated If feasible, prefer {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)} instead
+     * @deprecated If feasible, prefer {@link Element#withParentAttributeScope(NamespaceScope)} instead
      */
     @Deprecated
     public Element plusNamespaceBinding(String prefix, String namespace) {
@@ -218,7 +218,7 @@ public record Element(
      * parent scope, even if the parameter parent scope has a default namespace. Hence, this is a safe
      * operation that only adds still unused prefix-namespace bindings (without default namespace).
      *
-     * @deprecated Use {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)} instead
+     * @deprecated Use {@link Element#withParentAttributeScope(NamespaceScope)} instead
      */
     @Deprecated
     public Element usingParentAttributeScope(NamespaceScope parentScope) {
@@ -238,7 +238,7 @@ public record Element(
      * prefixes in the parent scope that do not conflict with the element's own namespace scope,
      * and the resulting element will be valid XML 1.0 as well.
      */
-    public Element deeplyUsingParentAttributeScope(NamespaceScope parentScope) {
+    public Element withParentAttributeScope(NamespaceScope parentScope) {
         NamespaceScope newScope =
                 parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
 
@@ -248,14 +248,14 @@ public record Element(
 
         // Recursion
         return new Element(name(), attributes(), newScope, children())
-                .transformChildElements(che -> che.deeplyUsingParentAttributeScope(newScope));
+                .transformChildElements(che -> che.withParentAttributeScope(newScope));
     }
 
     /**
      * Functionally updates the name of this element.
      * <p>
      * When calling this function, make sure to first add a namespace binding if needed.
-     * The safest way to do that is calling method {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)},
+     * The safest way to do that is calling method {@link Element#withParentAttributeScope(NamespaceScope)},
      * if the parameter name's prefix has not already been bound to another namespace.
      */
     @Override
@@ -447,10 +447,10 @@ public record Element(
     }
 
     /**
-     * Alias for {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)}.
+     * Alias for {@link Element#withParentAttributeScope(NamespaceScope)}.
      */
     public Element notUndeclaringPrefixes(NamespaceScope parentScope) {
-        return deeplyUsingParentAttributeScope(parentScope);
+        return withParentAttributeScope(parentScope);
     }
 
     // Private methods
