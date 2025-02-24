@@ -204,7 +204,7 @@ public record Element(
      * Also, adding a (non-empty) namespace binding requires all descendant elements to get this extra
      * namespace binding as well, or else the result will not be valid XML 1.0.
      *
-     * @deprecated If feasible, prefer {@link Element#notUndeclaringPrefixes(NamespaceScope)} instead
+     * @deprecated If feasible, prefer {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)} instead
      */
     @Deprecated
     public Element plusNamespaceBinding(String prefix, String namespace) {
@@ -218,7 +218,7 @@ public record Element(
      * parent scope, even if the parameter parent scope has a default namespace. Hence, this is a safe
      * operation that only adds still unused prefix-namespace bindings (without default namespace).
      *
-     * @deprecated Use {@link Element#notUndeclaringPrefixes(NamespaceScope)} instead
+     * @deprecated Use {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)} instead
      */
     @Deprecated
     public Element usingParentAttributeScope(NamespaceScope parentScope) {
@@ -231,10 +231,31 @@ public record Element(
     }
 
     /**
+     * Returns the "same element", except that there are no prefixed namespace un-declarations
+     * (which are not allowed in XML 1.0), and the given parent scope (without its default
+     * namespace, if any) is taken as the "starting point". If this element is valid in XML 1.0,
+     * then this element and its descendant elements will (functionally) get the extra (non-empty)
+     * prefixes in the parent scope that do not conflict with the element's own namespace scope,
+     * and the resulting element will be valid XML 1.0 as well.
+     */
+    public Element deeplyUsingParentAttributeScope(NamespaceScope parentScope) {
+        NamespaceScope newScope =
+                parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
+
+        // The namespace scope additions are completely safe:
+        Preconditions.checkArgument(namespaceScope().subScopeOf(newScope));
+        Preconditions.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
+
+        // Recursion
+        return new Element(name(), attributes(), newScope, children())
+                .transformChildElements(che -> che.deeplyUsingParentAttributeScope(newScope));
+    }
+
+    /**
      * Functionally updates the name of this element.
      * <p>
      * When calling this function, make sure to first add a namespace binding if needed.
-     * The safest way to do that is calling method {@link Element#notUndeclaringPrefixes(NamespaceScope)},
+     * The safest way to do that is calling method {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)},
      * if the parameter name's prefix has not already been bound to another namespace.
      */
     @Override
@@ -426,20 +447,10 @@ public record Element(
     }
 
     /**
-     * Returns the "same element", except that there are no prefixed namespace un-declarations
-     * (which are not allowed in XML 1.0), and the given parent scope (without its default
-     * namespace, if any) is taken as the "starting point".
+     * Alias for {@link Element#deeplyUsingParentAttributeScope(NamespaceScope)}.
      */
     public Element notUndeclaringPrefixes(NamespaceScope parentScope) {
-        NamespaceScope newScope =
-                parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
-
-        Preconditions.checkArgument(namespaceScope().subScopeOf(newScope));
-        Preconditions.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
-
-        // Recursion
-        return new Element(name(), attributes(), newScope, children())
-                .transformChildElements(che -> che.notUndeclaringPrefixes(newScope));
+        return deeplyUsingParentAttributeScope(parentScope);
     }
 
     // Private methods
