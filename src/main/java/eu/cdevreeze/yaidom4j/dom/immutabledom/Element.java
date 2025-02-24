@@ -235,8 +235,7 @@ public record Element(
      * (which are not allowed in XML 1.0), and the given parent scope (without its default
      * namespace, if any) is taken as the "starting point". If this element is valid in XML 1.0,
      * then this element and its descendant elements will (functionally) get the extra (non-empty)
-     * prefixes in the parent scope that do not conflict with the element's own namespace scope,
-     * and the resulting element will be valid XML 1.0 as well.
+     * prefixes in the parent scope that do not conflict with the element's own namespace scope.
      */
     public Element withParentAttributeScope(NamespaceScope parentScope) {
         NamespaceScope newScope =
