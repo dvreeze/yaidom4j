@@ -252,6 +252,21 @@ public class ClarkNodes {
         }
 
         @Override
+        public Element plusAttributeOption(QName attrName, Optional<String> newAttrValueOption) {
+            return withAttributes(
+                    ImmutableMap.<QName, String>builder()
+                            .putAll(attributes)
+                            .putAll(
+                                    newAttrValueOption
+                                            .stream()
+                                            .map(v -> Map.entry(attrName, v))
+                                            .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                            )
+                            .buildKeepingLast()
+            );
+        }
+
+        @Override
         public Element transformChildrenToNodeLists(Function<Node, List<Node>> f) {
             return withChildren(
                     children().stream()

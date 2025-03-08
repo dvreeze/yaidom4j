@@ -73,6 +73,11 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     E plusAttribute(QName attrName, String attrValue);
 
     /**
+     * Calls method {@link TransformableElementApi#withAttributes} to functionally add or update at most one attribute
+     */
+    E plusAttributeOption(QName attrName, Optional<String> newAttrValueOption);
+
+    /**
      * Returns an adapted copy of this element where the children are replaced by the results of applying
      * the given function.
      * <p>
