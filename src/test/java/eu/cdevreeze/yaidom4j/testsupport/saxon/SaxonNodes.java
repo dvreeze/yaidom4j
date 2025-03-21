@@ -22,10 +22,10 @@ import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
-import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.s9api.streams.Steps;
 import net.sf.saxon.tree.NamespaceNode;
 
 import javax.xml.namespace.QName;
@@ -104,8 +104,7 @@ public class SaxonNodes {
 
         @Override
         public ImmutableMap<QName, String> attributes() {
-            return xdmNode.axisIterator(Axis.ATTRIBUTE)
-                    .stream()
+            return xdmNode.select(Steps.attribute())
                     .collect(
                             ImmutableMap.toImmutableMap(
                                     xdmAttrNode -> xdmAttrNode.getNodeName().getStructuredQName().toJaxpQName(),
@@ -116,8 +115,7 @@ public class SaxonNodes {
 
         @Override
         public Optional<String> attributeOption(QName attrName) {
-            return xdmNode.axisIterator(Axis.ATTRIBUTE, new net.sf.saxon.s9api.QName(attrName))
-                    .stream()
+            return xdmNode.select(Steps.attribute(attrName.getNamespaceURI(), attrName.getLocalPart()))
                     .map(XdmItem::getStringValue)
                     .findAny();
         }
@@ -129,8 +127,7 @@ public class SaxonNodes {
 
         @Override
         public String text() {
-            return xdmNode.axisIterator(Axis.CHILD)
-                    .stream()
+            return xdmNode.select(Steps.child())
                     .filter(n -> n.getNodeKind().equals(XdmNodeKind.TEXT))
                     .map(XdmNode::getStringValue)
                     .collect(Collectors.joining());
@@ -138,8 +135,7 @@ public class SaxonNodes {
 
         @Override
         public Optional<NamespaceScope> namespaceScopeOption() {
-            ImmutableMap<String, String> nsMappings = xdmNode.axisIterator(Axis.NAMESPACE)
-                    .stream()
+            ImmutableMap<String, String> nsMappings = xdmNode.select(Steps.namespace())
                     .map(n -> (NamespaceNode) n.getUnderlyingNode())
                     .map(n -> Map.entry(n.getDisplayName(), n.getStringValue()))
                     .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -163,8 +159,7 @@ public class SaxonNodes {
         }
 
         public Stream<Node> childNodeStream() {
-            return xdmNode.axisIterator(Axis.CHILD)
-                    .stream()
+            return xdmNode.select(Steps.child())
                     .flatMap(n -> SaxonNodes.optionalNodeFrom(n).stream());
         }
 
