@@ -53,7 +53,9 @@ class MpmWithXmlTests {
         ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
         MimeStreamParser mimeParser = new MimeStreamParser();
         mimeParser.setContentHandler(handler);
-        mimeParser.parse(mpmUri.toURL().openStream());
+        try (InputStream is = mpmUri.toURL().openStream()) {
+            mimeParser.parse(is);
+        }
         ImmutableMap<ImmutableList<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
 
         assertEquals(3, rootElements.size());
@@ -97,7 +99,9 @@ class MpmWithXmlTests {
         ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
         MimeStreamParser mimeParser = new MimeStreamParser();
         mimeParser.setContentHandler(handler);
-        mimeParser.parse(mpmUri.toURL().openStream());
+        try (InputStream is = mpmUri.toURL().openStream()) {
+            mimeParser.parse(is);
+        }
         ImmutableMap<ImmutableList<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
 
         assertEquals(3, rootElements.size());
