@@ -44,11 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Chris de Vreeze
  */
-class NestedMpmWithXmlTests {
+class MpmWithXmlTests {
 
     @Test
     void testParsingOfNonNestedMultipartMimeWithXml() throws URISyntaxException, IOException, MimeException {
-        URI mpmUri = Objects.requireNonNull(NestedMpmWithXmlTests.class.getResource("/mpm/sample-mpm.txt")).toURI();
+        URI mpmUri = Objects.requireNonNull(MpmWithXmlTests.class.getResource("/mpm/sample-mpm.txt")).toURI();
 
         ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
         MimeStreamParser mimeParser = new MimeStreamParser();
@@ -92,7 +92,7 @@ class NestedMpmWithXmlTests {
 
     @Test
     void testParsingOfNestedMultipartMimeWithXml() throws URISyntaxException, IOException, MimeException {
-        URI mpmUri = Objects.requireNonNull(NestedMpmWithXmlTests.class.getResource("/mpm/sample-nested-mpm.txt")).toURI();
+        URI mpmUri = Objects.requireNonNull(MpmWithXmlTests.class.getResource("/mpm/sample-nested-mpm.txt")).toURI();
 
         ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
         MimeStreamParser mimeParser = new MimeStreamParser();
@@ -138,7 +138,7 @@ class NestedMpmWithXmlTests {
         try {
             DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
             return docParser.parse(
-                            Objects.requireNonNull(NestedMpmWithXmlTests.class.getResource(classPathResource)).toURI()
+                            Objects.requireNonNull(MpmWithXmlTests.class.getResource(classPathResource)).toURI()
                     )
                     .documentElement();
         } catch (URISyntaxException e) {
