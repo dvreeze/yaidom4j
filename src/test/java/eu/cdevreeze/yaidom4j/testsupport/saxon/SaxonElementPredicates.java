@@ -49,6 +49,10 @@ public class SaxonElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
+    public static Predicate<Element> hasLocalName(String localName) {
+        return factory.hasLocalName(localName);
+    }
+
     public static Predicate<Element> hasAttributeWithName(QName attrName) {
         return factory.hasAttributeWithName(attrName);
     }
@@ -116,6 +120,11 @@ public class SaxonElementPredicates {
         @Override
         public Predicate<Element> hasName(String noNamespaceName) {
             return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+        }
+
+        @Override
+        public Predicate<Element> hasLocalName(String localName) {
+            return e -> e.elementName().getLocalPart().equals(localName);
         }
 
         @Override

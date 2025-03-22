@@ -45,6 +45,10 @@ public class AncestryAwareElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
+    public static Predicate<AncestryAwareNodes.Element> hasLocalName(String localName) {
+        return factory.hasLocalName(localName);
+    }
+
     public static Predicate<AncestryAwareNodes.Element> hasAttributeWithName(QName attrName) {
         return factory.hasAttributeWithName(attrName);
     }
@@ -115,6 +119,11 @@ public class AncestryAwareElementPredicates {
         @Override
         public Predicate<AncestryAwareNodes.Element> hasName(String noNamespaceName) {
             return e -> underlyingFactory.hasName(noNamespaceName).test(e.underlyingElement());
+        }
+
+        @Override
+        public Predicate<AncestryAwareNodes.Element> hasLocalName(String localName) {
+            return e -> underlyingFactory.hasLocalName(localName).test(e.underlyingElement());
         }
 
         @Override

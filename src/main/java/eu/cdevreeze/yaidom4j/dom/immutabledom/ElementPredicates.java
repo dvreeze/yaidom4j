@@ -46,6 +46,10 @@ public class ElementPredicates {
         return factory.hasName(noNamespaceName);
     }
 
+    public static Predicate<Element> hasLocalName(String localName) {
+        return factory.hasLocalName(localName);
+    }
+
     public static Predicate<Element> hasAttributeWithName(QName attrName) {
         return factory.hasAttributeWithName(attrName);
     }
@@ -113,6 +117,11 @@ public class ElementPredicates {
         @Override
         public Predicate<Element> hasName(String noNamespaceName) {
             return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+        }
+
+        @Override
+        public Predicate<Element> hasLocalName(String localName) {
+            return e -> e.name().getLocalPart().equals(localName);
         }
 
         @Override
