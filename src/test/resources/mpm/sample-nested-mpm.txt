@@ -40,16 +40,20 @@ Content-Type: text/xml; charset=utf-8
     </env:Body>
 </env:Envelope>
 --__a_boundary__
+Content-Type: multipart/mixed; boundary="__another_boundary__"
+
+--__another_boundary__
 Content-Type: text/plain; charset=utf-8
 
 This is a nested part, in plain text.
---__a_boundary__
+--__another_boundary__
 Content-Type: text/xml; charset=utf-8
 
 <!-- Example file from https://www.w3.org/TR/xmlbase/ -->
 <e1 xml:base="http://example.org/wine/">
     <e2 xml:base="rosé"/>
 </e1>
+--__another_boundary__
 --__a_boundary__
 Content-Type: text/xml; charset=utf-8
 

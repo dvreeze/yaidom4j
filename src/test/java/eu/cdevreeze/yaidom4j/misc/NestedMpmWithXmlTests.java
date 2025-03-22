@@ -38,7 +38,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * This test checks parsing of nested multipart MIME data containing XML content.
+ * This test checks parsing of non-nested and nested multipart MIME data containing XML content.
  * <p>
  * This is not a unit test.
  *
@@ -47,8 +47,52 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NestedMpmWithXmlTests {
 
     @Test
-    void testParsingOfNestedMultipartMimeWithXml() throws URISyntaxException, IOException, MimeException {
+    void testParsingOfNonNestedMultipartMimeWithXml() throws URISyntaxException, IOException, MimeException {
         URI mpmUri = Objects.requireNonNull(NestedMpmWithXmlTests.class.getResource("/mpm/sample-mpm.txt")).toURI();
+
+        ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
+        MimeStreamParser mimeParser = new MimeStreamParser();
+        mimeParser.setContentHandler(handler);
+        mimeParser.parse(mpmUri.toURL().openStream());
+        ImmutableMap<ImmutableList<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
+
+        assertEquals(3, rootElements.size());
+
+        Element firstElement = parseElementOnClassPath("/sample-soap-message.xml");
+        Element secondElement = parseElementOnClassPath("/rose.xml");
+        Element thirdElement = parseElementOnClassPath("/valid-books.xml");
+
+        assertEquals(
+                firstElement.toClarkNode(),
+                Objects.requireNonNull(rootElements.get(ImmutableList.of(1))).toClarkNode()
+        );
+
+        assertEquals(
+                secondElement.toClarkNode(),
+                Objects.requireNonNull(rootElements.get(ImmutableList.of(3))).toClarkNode()
+        );
+
+        assertEquals(
+                thirdElement.toClarkNode(),
+                Objects.requireNonNull(rootElements.get(ImmutableList.of(4))).toClarkNode()
+        );
+
+        assertEquals(
+                ImmutableMap.of(
+                        ImmutableList.of(1), firstElement.toClarkNode(),
+                        ImmutableList.of(3), secondElement.toClarkNode(),
+                        ImmutableList.of(4), thirdElement.toClarkNode()
+                ),
+                rootElements.entrySet()
+                        .stream()
+                        .map(kv -> Map.entry(kv.getKey(), kv.getValue().toClarkNode()))
+                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
+    }
+
+    @Test
+    void testParsingOfNestedMultipartMimeWithXml() throws URISyntaxException, IOException, MimeException {
+        URI mpmUri = Objects.requireNonNull(NestedMpmWithXmlTests.class.getResource("/mpm/sample-nested-mpm.txt")).toURI();
 
         ContentHandlerCollectingXml handler = new ContentHandlerCollectingXml();
         MimeStreamParser mimeParser = new MimeStreamParser();
