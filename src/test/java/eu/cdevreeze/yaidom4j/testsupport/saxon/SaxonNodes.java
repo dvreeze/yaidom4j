@@ -179,6 +179,17 @@ public class SaxonNodes {
         }
 
         @Override
+        public Stream<Element> selfElementStream() {
+            return Stream.of(Element.this);
+        }
+
+        @Override
+        public Stream<Element> selfElementStream(Predicate<? super Element> predicate) {
+            return xdmNode.select(SaxonElementSteps.selfElements(n -> Element.optionallyFrom(n).map(predicate::test).orElse(false)))
+                    .flatMap(n -> Element.optionallyFrom(n).stream());
+        }
+
+        @Override
         public Stream<Element> childElementStream() {
             return xdmNode.select(SaxonElementSteps.childElements()).flatMap(n -> Element.optionallyFrom(n).stream());
         }

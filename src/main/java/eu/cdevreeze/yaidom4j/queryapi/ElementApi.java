@@ -70,6 +70,10 @@ public interface ElementApi<E extends ElementApi<E>> {
      */
     Stream<E> topmostElementStream(Predicate<? super E> predicate);
 
+    Stream<E> selfElementStream();
+
+    Stream<E> selfElementStream(Predicate<? super E> predicate);
+
     Stream<E> childElementStream();
 
     Stream<E> childElementStream(Predicate<? super E> predicate);

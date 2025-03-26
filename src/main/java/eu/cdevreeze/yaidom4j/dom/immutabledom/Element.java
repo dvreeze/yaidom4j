@@ -133,6 +133,18 @@ public record Element(
     }
 
     @Override
+    public Stream<Element> selfElementStream() {
+        return Stream.of(Element.this);
+    }
+
+    @Override
+    public Stream<Element> selfElementStream(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return selfElementStream().filter(predicate);
+    }
+
+    @Override
     public Stream<Element> childElementStream() {
         return childNodeStream().filter(Node::isElement).map(n -> (Element) n);
     }

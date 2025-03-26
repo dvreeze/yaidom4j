@@ -276,6 +276,18 @@ public class AncestryAwareNodes {
         }
 
         @Override
+        public Stream<Element> selfElementStream() {
+            return Stream.of(Element.this);
+        }
+
+        @Override
+        public Stream<Element> selfElementStream(Predicate<? super Element> predicate) {
+            Objects.requireNonNull(predicate);
+
+            return selfElementStream().filter(predicate);
+        }
+
+        @Override
         public Optional<Element> parentElementOption() {
             return navigationPath.withoutLastEntryOption().map(p -> new Element(elementTree, docUriOption, p));
         }
