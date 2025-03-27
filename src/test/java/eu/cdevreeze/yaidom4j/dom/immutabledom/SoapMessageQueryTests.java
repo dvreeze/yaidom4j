@@ -31,7 +31,9 @@ import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
 
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasLocalName;
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -158,5 +160,87 @@ class SoapMessageQueryTests {
 
         // Even stronger guarantee
         assertEquals(soapMessage.documentElement(), soapMessage2.documentElement());
+    }
+
+    @Test
+    void testQueryingUsingElementSteps() {
+        // Using just the Element query API
+        String departing1 = soapMessage.documentElement()
+                .selfElementStream(hasLocalName("Envelope"))
+                .flatMap(e -> e.childElementStream(hasLocalName("Body")))
+                .flatMap(e -> e.childElementStream(hasLocalName("itinerary")))
+                .flatMap(e -> e.childElementStream(hasLocalName("departure")))
+                .flatMap(e -> e.childElementStream(hasLocalName("departing")))
+                .findFirst()
+                .map(Element::text)
+                .orElseThrow();
+
+        assertEquals("New York", departing1);
+
+        // Using ElementStep instances (which is slightly more friendly syntactically)
+        String departing2 = soapMessage.documentElement()
+                .selfElementStream(hasLocalName("Envelope"))
+                .flatMap(childElements(hasLocalName("Body")))
+                .flatMap(childElements(hasLocalName("itinerary")))
+                .flatMap(childElements(hasLocalName("departure")))
+                .flatMap(childElements(hasLocalName("departing")))
+                .findFirst()
+                .map(Element::text)
+                .orElseThrow();
+
+        assertEquals(departing1, departing2);
+
+        // Using ElementStep chains
+        String departing3 = soapMessage.documentElement()
+                .selfElementStream(hasLocalName("Envelope"))
+                .flatMap(
+                        chain(
+                                childElements(hasLocalName("Body")),
+                                childElements(hasLocalName("itinerary")),
+                                childElements(hasLocalName("departure")),
+                                childElements(hasLocalName("departing"))
+                        )
+                )
+                .findFirst()
+                .map(Element::text)
+                .orElseThrow();
+
+        assertEquals(departing1, departing3);
+
+        // Much like the preceding example
+        String departing4 = soapMessage.documentElement()
+                .selfElementStream()
+                .flatMap(
+                        chain(
+                                selfElements(hasLocalName("Envelope")),
+                                childElements(hasLocalName("Body")),
+                                childElements(hasLocalName("itinerary")),
+                                childElements(hasLocalName("departure")),
+                                childElements(hasLocalName("departing"))
+                        )
+                )
+                .findFirst()
+                .map(Element::text)
+                .orElseThrow();
+
+        assertEquals(departing1, departing4);
+
+        // Using different axes
+        String departing5 = soapMessage.documentElement()
+                .selfElementStream()
+                .flatMap(
+                        chain(
+                                descendantElementsOrSelf(hasLocalName("Envelope")),
+                                topmostDescendantElements(hasLocalName("Body")),
+                                topmostDescendantElementsOrSelf(hasLocalName("itinerary")),
+                                descendantElements(hasLocalName("departure")),
+                                descendantElementsOrSelf(hasLocalName("departing"))
+                        )
+                )
+                .findFirst()
+                .map(Element::text)
+                .orElseThrow();
+
+        assertEquals(departing1, departing5);
     }
 }
