@@ -25,11 +25,14 @@ import java.util.stream.Stream;
  * <p>
  * This interface is heavily inspired by the Saxon "Step" API. Unlike Saxon's "Step", this API limits
  * itself only to element nodes. Unlike Saxon's "Step", this interface is a functional interface. The
- * downside of that is that this interface has no API to combine element steps (other than what the
- * {@link Function} interface offers, such as method {@link Function#andThen(Function)}).
+ * downside of that is that this interface can not have any additional abstract instance methods.
  *
  * @author Chris de Vreeze
  */
 @FunctionalInterface
 public interface ElementStep extends Function<Element, Stream<Element>> {
+
+    default ElementStep andThen(ElementStep nextStep) {
+        return e -> ElementStep.this.apply(e).flatMap(nextStep);
+    }
 }

@@ -16,14 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.base.Preconditions;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Static factory methods of {@link ElementStep} instances. The factory methods trivially delegate
@@ -89,27 +83,5 @@ public class ElementSteps {
         Objects.requireNonNull(predicate);
 
         return e -> e.topmostDescendantElementStream(predicate);
-    }
-
-    public static ElementStep chain(List<ElementStep> elementSteps) {
-        Preconditions.checkArgument(!elementSteps.isEmpty(), "Expected at least one element step");
-
-        if (elementSteps.size() == 1) {
-            return elementSteps.get(0);
-        } else {
-            List<ElementStep> remainder = elementSteps.subList(1, elementSteps.size());
-            // Recursion
-            Function<Element, Stream<Element>> result = elementSteps.get(0)
-                    .andThen(elemStream -> elemStream.flatMap(chain(remainder)));
-            return of(result);
-        }
-    }
-
-    public static ElementStep chain(ElementStep... elementSteps) {
-        return chain(Arrays.stream(elementSteps).toList());
-    }
-
-    private static ElementStep of(Function<Element, Stream<Element>> f) {
-        return f::apply;
     }
 }

@@ -194,12 +194,10 @@ class SoapMessageQueryTests {
         String departing3 = soapMessage.documentElement()
                 .selfElementStream(hasLocalName("Envelope"))
                 .flatMap(
-                        chain(
-                                childElements(hasLocalName("Body")),
-                                childElements(hasLocalName("itinerary")),
-                                childElements(hasLocalName("departure")),
-                                childElements(hasLocalName("departing"))
-                        )
+                        childElements(hasLocalName("Body"))
+                                .andThen(childElements(hasLocalName("itinerary")))
+                                .andThen(childElements(hasLocalName("departure")))
+                                .andThen(childElements(hasLocalName("departing")))
                 )
                 .findFirst()
                 .map(Element::text)
@@ -211,13 +209,11 @@ class SoapMessageQueryTests {
         String departing4 = soapMessage.documentElement()
                 .selfElementStream()
                 .flatMap(
-                        chain(
-                                selfElements(hasLocalName("Envelope")),
-                                childElements(hasLocalName("Body")),
-                                childElements(hasLocalName("itinerary")),
-                                childElements(hasLocalName("departure")),
-                                childElements(hasLocalName("departing"))
-                        )
+                        selfElements(hasLocalName("Envelope"))
+                                .andThen(childElements(hasLocalName("Body")))
+                                .andThen(childElements(hasLocalName("itinerary")))
+                                .andThen(childElements(hasLocalName("departure")))
+                                .andThen(childElements(hasLocalName("departing")))
                 )
                 .findFirst()
                 .map(Element::text)
@@ -229,13 +225,11 @@ class SoapMessageQueryTests {
         String departing5 = soapMessage.documentElement()
                 .selfElementStream()
                 .flatMap(
-                        chain(
-                                descendantElementsOrSelf(hasLocalName("Envelope")),
-                                topmostDescendantElements(hasLocalName("Body")),
-                                topmostDescendantElementsOrSelf(hasLocalName("itinerary")),
-                                descendantElements(hasLocalName("departure")),
-                                descendantElementsOrSelf(hasLocalName("departing"))
-                        )
+                        descendantElementsOrSelf(hasLocalName("Envelope"))
+                                .andThen(topmostDescendantElements(hasLocalName("Body")))
+                                .andThen(topmostDescendantElementsOrSelf(hasLocalName("itinerary")))
+                                .andThen(descendantElements(hasLocalName("departure")))
+                                .andThen(descendantElementsOrSelf(hasLocalName("departing")))
                 )
                 .findFirst()
                 .map(Element::text)
