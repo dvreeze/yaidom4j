@@ -207,8 +207,7 @@ class SoapMessageQueryTests {
 
         // Much like the preceding example
         String departing4 = soapMessage.documentElement()
-                .selfElementStream()
-                .flatMap(
+                .select(
                         selfElements(hasLocalName("Envelope"))
                                 .andThen(childElements(hasLocalName("Body")))
                                 .andThen(childElements(hasLocalName("itinerary")))
@@ -223,8 +222,7 @@ class SoapMessageQueryTests {
 
         // Using different axes
         String departing5 = soapMessage.documentElement()
-                .selfElementStream()
-                .flatMap(
+                .select(
                         descendantElementsOrSelf(hasLocalName("Envelope"))
                                 .andThen(topmostDescendantElements(hasLocalName("Body")))
                                 .andThen(topmostDescendantElementsOrSelf(hasLocalName("itinerary")))

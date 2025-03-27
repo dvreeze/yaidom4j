@@ -203,6 +203,10 @@ public record Element(
         return childElementStream().flatMap(che -> che.topmostDescendantElementOrSelfStream(predicate));
     }
 
+    public Stream<Element> select(ElementStep elementStep) {
+        return elementStep.apply(Element.this);
+    }
+
     // Functional updates
 
     /**
