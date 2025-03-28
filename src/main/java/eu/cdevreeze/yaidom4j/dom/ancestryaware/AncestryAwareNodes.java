@@ -402,6 +402,10 @@ public class AncestryAwareNodes {
             return childElementStream().flatMap(e -> e.topmostDescendantElementOrSelfStream(predicate));
         }
 
+        public Stream<Element> select(ElementStep elementStep) {
+            return elementStep.apply(Element.this);
+        }
+
         /**
          * Factory method for {@link Element} creation
          */
