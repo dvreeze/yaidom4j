@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -32,7 +33,11 @@ import java.util.stream.Stream;
 @FunctionalInterface
 public interface ElementStep extends Function<Element, Stream<Element>> {
 
-    default ElementStep andThen(ElementStep nextStep) {
+    default ElementStep where(Predicate<? super Element> predicate) {
+        return e -> ElementStep.this.apply(e).filter(predicate);
+    }
+
+    default ElementStep then(ElementStep nextStep) {
         return e -> ElementStep.this.apply(e).flatMap(nextStep);
     }
 }

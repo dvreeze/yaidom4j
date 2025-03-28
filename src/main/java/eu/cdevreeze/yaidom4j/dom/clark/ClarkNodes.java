@@ -461,7 +461,11 @@ public class ClarkNodes {
     @FunctionalInterface
     public interface ElementStep extends Function<Element, Stream<Element>> {
 
-        default ElementStep andThen(ElementStep nextStep) {
+        default ElementStep where(Predicate<? super Element> predicate) {
+            return e -> ElementStep.this.apply(e).filter(predicate);
+        }
+
+        default ElementStep then(ElementStep nextStep) {
             return e -> ElementStep.this.apply(e).flatMap(nextStep);
         }
     }
@@ -474,11 +478,11 @@ public class ClarkNodes {
         private ElementSteps() {
         }
 
-        public static ElementStep selfElements() {
+        public static ElementStep selfElement() {
             return Element::selfElementStream;
         }
 
-        public static ElementStep selfElements(Predicate<? super Element> predicate) {
+        public static ElementStep selfElement(Predicate<? super Element> predicate) {
             Objects.requireNonNull(predicate);
 
             return e -> e.selfElementStream(predicate);

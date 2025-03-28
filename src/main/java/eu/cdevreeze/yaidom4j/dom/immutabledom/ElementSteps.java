@@ -33,11 +33,11 @@ public class ElementSteps {
     private ElementSteps() {
     }
 
-    public static ElementStep selfElements() {
+    public static ElementStep selfElement() {
         return Element::selfElementStream;
     }
 
-    public static ElementStep selfElements(Predicate<? super Element> predicate) {
+    public static ElementStep selfElement(Predicate<? super Element> predicate) {
         Objects.requireNonNull(predicate);
 
         return e -> e.selfElementStream(predicate);
