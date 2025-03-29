@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.dom.ancestryaware;
+package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -30,9 +30,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasAttributeValue;
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasName;
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.*;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasAttributeValue;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -55,19 +55,18 @@ class XbrlInstanceXmlQueryTests {
 
     private static final String GAAP_NS = "http://xasb.org/gaap";
 
-    private AncestryAwareDocument xbrlDoc;
+    private Document xbrlDoc;
 
     @BeforeAll
     void parseDocument() {
         InputStream inputStream = XbrlInstanceXmlQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
-        var underlyingDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
+        this.xbrlDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream));
-        this.xbrlDoc = AncestryAwareDocument.from(underlyingDoc);
     }
 
     @Test
     void testQueryDimensionMembers() {
-        AncestryAwareNodes.Element context = xbrlDoc.documentElement().select(
+        Element context = xbrlDoc.documentElement().select(
                 selfElement(hasName(XBRLI_NS, "xbrl"))
                         .then(childElements(hasName(XBRLI_NS, "context"))
                                 .where(hasAttributeValue("id", "I-2005"))
@@ -94,22 +93,22 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactContext() {
-        ImmutableList<AncestryAwareNodes.Element> landFacts = xbrlDoc.documentElement().select(
+        ImmutableList<Element> landFacts = xbrlDoc.documentElement().select(
                 childElements(hasName(GAAP_NS, "Land"))
         ).collect(ImmutableList.toImmutableList());
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<AncestryAwareNodes.Element> landFacts2005 = landFacts
+        ImmutableList<Element> landFacts2005 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2005"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, landFacts2005.size());
 
-        AncestryAwareNodes.Element landFact2005 = landFacts2005.get(0);
+        Element landFact2005 = landFacts2005.get(0);
 
-        AncestryAwareNodes.Element context = xbrlDoc.documentElement().select(
+        Element context = xbrlDoc.documentElement().select(
                 childElements(hasName(XBRLI_NS, "context"))
                         .where(hasAttributeValue("id", landFact2005.attribute(new QName("contextRef"))))
         ).findFirst().orElseThrow();
@@ -136,23 +135,23 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactUnit() {
-        ImmutableList<AncestryAwareNodes.Element> landFacts = xbrlDoc.documentElement().select(
+        ImmutableList<Element> landFacts = xbrlDoc.documentElement().select(
                         childElements(hasName(GAAP_NS, "Land"))
                 )
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<AncestryAwareNodes.Element> landFacts2007 = landFacts
+        ImmutableList<Element> landFacts2007 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2007"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, landFacts2007.size());
 
-        AncestryAwareNodes.Element landFact2007 = landFacts2007.get(0);
+        Element landFact2007 = landFacts2007.get(0);
 
-        AncestryAwareNodes.Element unit = xbrlDoc.documentElement().select(
+        Element unit = xbrlDoc.documentElement().select(
                         childElements(hasName(XBRLI_NS, "unit"))
                                 .where(hasAttributeValue("id", landFact2007.attribute(new QName("unitRef"))))
                 )
@@ -182,35 +181,25 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactValue() {
-        ImmutableList<AncestryAwareNodes.Element> preferredStockAmountFacts = xbrlDoc.documentElement().select(
+        ImmutableList<Element> preferredStockAmountFacts = xbrlDoc.documentElement().select(
                 childElements(hasName(GAAP_NS, "PreferredStockAmount"))
         ).collect(ImmutableList.toImmutableList());
 
         assertEquals(6, preferredStockAmountFacts.size());
 
-        ImmutableList<AncestryAwareNodes.Element> preferredStockAmountFacts2 = xbrlDoc.documentElement().select(
-                descendantElements(hasName(GAAP_NS, "PreferredStockAmount"))
-                        .where(e -> e.parentElementOption().stream().anyMatch(hasName(XBRLI_NS, "xbrl")))
-        ).collect(ImmutableList.toImmutableList());
-
-        assertEquals(
-                preferredStockAmountFacts.stream().map(e -> e.underlyingElement().toClarkNode()).toList(),
-                preferredStockAmountFacts2.stream().map(e -> e.underlyingElement().toClarkNode()).toList()
-        );
-
-        ImmutableList<AncestryAwareNodes.Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
+        ImmutableList<Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
                 .stream()
                 .filter(f -> f.attribute(new QName("contextRef")).equals("I-2007-PS-All"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, preferredStockAmountFacts2007PsAll.size());
 
-        AncestryAwareNodes.Element preferredStockAmountFact2007PsAll = preferredStockAmountFacts2007PsAll.get(0);
+        Element preferredStockAmountFact2007PsAll = preferredStockAmountFacts2007PsAll.get(0);
 
         assertEquals(String.valueOf(2000), preferredStockAmountFact2007PsAll.text().strip());
     }
 
-    private Map.Entry<QName, QName> explicitDimensionMember(AncestryAwareNodes.Element explicitDimension) {
+    private Map.Entry<QName, QName> explicitDimensionMember(Element explicitDimension) {
         Preconditions.checkArgument(hasName(XBRLDI_NS, "explicitMember").test(explicitDimension));
 
         return Map.entry(
