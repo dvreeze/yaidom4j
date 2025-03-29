@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.clark;
 
 import eu.cdevreeze.yaidom4j.dom.AbstractBookQueryTests;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop.ClarkDomProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.xml.sax.InputSource;
@@ -43,13 +43,11 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
     @BeforeAll
     protected static void parseRootElement() {
-        ImmutableDomProducingSaxHandler saxHandler = new ImmutableDomProducingSaxHandler();
+        ClarkDomProducingSaxHandler saxHandler = new ClarkDomProducingSaxHandler();
 
         InputStream inputStream = BookQueryTests.class.getResourceAsStream("/books.xml");
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
-        rootElement = saxHandler.resultingDocument().removeInterElementWhitespace()
-                .documentElement()
-                .toClarkNode();
+        rootElement = saxHandler.resultingOutermostElement().removeInterElementWhitespace();
     }
 
     @Override

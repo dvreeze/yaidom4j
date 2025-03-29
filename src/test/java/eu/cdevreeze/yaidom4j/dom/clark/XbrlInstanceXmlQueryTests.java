@@ -20,7 +20,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop.ClarkDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -64,11 +65,11 @@ class XbrlInstanceXmlQueryTests {
 
     @BeforeAll
     void parseDocument() {
+        ClarkDomProducingSaxHandler saxHandler = new ClarkDomProducingSaxHandler();
+
         InputStream inputStream = XbrlInstanceXmlQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
-        this.xbrlDocElem = DocumentParsers.builder().removingInterElementWhitespace().build()
-                .parse(new InputSource(inputStream))
-                .documentElement()
-                .toClarkNode();
+        SaxParsers.parse(new InputSource(inputStream), saxHandler);
+        this.xbrlDocElem = saxHandler.resultingOutermostElement().removeInterElementWhitespace();
     }
 
     @Test
