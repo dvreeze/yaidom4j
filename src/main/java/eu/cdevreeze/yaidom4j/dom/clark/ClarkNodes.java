@@ -470,64 +470,55 @@ public class ClarkNodes {
         }
     }
 
-    /**
-     * Analogous class to {@link eu.cdevreeze.yaidom4j.dom.immutabledom.ElementSteps}.
-     */
-    public static class ElementSteps {
+    public static ElementStep selfElement() {
+        return Element::selfElementStream;
+    }
 
-        private ElementSteps() {
-        }
+    public static ElementStep selfElement(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-        public static ElementStep selfElement() {
-            return Element::selfElementStream;
-        }
+        return e -> e.selfElementStream(predicate);
+    }
 
-        public static ElementStep selfElement(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
+    public static ElementStep childElements() {
+        return Element::childElementStream;
+    }
 
-            return e -> e.selfElementStream(predicate);
-        }
+    public static ElementStep childElements(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-        public static ElementStep childElements() {
-            return Element::childElementStream;
-        }
+        return e -> e.childElementStream(predicate);
+    }
 
-        public static ElementStep childElements(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
+    public static ElementStep descendantElementsOrSelf() {
+        return Element::descendantElementOrSelfStream;
+    }
 
-            return e -> e.childElementStream(predicate);
-        }
+    public static ElementStep descendantElementsOrSelf(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-        public static ElementStep descendantElementsOrSelf() {
-            return Element::descendantElementOrSelfStream;
-        }
+        return e -> e.descendantElementOrSelfStream(predicate);
+    }
 
-        public static ElementStep descendantElementsOrSelf(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
+    public static ElementStep descendantElements() {
+        return Element::descendantElementStream;
+    }
 
-            return e -> e.descendantElementOrSelfStream(predicate);
-        }
+    public static ElementStep descendantElements(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-        public static ElementStep descendantElements() {
-            return Element::descendantElementStream;
-        }
+        return e -> e.descendantElementStream(predicate);
+    }
 
-        public static ElementStep descendantElements(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
+    public static ElementStep topmostDescendantElementsOrSelf(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-            return e -> e.descendantElementStream(predicate);
-        }
+        return e -> e.topmostDescendantElementOrSelfStream(predicate);
+    }
 
-        public static ElementStep topmostDescendantElementsOrSelf(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
+    public static ElementStep topmostDescendantElements(Predicate<? super Element> predicate) {
+        Objects.requireNonNull(predicate);
 
-            return e -> e.topmostDescendantElementOrSelfStream(predicate);
-        }
-
-        public static ElementStep topmostDescendantElements(Predicate<? super Element> predicate) {
-            Objects.requireNonNull(predicate);
-
-            return e -> e.topmostDescendantElementStream(predicate);
-        }
+        return e -> e.topmostDescendantElementStream(predicate);
     }
 }

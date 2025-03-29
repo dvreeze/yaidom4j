@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasAttributeValue;
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasName;
-import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.ElementSteps.*;
+import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
