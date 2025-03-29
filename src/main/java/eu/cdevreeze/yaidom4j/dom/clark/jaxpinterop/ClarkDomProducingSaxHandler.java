@@ -18,18 +18,17 @@ package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import org.xml.sax.Attributes;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -39,7 +38,7 @@ import java.util.stream.Stream;
  * It is expected that W3C documents have been parsed/created in a namespace-aware manner, or else
  * an exception is likely to be thrown.
  * <p>
- * This class is an adapted copy of {@link eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler}.
+ * This class is an adapted (and simplified) copy of {@link eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler}.
  *
  * @author Chris de Vreeze
  */
@@ -51,38 +50,12 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
 
     private boolean currentlyInCData = false;
 
-    private final NamespaceSupport namespaceSupport = newNamespaceSupport();
-
-    /**
-     * When startPrefixMapping is called the first time for a subsequent startElement call,
-     * "NamespaceSupport.pushContext()" should be called, before calling "NamespaceSupport.declarePrefix".
-     * It is possible, though, that the subsequent startElement call has not been preceded by any
-     * startPrefixMapping call. In the latter case, it is method startElement that should call
-     * "NamespaceSupport.pushContext()". To distinguish between these 2 scenarios, this variable is used.
-     * Note that only the first startPrefixMapping call for an element should push a new context, which
-     * is also supported by this variable.
-     * <p>
-     * The invariant is that per startElement call, pushContext is called precisely once (whether
-     * by this method or just before that), and per endElement call, the corresponding popContext
-     * call is made.
-     */
-    private boolean namespaceContextHasAlreadyBeenPushed = false;
-
     @Override
     public void startDocument() {
     }
 
     @Override
     public void startElement(String uri, String localName, String qname, Attributes attrs) {
-        if (!namespaceContextHasAlreadyBeenPushed) {
-            // Pushing an empty context, that will be popped by method endElement
-            namespaceSupport.pushContext();
-        }
-        // Clear the namespaceContextHasAlreadyBeenPushed status in time, before a next startElement call
-        namespaceContextHasAlreadyBeenPushed = false;
-
-        NamespaceScope namespaceScope = convertToNamespaceScope(namespaceSupport);
-
         QName name =
                 new QName(
                         Objects.requireNonNull(uri),
@@ -95,8 +68,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),
                 name,
-                attributes,
-                namespaceScope
+                attributes
         );
 
         if (currentRootElement == null) {
@@ -115,10 +87,6 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
     public void endElement(String uri, String localName, String qname) {
         Preconditions.checkArgument(currentRootElement != null);
         Preconditions.checkArgument(currentElement != null);
-
-        // Per startElement call, pushContext() has been called exactly once, so call popContext() now
-        namespaceSupport.popContext();
-        Preconditions.checkArgument(!namespaceContextHasAlreadyBeenPushed);
 
         currentElement = currentElement.getParentElementOption().orElse(null);
     }
@@ -159,20 +127,6 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
     @Override
     public void ignorableWhitespace(char[] chars, int start, int length) {
         // No-op
-    }
-
-    @Override
-    public void startPrefixMapping(String prefix, String uri) {
-        if (!namespaceContextHasAlreadyBeenPushed) {
-            namespaceSupport.pushContext();
-            namespaceContextHasAlreadyBeenPushed = true;
-        }
-        namespaceSupport.declarePrefix(prefix, uri);
-    }
-
-    @Override
-    public void endPrefixMapping(String prefix) {
-        Preconditions.checkArgument(!namespaceContextHasAlreadyBeenPushed);
     }
 
     @Override
@@ -218,12 +172,6 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         return currentRootElement.toNode();
     }
 
-    private NamespaceSupport newNamespaceSupport() {
-        NamespaceSupport namespaceSupport = new NamespaceSupport();
-        namespaceSupport.setNamespaceDeclUris(false);
-        return namespaceSupport;
-    }
-
     private String extractPrefix(String qname) {
         if (qname.equals(":")) {
             // Corner-case, where the local name is a colon, and the prefix is empty
@@ -259,25 +207,5 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         String[] parts = attrName.split(Pattern.quote(":"));
         Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
-    }
-
-    private static NamespaceScope convertToNamespaceScope(NamespaceSupport namespaceSupport) {
-        Preconditions.checkArgument(!namespaceSupport.isNamespaceDeclUris());
-
-        List<String> prefixes = new ArrayList<>(Collections.list(namespaceSupport.getPrefixes()));
-        Optional.ofNullable(namespaceSupport.getURI("")).ifPresent(prefixes::add);
-
-        Map<String, String> nsBindingsWithoutDefaultNs =
-                prefixes.stream()
-                        .filter(pref -> namespaceSupport.getURI(pref) != null) // Yep, needed
-                        .distinct()
-                        .collect(Collectors.toMap(
-                                pref -> pref,
-                                namespaceSupport::getURI
-                        ));
-        Map<String, String> nsBindings = new HashMap<>(nsBindingsWithoutDefaultNs);
-        Optional.ofNullable(namespaceSupport.getURI("")).ifPresent(ns -> nsBindings.put("", ns));
-
-        return NamespaceScope.from(ImmutableMap.copyOf(nsBindings));
     }
 }

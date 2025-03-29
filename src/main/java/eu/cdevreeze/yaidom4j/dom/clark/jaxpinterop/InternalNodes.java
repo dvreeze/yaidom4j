@@ -18,7 +18,6 @@ package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 
 import javax.xml.namespace.QName;
@@ -49,20 +48,16 @@ class InternalNodes {
 
         private final ImmutableMap<QName, String> attributes;
 
-        private final NamespaceScope namespaceScope;
-
         private final List<InternalNode> children = new ArrayList<>();
 
         InternalElement(
                 Optional<InternalElement> parentElementOption,
                 QName name,
-                ImmutableMap<QName, String> attributes,
-                NamespaceScope namespaceScope
+                ImmutableMap<QName, String> attributes
         ) {
             this.parentElementOption = parentElementOption;
             this.name = name;
             this.attributes = attributes;
-            this.namespaceScope = namespaceScope;
         }
 
         Optional<InternalElement> getParentElementOption() {
