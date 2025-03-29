@@ -18,6 +18,9 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkElementPredicates;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkElementSteps;
+import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomToJaxpDomConverter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
@@ -234,5 +237,20 @@ class SoapMessageQueryTests {
                 .orElseThrow();
 
         assertEquals(departing1, departing5);
+
+        // As Clark nodes
+        String departing6 = soapMessage.documentElement().toClarkNode()
+                .select(
+                        ClarkElementSteps.descendantElementsOrSelf(ClarkElementPredicates.hasLocalName("Envelope"))
+                                .then(ClarkElementSteps.topmostDescendantElements(ClarkElementPredicates.hasLocalName("Body")))
+                                .then(ClarkElementSteps.topmostDescendantElementsOrSelf(ClarkElementPredicates.hasLocalName("itinerary")))
+                                .then(ClarkElementSteps.descendantElements(ClarkElementPredicates.hasLocalName("departure")))
+                                .then(ClarkElementSteps.descendantElementsOrSelf(ClarkElementPredicates.hasLocalName("departing")))
+                )
+                .findFirst()
+                .map(ClarkNodes.Element::text)
+                .orElseThrow();
+
+        assertEquals(departing1, departing6);
     }
 }
