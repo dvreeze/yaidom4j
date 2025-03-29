@@ -33,7 +33,7 @@ import java.util.Map;
 
 import static eu.cdevreeze.yaidom4j.dom.clark.ClarkElementPredicates.hasAttributeValue;
 import static eu.cdevreeze.yaidom4j.dom.clark.ClarkElementPredicates.hasName;
-import static eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes.*;
+import static eu.cdevreeze.yaidom4j.dom.clark.ClarkElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -100,22 +100,22 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactContext() {
-        ImmutableList<Element> landFacts = xbrlDocElem.select(
+        ImmutableList<ClarkNodes.Element> landFacts = xbrlDocElem.select(
                 childElements(hasName(GAAP_NS, "Land"))
         ).collect(ImmutableList.toImmutableList());
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<Element> landFacts2005 = landFacts
+        ImmutableList<ClarkNodes.Element> landFacts2005 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2005"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, landFacts2005.size());
 
-        Element landFact2005 = landFacts2005.get(0);
+        ClarkNodes.Element landFact2005 = landFacts2005.get(0);
 
-        Element context = xbrlDocElem.select(
+        ClarkNodes.Element context = xbrlDocElem.select(
                 childElements(hasName(XBRLI_NS, "context"))
                         .where(hasAttributeValue("id", landFact2005.attribute(new QName("contextRef"))))
         ).findFirst().orElseThrow();
@@ -142,23 +142,23 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactUnit() {
-        ImmutableList<Element> landFacts = xbrlDocElem.select(
+        ImmutableList<ClarkNodes.Element> landFacts = xbrlDocElem.select(
                         childElements(hasName(GAAP_NS, "Land"))
                 )
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<Element> landFacts2007 = landFacts
+        ImmutableList<ClarkNodes.Element> landFacts2007 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2007"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, landFacts2007.size());
 
-        Element landFact2007 = landFacts2007.get(0);
+        ClarkNodes.Element landFact2007 = landFacts2007.get(0);
 
-        Element unit = xbrlDocElem.select(
+        ClarkNodes.Element unit = xbrlDocElem.select(
                         childElements(hasName(XBRLI_NS, "unit"))
                                 .where(hasAttributeValue("id", landFact2007.attribute(new QName("unitRef"))))
                 )
@@ -188,25 +188,25 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactValue() {
-        ImmutableList<Element> preferredStockAmountFacts = xbrlDocElem.select(
+        ImmutableList<ClarkNodes.Element> preferredStockAmountFacts = xbrlDocElem.select(
                 childElements(hasName(GAAP_NS, "PreferredStockAmount"))
         ).collect(ImmutableList.toImmutableList());
 
         assertEquals(6, preferredStockAmountFacts.size());
 
-        ImmutableList<Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
+        ImmutableList<ClarkNodes.Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
                 .stream()
                 .filter(f -> f.attribute(new QName("contextRef")).equals("I-2007-PS-All"))
                 .collect(ImmutableList.toImmutableList());
 
         assertEquals(1, preferredStockAmountFacts2007PsAll.size());
 
-        Element preferredStockAmountFact2007PsAll = preferredStockAmountFacts2007PsAll.get(0);
+        ClarkNodes.Element preferredStockAmountFact2007PsAll = preferredStockAmountFacts2007PsAll.get(0);
 
         assertEquals(String.valueOf(2000), preferredStockAmountFact2007PsAll.text().strip());
     }
 
-    private Map.Entry<QName, QName> explicitDimensionMember(Element explicitDimension) {
+    private Map.Entry<QName, QName> explicitDimensionMember(ClarkNodes.Element explicitDimension) {
         Preconditions.checkArgument(hasName(XBRLDI_NS, "explicitMember").test(explicitDimension));
 
         return Map.entry(
