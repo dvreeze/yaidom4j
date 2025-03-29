@@ -136,6 +136,37 @@ The same querying stream pipeline above (but with different imports and bootstra
 works for multiple yaidom4j element implementations, and not just for the default immutable DOM
 implementation.
 
+The code above can be rewritten as follows, using the notion of "element steps", which has been deeply
+inspired by Saxon's [Step](https://www.saxonica.com/html/documentation12/javadoc/net/sf/saxon/s9api/streams/Step.html) API:
+
+```java
+import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
+import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
+
+import java.nio.file.Path;
+import java.util.List;
+
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.*;
+import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementSteps.*;
+
+DocumentParser parser = DocumentParsers.instance();
+Document doc = parser.parse(Path.of("bookstore.xml").toUri());
+
+var ns = "http://bookstore";
+
+List<String> februaryMagazineTitles = doc.documentElement().select(
+            childElements(hasName(ns, "Magazine"))
+                    .where(hasAttributeValue("Month", "February"))
+                    .then(childElements(hasName(ns, "Title")))
+        )
+        .map(ElementApi::text)
+        .toList();
+
+// [National Geographic, Newsweek]
+```
+
 ## Characteristics of yaidom4j
 
 Some characteristics of yaidom4j are as follows:
@@ -163,7 +194,11 @@ Keeping this limited scope in mind, comparisons to some other XML libraries are 
 * Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
 * Unlike JAXP XPath (1.0) support, the element query API in yaidom4j is very easy to use without any involved bootstrapping
 * Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is *element-node-centric*
-* Also, *Saxon* defines the concept of a *Step*, which is a function from item to (Java) Stream of items (think: XPath axes), but yaidom4j does not do so
+
+*Saxon* defines the concept of a *Step*, which is a function from item to (Java) Stream of items (think: XPath axes).
+Yaidom4j has been *deeply inspired by this Saxon Step* notion, and copied this idea for "element steps".
+These "element steps" are implemented by delegating to the underlying element type's query API implementation.
+Unlike the element query API, yaidom4j's "element steps" can not be used to abstract over element types.
 
 As said above, yaidom4j does not try to implement the full XML InfoSet in its *immutable DOM* implementation. For example:
 * If *information item* loosely means *node*, a *document* is not treated as an information item or node
