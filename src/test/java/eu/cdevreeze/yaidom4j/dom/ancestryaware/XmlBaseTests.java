@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class XmlBaseTests {
 
     private AncestryAwareDocument parseDocument(String nameOnClasspath) {
-        InputStream inputStream = BookQueryTests.class.getResourceAsStream(nameOnClasspath);
+        InputStream inputStream = XmlBaseTests.class.getResourceAsStream(nameOnClasspath);
         var underlyingDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream));
         return AncestryAwareDocument.from(underlyingDoc);

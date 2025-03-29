@@ -59,7 +59,7 @@ class SoapMessageQueryTests {
 
     @BeforeAll
     void parseDocument() {
-        InputStream inputStream = BookQueryTests.class.getResourceAsStream("/sample-soap-message.xml");
+        InputStream inputStream = SoapMessageQueryTests.class.getResourceAsStream("/sample-soap-message.xml");
         soapMessage = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream));
     }

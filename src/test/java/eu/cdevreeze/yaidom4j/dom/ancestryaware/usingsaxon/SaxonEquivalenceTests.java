@@ -71,7 +71,7 @@ class SaxonEquivalenceTests {
     private static AncestryAwareDocument parseUsingSaxon(String classpathUri, Processor processor) throws SaxonApiException, TransformerException {
         DocumentBuilder docBuilder = processor.newDocumentBuilder();
 
-        InputStream inputStream = BookQueryTests.class.getResourceAsStream(classpathUri);
+        InputStream inputStream = SaxonEquivalenceTests.class.getResourceAsStream(classpathUri);
         XdmNode xdmDoc = docBuilder.build(new StreamSource(inputStream));
 
         TransformerFactory tff = new BasicTransformerFactory(processor.getUnderlyingConfiguration());
