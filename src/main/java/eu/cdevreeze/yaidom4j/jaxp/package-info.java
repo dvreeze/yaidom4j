@@ -23,4 +23,7 @@
  *
  * @author Chris de Vreeze
  */
+@NullMarked
 package eu.cdevreeze.yaidom4j.jaxp;
+
+import org.jspecify.annotations.NullMarked;

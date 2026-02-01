@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.ext.LexicalHandler;
@@ -50,9 +51,9 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     private final List<InternalNodes.InternalCanBeDocumentChild> docChildren = new ArrayList<>();
 
-    private InternalNodes.InternalElement currentRootElement;
+    private InternalNodes.@Nullable InternalElement currentRootElement;
 
-    private InternalNodes.InternalElement currentElement;
+    private InternalNodes.@Nullable InternalElement currentElement;
 
     private boolean currentlyInCData = false;
 
@@ -75,9 +76,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     @Override
     public void setDocumentLocator(Locator locator) {
-        Optional.ofNullable(locator.getSystemId()).ifPresent(u -> {
-            docUriOption = Optional.of(URI.create(u));
-        });
+        Optional.ofNullable(locator.getSystemId()).ifPresent(u -> docUriOption = Optional.of(URI.create(u)));
     }
 
     @Override

@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -145,7 +146,7 @@ public class ImmutableDomToJaxpDomConverter {
                 String.format("%s:%s", name.getPrefix(), name.getLocalPart());
     }
 
-    private static String convertEmptyStringToNull(String s) {
+    private static @Nullable String convertEmptyStringToNull(String s) {
         return s.isEmpty() ? null : s;
     }
 }

@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.*;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -96,7 +97,7 @@ public class ImmutableDomSource extends SAXSource {
             @Override
             public Object getProperty(String name) throws SAXNotRecognizedException {
                 if (name.equals("http://xml.org/sax/properties/lexical-handler")) {
-                    return lexicalHandler;
+                    return Objects.requireNonNull(lexicalHandler);
                 } else {
                     throw new SAXNotRecognizedException(name);
                 }
@@ -111,9 +112,9 @@ public class ImmutableDomSource extends SAXSource {
                 }
             }
 
-            private LexicalHandler lexicalHandler;
+            private @Nullable LexicalHandler lexicalHandler;
 
-            private EntityResolver entityResolver;
+            private @Nullable EntityResolver entityResolver;
 
             @Override
             public void setEntityResolver(EntityResolver resolver) {
@@ -121,11 +122,11 @@ public class ImmutableDomSource extends SAXSource {
             }
 
             @Override
-            public EntityResolver getEntityResolver() {
+            public @Nullable EntityResolver getEntityResolver() {
                 return entityResolver;
             }
 
-            private DTDHandler dtdHandler;
+            private @Nullable DTDHandler dtdHandler;
 
             @Override
             public void setDTDHandler(DTDHandler handler) {
@@ -133,7 +134,7 @@ public class ImmutableDomSource extends SAXSource {
             }
 
             @Override
-            public DTDHandler getDTDHandler() {
+            public @Nullable DTDHandler getDTDHandler() {
                 return dtdHandler;
             }
 
@@ -149,7 +150,7 @@ public class ImmutableDomSource extends SAXSource {
                 return xmlFilter.getContentHandler();
             }
 
-            private ErrorHandler errorHandler;
+            private @Nullable ErrorHandler errorHandler;
 
             @Override
             public void setErrorHandler(ErrorHandler handler) {
@@ -157,7 +158,7 @@ public class ImmutableDomSource extends SAXSource {
             }
 
             @Override
-            public ErrorHandler getErrorHandler() {
+            public @Nullable ErrorHandler getErrorHandler() {
                 return errorHandler;
             }
 

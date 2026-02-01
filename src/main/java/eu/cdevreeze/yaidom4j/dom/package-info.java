@@ -29,4 +29,7 @@
  *
  * @author Chris de Vreeze
  */
+@NullMarked
 package eu.cdevreeze.yaidom4j.dom;
+
+import org.jspecify.annotations.NullMarked;

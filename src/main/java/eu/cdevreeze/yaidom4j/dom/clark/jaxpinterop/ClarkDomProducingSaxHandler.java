@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
@@ -44,9 +45,9 @@ import java.util.stream.Stream;
  */
 public class ClarkDomProducingSaxHandler extends DefaultHandler implements LexicalHandler {
 
-    private InternalNodes.InternalElement currentRootElement;
+    private InternalNodes.@Nullable InternalElement currentRootElement;
 
-    private InternalNodes.InternalElement currentElement;
+    private InternalNodes.@Nullable InternalElement currentElement;
 
     private boolean currentlyInCData = false;
 
@@ -169,7 +170,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
     }
 
     public ClarkNodes.Element resultingOutermostElement() {
-        return currentRootElement.toNode();
+        return Objects.requireNonNull(currentRootElement).toNode();
     }
 
     private String extractPrefix(String qname) {

@@ -1,6 +1,7 @@
 module eu.cdevreeze.yaidom4j {
     requires transitive com.google.common;
     requires transitive java.xml;
+    requires org.jspecify;
     requires java.logging; // Only for unit testing...
 
     exports eu.cdevreeze.yaidom4j.core;
