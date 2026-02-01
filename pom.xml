@@ -107,6 +107,9 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.4</version>
+          <configuration>
+            <useModulePath>false</useModulePath> <!-- To avoid polluting module-info.java for unit testing -->
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
