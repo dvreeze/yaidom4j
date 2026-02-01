@@ -1,7 +1,7 @@
 module eu.cdevreeze.yaidom4j {
-    requires transitive com.google.common;
     requires transitive java.xml;
-    requires org.jspecify;
+    requires transitive com.google.common;
+    requires transitive org.jspecify;
 
     exports eu.cdevreeze.yaidom4j.core;
     exports eu.cdevreeze.yaidom4j.dom.ancestryaware;
