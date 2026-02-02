@@ -27,6 +27,8 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
@@ -38,7 +40,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -63,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ThreadSafetyTest {
 
-    private static final Logger logger = Logger.getGlobal();
+    private static final Logger logger = LoggerFactory.getLogger(ThreadSafetyTest.class);
 
     private static final int NUMBER_OF_UPDATES = 20;
 
@@ -80,7 +81,7 @@ class ThreadSafetyTest {
         List<CompletableFuture<Void>> updateFutures =
                 IntStream.range(0, NUMBER_OF_UPDATES)
                         .mapToObj(e -> CompletableFuture.runAsync(() -> {
-                            logger.info("Current thread (start): " + Thread.currentThread());
+                            logger.info("Current thread (start): {}", Thread.currentThread());
 
                             updateAllElements(elementHolder, elemNavigationPaths);
                         }))
@@ -127,7 +128,7 @@ class ThreadSafetyTest {
                     if (elem.text().isBlank()) {
                         return elem;
                     } else {
-                        logger.fine("Current thread (updating element): " + Thread.currentThread());
+                        logger.trace("Current thread (updating element): {}", Thread.currentThread());
                         return elem.withChildren(
                                 ImmutableList.of(
                                         new Text(

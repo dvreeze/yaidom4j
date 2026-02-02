@@ -31,7 +31,6 @@ import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -46,8 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Chris de Vreeze
  */
 class UpdateTest {
-
-    private static final Logger logger = Logger.getGlobal();
 
     @Test
     void testUpdateRootElement() {
