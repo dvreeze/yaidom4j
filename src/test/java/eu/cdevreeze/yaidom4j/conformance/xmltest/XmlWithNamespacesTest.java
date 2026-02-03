@@ -25,14 +25,11 @@ import net.sf.saxon.s9api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -65,11 +62,11 @@ class XmlWithNamespacesTest {
 
     @ParameterizedTest
     @MethodSource("provideValidXmlDocUris")
-    void xmlParsedIntoYaidom4jTree(URI xmlUri, Predicate<Element> expectation) throws SaxonApiException, ParserConfigurationException, IOException, SAXException {
+    void xmlParsedIntoYaidom4jTree(URI xmlUri, Predicate<Element> expectation) throws SaxonApiException {
         // First parse with Saxon
         DocumentBuilder saxonDocBuilder = processor.newDocumentBuilder();
         XdmNode xdmDocNode = saxonDocBuilder.build(new File(xmlUri));
-        assertSame(xdmDocNode.getNodeKind(), XdmNodeKind.DOCUMENT);
+        assertSame(XdmNodeKind.DOCUMENT, xdmDocNode.getNodeKind());
 
         // Default (non-validating) NS instance of SAXParserFactory, in order to allow for entity processing
         SAXParserFactory spf = SAXParserFactory.newDefaultNSInstance();

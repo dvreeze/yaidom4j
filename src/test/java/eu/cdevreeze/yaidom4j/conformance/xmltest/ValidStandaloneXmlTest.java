@@ -72,7 +72,7 @@ class ValidStandaloneXmlTest {
         // First parse with Saxon
         DocumentBuilder saxonDocBuilder = processor.newDocumentBuilder();
         XdmNode xdmDocNode = saxonDocBuilder.build(new File(xmlUri));
-        assertSame(xdmDocNode.getNodeKind(), XdmNodeKind.DOCUMENT);
+        assertSame(XdmNodeKind.DOCUMENT, xdmDocNode.getNodeKind());
 
         int docChildCount = (int) xdmDocNode.select(Steps.child()).count();
 
