@@ -191,6 +191,7 @@
         </plugins>
     </build>
     <!-- Release a new non-snapshot version with command "mvn clean deploy -Prelease" -->
+    <!-- IMPORTANT! Adapt this POM file; first have a look at https://central.sonatype.org/publish/publish-portal-maven/ -->
     <profiles>
         <profile>
             <id>release</id>
