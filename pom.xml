@@ -3,11 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.cdevreeze.yaidom4j</groupId>
+    <groupId>io.github.dvreeze</groupId>
     <artifactId>yaidom4j</artifactId>
     <version>0.15.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-    <name>yaidom4j</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/dvreeze/yaidom4j</url>
     <description>Yaidom4j is an easy-to-use element-node-centric XML query API (with native immutable DOM
         implementations)
@@ -38,17 +39,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -161,6 +151,8 @@
         </plugins>
     </build>
     <!-- Release a new non-snapshot version with command "mvn clean deploy -Prelease" -->
+    <!-- Do not forget to set environment variable GPG_PASSPHRASE or a user property having the same effect -->
+    <!-- For the latter, see https://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html#passphraseServerId -->
     <!-- IMPORTANT! Adapt this POM file; first have a look at https://central.sonatype.org/publish/publish-portal-maven/ -->
     <profiles>
         <profile>
@@ -168,14 +160,12 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.7.0</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.10.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <publishingServerId>central</publishingServerId>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -204,6 +194,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Also see https://central.sonatype.org/publish/requirements/gpg/ -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -217,7 +208,8 @@
                                 </goals>
                                 <configuration>
                                     <keyname>1AF09C0C518250A8BB4AA6AB9FB31886D593CB2B</keyname>
-                                    <passphraseServerId>ossrh</passphraseServerId>
+                                    <!-- No passphraseServerId -->
+                                    <!-- See https://maven.apache.org/plugins/maven-gpg-plugin/sign-mojo.html#passphraseServerId -->
                                     <gpgArguments>
                                         <arg>--pinentry-mode</arg>
                                         <arg>loopback</arg>
