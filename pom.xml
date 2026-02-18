@@ -5,7 +5,7 @@
 
     <groupId>eu.cdevreeze.yaidom4j</groupId>
     <artifactId>yaidom4j</artifactId>
-    <version>0.16.0</version>
+    <version>0.17.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
