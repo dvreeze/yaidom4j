@@ -7,7 +7,7 @@
 Even if Guava immutable collections are great in that they express immutability in the collection type, we should be able to do without this dependency.
 
 Indeed, we can work with "regular" type `java.util.List` as *thread-safe immutable Lists*, if:
-* We return `List` instances following the "unmodifiabilty" semantics of `java.util.stream.Stream.toList`
+* We return `List` instances following the "unmodifiability" semantics of `java.util.stream.Stream.toList`
 * All elements of the `List` are non-null and *immutable* themselves
 * We document immutability, given that the type does not express this
 
