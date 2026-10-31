@@ -69,8 +69,6 @@ public class ClarkNodes {
             children = List.copyOf(children);
 
             Objects.requireNonNull(name);
-            Objects.requireNonNull(attributes);
-            Objects.requireNonNull(children);
 
             PreconditionUtil.checkArgument(
                     attributes.keySet().stream()
@@ -226,7 +224,7 @@ public class ClarkNodes {
             return new Element(
                     name(),
                     attributes(),
-                    newChildren
+                    List.copyOf(newChildren)
             );
         }
 
@@ -253,7 +251,7 @@ public class ClarkNodes {
         public Element withAttributes(Map<QName, String> newAttributes) {
             return new Element(
                     name(),
-                    newAttributes,
+                    Map.copyOf(newAttributes),
                     children()
             );
         }
@@ -276,7 +274,7 @@ public class ClarkNodes {
                             .map(v -> Map.entry(attrName, v))
                             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
             );
-            return withAttributes(newAttributes);
+            return withAttributes(Map.copyOf(newAttributes));
         }
 
         @Override

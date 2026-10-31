@@ -51,9 +51,7 @@ public record Element(
         children = List.copyOf(children);
 
         Objects.requireNonNull(name);
-        Objects.requireNonNull(attributes);
         Objects.requireNonNull(namespaceScope);
-        Objects.requireNonNull(children);
 
         PreconditionUtil.checkArgument(
                 namespaceScope.allowsElementName(name),

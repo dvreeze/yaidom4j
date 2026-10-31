@@ -37,7 +37,6 @@ public record Document(
         children = List.copyOf(children);
 
         Objects.requireNonNull(uriOption);
-        Objects.requireNonNull(children);
 
         PreconditionUtil.checkArgument(
                 children.stream().filter(n -> n instanceof Element).count() == 1

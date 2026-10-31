@@ -37,7 +37,6 @@ public record AncestryAwareDocument(
         children = List.copyOf(children);
 
         Objects.requireNonNull(uriOption);
-        Objects.requireNonNull(children);
 
         PreconditionUtil.checkArgument(
                 children.stream().filter(n -> n instanceof AncestryAwareNodes.Element).count() == 1
