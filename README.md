@@ -177,7 +177,7 @@ Some characteristics of yaidom4j are as follows:
   * So no dependency on Guava and its immutable collections is needed
   * Unlike Guava immutable collections, these immutable collections do not express immutability in terms of their collection types
   * Instead, factory methods like `List.copyOf`, `List.of`, `Map.copyOf`,`Map.of` and `Stream.toList` express and enforce immutability
-  * These effectively immutable collections are also thread-safe; see [JEP 269](https://openjdk.org/jeps/269)
+  * These effectively immutable collections are also thread-safe; see for example [JEP 269](https://openjdk.org/jeps/269)
 * It has a *small conceptual surface area*, and a small, rather *stable API*
 * It is *not* a schema validator (against DTD or XSD), nor is it an O-X mapper, or XPath/XQuery processor, or HTML library
 * The *element query API* mostly returns *Java Streams*, which can be used in Java Stream pipelines
