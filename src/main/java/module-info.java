@@ -26,7 +26,7 @@ import java.util.Map;
  * achieved with calls such as {@link java.util.List#copyOf(Collection)} and {@link java.util.Map#copyOf(Map)}.
  * <p>
  * The dependency outside the JDK is only JSpecify for its "nullness" annotations. It is exposed in the API,
- * therefore it is a transitive dependencies. Of the JDK, only modules java.base and java.xml are needed.
+ * therefore it is a transitive dependency. Of the JDK, only modules java.base and java.xml are needed.
  *
  * @author Chris de Vreeze
  */
