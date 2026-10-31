@@ -16,12 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
@@ -43,23 +41,26 @@ import java.util.stream.Stream;
  */
 public record Element(
         QName name,
-        ImmutableMap<QName, String> attributes,
+        Map<QName, String> attributes,
         NamespaceScope namespaceScope,
-        ImmutableList<Node> children
+        List<Node> children
 ) implements CanBeDocumentChild, ElementApi<Element>, TransformableElementApi<Element, Node> {
 
     public Element {
+        attributes = Map.copyOf(attributes);
+        children = List.copyOf(children);
+
         Objects.requireNonNull(name);
         Objects.requireNonNull(attributes);
         Objects.requireNonNull(namespaceScope);
         Objects.requireNonNull(children);
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 namespaceScope.allowsElementName(name),
                 String.format("Name '%s' not allowed by NamespaceScope %s", name, namespaceScope)
         );
 
-        Preconditions.checkArgument(attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName));
+        PreconditionUtil.checkArgument(attributes.keySet().stream().allMatch(namespaceScope::allowsAttributeName));
     }
 
     @Override
@@ -72,7 +73,7 @@ public record Element(
         return new ClarkNodes.Element(
                 name(),
                 attributes(),
-                children.stream().map(Node::toClarkNode).collect(ImmutableList.toImmutableList())
+                children.stream().map(Node::toClarkNode).toList()
         );
     }
 
@@ -258,8 +259,8 @@ public record Element(
                 parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
 
         // The namespace scope additions are completely safe:
-        Preconditions.checkArgument(namespaceScope().subScopeOf(newScope));
-        Preconditions.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
+        PreconditionUtil.checkArgument(namespaceScope().subScopeOf(newScope));
+        PreconditionUtil.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
 
         // Recursion
         return new Element(name(), attributes(), newScope, children())
@@ -286,19 +287,19 @@ public record Element(
      * are not allowed in XML 1.0.
      */
     @Override
-    public Element withChildren(ImmutableList<Node> newChildren) {
+    public Element withChildren(List<Node> newChildren) {
         return new Element(
                 name(),
                 attributes(),
                 namespaceScope(),
-                newChildren
+                List.copyOf(newChildren)
         );
     }
 
     @Override
     public Element plusChild(Node newChild) {
         return withChildren(
-                ImmutableList.<Node>builder().addAll(children).add(newChild).build()
+                Stream.concat(children.stream(), Stream.of(newChild)).toList()
         );
     }
 
@@ -308,9 +309,9 @@ public record Element(
     }
 
     @Override
-    public Element plusChildren(ImmutableList<Node> newChildren) {
+    public Element plusChildren(List<Node> newChildren) {
         return withChildren(
-                ImmutableList.<Node>builder().addAll(children).addAll(newChildren).build()
+                Stream.concat(children.stream(), newChildren.stream()).toList()
         );
     }
 
@@ -318,7 +319,7 @@ public record Element(
      * Convenience method to set a Text child as the only child node
      */
     public Element withText(String textValue) {
-        return withChildren(ImmutableList.of(new Text(textValue, false)));
+        return withChildren(List.of(new Text(textValue, false)));
     }
 
     /**
@@ -334,10 +335,10 @@ public record Element(
      * For prefixed attributes, take care to use only prefixes that are in scope.
      */
     @Override
-    public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
+    public Element withAttributes(Map<QName, String> newAttributes) {
         return new Element(
                 name(),
-                newAttributes,
+                Map.copyOf(newAttributes),
                 namespaceScope(),
                 children()
         );
@@ -345,27 +346,21 @@ public record Element(
 
     @Override
     public Element plusAttribute(QName attrName, String attrValue) {
-        return withAttributes(
-                ImmutableMap.<QName, String>builder()
-                        .putAll(attributes)
-                        .put(attrName, attrValue)
-                        .buildKeepingLast()
-        );
+        Map<QName, String> newAttributes = new HashMap<>(attributes());
+        newAttributes.put(attrName, attrValue);
+        return withAttributes(Map.copyOf(newAttributes));
     }
 
     @Override
     public Element plusAttributeOption(QName attrName, Optional<String> newAttrValueOption) {
-        return withAttributes(
-                ImmutableMap.<QName, String>builder()
-                        .putAll(attributes)
-                        .putAll(
-                                newAttrValueOption
-                                        .stream()
-                                        .map(v -> Map.entry(attrName, v))
-                                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
-                        )
-                        .buildKeepingLast()
+        Map<QName, String> newAttributes = new HashMap<>(attributes());
+        newAttributes.putAll(
+                newAttrValueOption
+                        .stream()
+                        .map(v -> Map.entry(attrName, v))
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
+        return withAttributes(Map.copyOf(newAttributes));
     }
 
     @Override
@@ -373,7 +368,7 @@ public record Element(
         return withChildren(
                 children().stream()
                         .flatMap(ch -> f.apply(ch).stream())
-                        .collect(ImmutableList.toImmutableList())
+                        .toList()
         );
     }
 
@@ -450,7 +445,7 @@ public record Element(
 
     @Override
     public Element removeInterElementWhitespace() {
-        ImmutableList<Node> children = children();
+        List<Node> children = children();
 
         // Naive implementation
         boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
@@ -472,7 +467,7 @@ public record Element(
                                 return ch;
                             }
                         })
-                        .collect(ImmutableList.toImmutableList())
+                        .toList()
         );
     }
 
@@ -506,9 +501,9 @@ public record Element(
                 }
                 childNodeIndex += 1;
             }
-            Preconditions.checkArgument(updatedChildren.size() == this.children().size());
+            PreconditionUtil.checkArgument(updatedChildren.size() == this.children().size());
 
-            return this.withChildren(ImmutableList.copyOf(updatedChildren));
+            return this.withChildren(List.copyOf(updatedChildren));
         }
     }
 }

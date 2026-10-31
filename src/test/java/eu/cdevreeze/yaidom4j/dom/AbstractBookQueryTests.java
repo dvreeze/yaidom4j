@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.dom;
 
-import com.google.common.base.Preconditions;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
 import org.junit.jupiter.api.Test;
@@ -214,7 +214,7 @@ public abstract class AbstractBookQueryTests<E extends ElementApi<E>> {
     @Test
     void testQueryAuthorNames() {
         Function<E, String> getAuthorName = authorElem -> {
-            Preconditions.checkArgument(epf().hasName(NS, "Author").test(authorElem));
+            PreconditionUtil.checkArgument(epf().hasName(NS, "Author").test(authorElem));
 
             String firstName = authorElem.childElementStream(epf().hasName(NS, "First_Name"))
                     .findFirst()

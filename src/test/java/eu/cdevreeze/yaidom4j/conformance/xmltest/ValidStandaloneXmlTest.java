@@ -16,14 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.conformance.xmltest;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.JaxpDomToImmutableDomConverter;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonNodes;
 import net.sf.saxon.s9api.*;
 import net.sf.saxon.s9api.streams.Steps;
@@ -143,7 +141,7 @@ class ValidStandaloneXmlTest {
     }
 
     private static URI convertToUriInOutputDir(URI xmlDocUri) {
-        Preconditions.checkArgument(xmlDocUri.getScheme().equals("file"));
+        PreconditionUtil.checkArgument(xmlDocUri.getScheme().equals("file"));
         Path path = Path.of(xmlDocUri);
         Path simpleName = path.getFileName();
         return path.getParent().resolve("out").resolve(simpleName).toUri();
@@ -153,7 +151,7 @@ class ValidStandaloneXmlTest {
 
     private static ClarkNodes.Element combineAdjacentTextNodes(ClarkNodes.Element element) {
         return element.transformDescendantElementsOrSelf(elem ->
-                elem.withChildren(ImmutableList.copyOf(combineAdjacentTextNodes(elem.children())))
+                elem.withChildren(List.copyOf(combineAdjacentTextNodes(elem.children())))
         );
     }
 
@@ -207,13 +205,13 @@ class ValidStandaloneXmlTest {
                     .map(n -> (n instanceof ClarkNodes.Text t) ? normalizeWhitespace(t) : n)
                     .toList();
             // Normalize whitespace in attribute values as well
-            return elem.withChildren(ImmutableList.copyOf(children))
+            return elem.withChildren(List.copyOf(children))
                     .withAttributes(
                             elem.attributes()
                                     .entrySet()
                                     .stream()
                                     .map(kv -> Map.entry(kv.getKey(), normalizeWhitespace(kv.getValue())))
-                                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
                     );
         }).removeInterElementWhitespace();
     }

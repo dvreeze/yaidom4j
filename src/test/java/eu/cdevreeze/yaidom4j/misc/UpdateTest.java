@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
@@ -29,6 +28,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -170,7 +170,7 @@ class UpdateTest {
             return elem;
         } else {
             return elem.withChildren(
-                    ImmutableList.of(
+                    List.of(
                             new Text(
                                     String.valueOf(Integer.parseInt(elem.text()) + 1),
                                     false

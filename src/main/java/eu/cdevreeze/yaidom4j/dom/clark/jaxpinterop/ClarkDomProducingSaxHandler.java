@@ -16,9 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.ext.LexicalHandler;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -64,7 +64,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
                         extractPrefix(Objects.requireNonNull(qname))
                 );
 
-        ImmutableMap<QName, String> attributes = extractAttributes(attrs);
+        Map<QName, String> attributes = extractAttributes(attrs);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),
@@ -73,11 +73,11 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         );
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
 
             currentRootElement = elem;
         } else {
-            Preconditions.checkArgument(currentElement != null);
+            PreconditionUtil.checkArgument(currentElement != null);
 
             currentElement.addChild(elem);
         }
@@ -86,8 +86,8 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
 
     @Override
     public void endElement(String uri, String localName, String qname) {
-        Preconditions.checkArgument(currentRootElement != null);
-        Preconditions.checkArgument(currentElement != null);
+        PreconditionUtil.checkArgument(currentRootElement != null);
+        PreconditionUtil.checkArgument(currentElement != null);
 
         currentElement = currentElement.getParentElementOption().orElse(null);
     }
@@ -100,9 +100,9 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
 
         if (currentRootElement == null) {
             // Do nothing. This should not happen anyway.
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
         } else {
-            Preconditions.checkArgument(currentElement != null);
+            PreconditionUtil.checkArgument(currentElement != null);
 
             currentElement.addChild(text);
         }
@@ -113,7 +113,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         InternalNodes.InternalProcessingInstruction pi = new InternalNodes.InternalProcessingInstruction(target, data);
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
         } else {
             if (currentElement != null) {
                 currentElement.addChild(pi);
@@ -145,7 +145,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         var comment = new InternalNodes.InternalComment(new String(chars, start, length));
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
         } else {
             if (currentElement != null) {
                 currentElement.addChild(comment);
@@ -179,11 +179,11 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
             return "";
         }
         String[] parts = qname.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts.length == 2 ? parts[0] : "";
     }
 
-    private ImmutableMap<QName, String> extractAttributes(Attributes attrs) {
+    private Map<QName, String> extractAttributes(Attributes attrs) {
         return IntStream.range(0, attrs.getLength())
                 .boxed()
                 .flatMap(i -> {
@@ -197,7 +197,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
                         return Stream.of(Map.entry(new QName(ns, localName, extractPrefix(qname)), attrs.getValue(i)));
                     }
                 })
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static boolean isNamespaceDeclaration(String attrName) {
@@ -206,7 +206,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
             return false;
         }
         String[] parts = attrName.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
     }
 }

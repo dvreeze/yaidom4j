@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
@@ -73,14 +71,14 @@ public class AncestryAwareNodes {
     private static final class ElementTree {
 
         private final Optional<URI> docUriOption;
-        private final ImmutableMap<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
+        private final Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
         private ElementTree(
                 Optional<URI> docUriOption,
-                ImmutableMap<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
+                Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
         ) {
             this.docUriOption = docUriOption;
-            this.elementMap = Objects.requireNonNull(elementMap);
+            this.elementMap = Map.copyOf(Objects.requireNonNull(elementMap));
         }
 
         Element rootElement() {
@@ -94,7 +92,7 @@ public class AncestryAwareNodes {
             ElementNavigationPath navigationPath = ElementNavigationPath.empty();
             Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap = new HashMap<>();
             buildElementCache(docUriOption, navigationPath, underlyingRootElement, elementMap);
-            return new ElementTree(docUriOption, ImmutableMap.copyOf(elementMap));
+            return new ElementTree(docUriOption, Map.copyOf(elementMap));
         }
 
         private static void buildElementCache(
@@ -145,7 +143,7 @@ public class AncestryAwareNodes {
          * @deprecated Use {@link #elementNavigationPath()} instead
          */
         @Deprecated(forRemoval = true)
-        public ImmutableList<Integer> navigationPath() {
+        public List<Integer> navigationPath() {
             return navigationPath.entries();
         }
 
@@ -252,7 +250,7 @@ public class AncestryAwareNodes {
         }
 
         @Override
-        public ImmutableMap<QName, String> attributes() {
+        public Map<QName, String> attributes() {
             return underlyingElement().attributes();
         }
 

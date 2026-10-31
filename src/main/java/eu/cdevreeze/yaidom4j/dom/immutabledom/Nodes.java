@@ -16,12 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 
 import javax.xml.namespace.QName;
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,11 +39,11 @@ public class Nodes {
     }
 
     public static Document doc() {
-        return new Document(Optional.empty(), ImmutableList.of());
+        return new Document(Optional.empty(), List.of());
     }
 
     public static Document doc(URI docUri) {
-        return new Document(Optional.of(docUri), ImmutableList.of());
+        return new Document(Optional.of(docUri), List.of());
     }
 
     /**
@@ -55,11 +55,11 @@ public class Nodes {
     public static Element elem(QName name, NamespaceScope parentScope) {
         return new Element(
                 name,
-                ImmutableMap.of(),
+                Map.of(),
                 name.getNamespaceURI().isEmpty() ?
                         parentScope :
                         parentScope.resolve(name.getPrefix(), name.getNamespaceURI()),
-                ImmutableList.of()
+                List.of()
         );
     }
 
@@ -74,11 +74,11 @@ public class Nodes {
     public static Element elem(QName name) {
         return new Element(
                 name,
-                ImmutableMap.of(),
+                Map.of(),
                 name.getNamespaceURI().isEmpty() ?
                         NamespaceScope.empty() :
                         NamespaceScope.of(name.getPrefix(), name.getNamespaceURI()),
-                ImmutableList.of()
+                List.of()
         );
     }
 

@@ -16,11 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.testsupport.saxon;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -73,7 +71,7 @@ public class SaxonNodes {
         private final XdmNode xdmNode;
 
         public Element(XdmNode xdmNode) {
-            Preconditions.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.ELEMENT));
+            PreconditionUtil.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.ELEMENT));
             this.xdmNode = xdmNode;
         }
 
@@ -93,7 +91,7 @@ public class SaxonNodes {
             return new ClarkNodes.Element(
                     elementName(),
                     attributes(),
-                    childNodeStream().map(Node::toClarkNode).collect(ImmutableList.toImmutableList())
+                    childNodeStream().map(Node::toClarkNode).toList()
             );
         }
 
@@ -103,10 +101,10 @@ public class SaxonNodes {
         }
 
         @Override
-        public ImmutableMap<QName, String> attributes() {
+        public Map<QName, String> attributes() {
             return xdmNode.select(Steps.attribute())
                     .collect(
-                            ImmutableMap.toImmutableMap(
+                            Collectors.toUnmodifiableMap(
                                     xdmAttrNode -> xdmAttrNode.getNodeName().getStructuredQName().toJaxpQName(),
                                     XdmItem::getStringValue
                             )
@@ -135,10 +133,10 @@ public class SaxonNodes {
 
         @Override
         public Optional<NamespaceScope> namespaceScopeOption() {
-            ImmutableMap<String, String> nsMappings = xdmNode.select(Steps.namespace())
+            Map<String, String> nsMappings = xdmNode.select(Steps.namespace())
                     .map(n -> (NamespaceNode) n.getUnderlyingNode())
                     .map(n -> Map.entry(n.getDisplayName(), n.getStringValue()))
-                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
             return Optional.of(NamespaceScope.from(nsMappings));
         }
@@ -289,7 +287,7 @@ public class SaxonNodes {
         private final XdmNode xdmNode;
 
         public Text(XdmNode xdmNode) {
-            Preconditions.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.TEXT));
+            PreconditionUtil.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.TEXT));
             this.xdmNode = xdmNode;
         }
 
@@ -332,7 +330,7 @@ public class SaxonNodes {
         private final XdmNode xdmNode;
 
         public Comment(XdmNode xdmNode) {
-            Preconditions.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.COMMENT));
+            PreconditionUtil.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.COMMENT));
             this.xdmNode = xdmNode;
         }
 
@@ -375,7 +373,7 @@ public class SaxonNodes {
         private final XdmNode xdmNode;
 
         public ProcessingInstruction(XdmNode xdmNode) {
-            Preconditions.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.PROCESSING_INSTRUCTION));
+            PreconditionUtil.checkArgument(xdmNode.getNodeKind().equals(XdmNodeKind.PROCESSING_INSTRUCTION));
             this.xdmNode = xdmNode;
         }
 

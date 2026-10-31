@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,6 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,14 +64,14 @@ class XbrlInstanceQueryTests {
     @Test
     void testQueryDimensionMembers() {
         TestXbrlInstances.Context context = Objects.requireNonNull(instance.contexts().get("I-2005"));
-        ImmutableMap<QName, QName> dimensionMembers =
+        Map<QName, QName> dimensionMembers =
                 context.entity().segmentOption().orElseThrow()
                         .explicitMembers()
                         .stream()
                         .map(e -> Map.entry(e.dimension(), e.member()))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ImmutableMap<QName, QName> expectedDimensionMembers = ImmutableMap.of(
+        Map<QName, QName> expectedDimensionMembers = Map.of(
                 new QName(GAAP_NS, "EntityAxis"), new QName(GAAP_NS, "ABCCompanyDomain"),
                 new QName(GAAP_NS, "BusinessSegmentAxis"), new QName(GAAP_NS, "ConsolidatedGroupDomain"),
                 new QName(GAAP_NS, "VerificationAxis"), new QName(GAAP_NS, "UnqualifiedOpinionMember"),
@@ -85,14 +84,14 @@ class XbrlInstanceQueryTests {
 
     @Test
     void testQueryItemFactContext() {
-        ImmutableList<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
+        List<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<TestXbrlInstances.ItemFact> landFacts2005 = landFacts
+        List<TestXbrlInstances.ItemFact> landFacts2005 = landFacts
                 .stream()
                 .filter(f -> f.contextRef().equals("I-2005"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, landFacts2005.size());
 
@@ -102,14 +101,14 @@ class XbrlInstanceQueryTests {
 
         assertNotNull(context);
 
-        ImmutableMap<QName, QName> dimensionMembers =
+        Map<QName, QName> dimensionMembers =
                 context.entity().segmentOption().orElseThrow()
                         .explicitMembers()
                         .stream()
                         .map(e -> Map.entry(e.dimension(), e.member()))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ImmutableMap<QName, QName> expectedDimensionMembers = ImmutableMap.of(
+        Map<QName, QName> expectedDimensionMembers = Map.of(
                 new QName(GAAP_NS, "EntityAxis"), new QName(GAAP_NS, "ABCCompanyDomain"),
                 new QName(GAAP_NS, "BusinessSegmentAxis"), new QName(GAAP_NS, "ConsolidatedGroupDomain"),
                 new QName(GAAP_NS, "VerificationAxis"), new QName(GAAP_NS, "UnqualifiedOpinionMember"),
@@ -122,14 +121,14 @@ class XbrlInstanceQueryTests {
 
     @Test
     void testQueryItemFactUnit() {
-        ImmutableList<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
+        List<TestXbrlInstances.ItemFact> landFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "Land"));
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<TestXbrlInstances.ItemFact> landFacts2007 = landFacts
+        List<TestXbrlInstances.ItemFact> landFacts2007 = landFacts
                 .stream()
                 .filter(f -> f.contextRef().equals("I-2007"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, landFacts2007.size());
 
@@ -147,21 +146,21 @@ class XbrlInstanceQueryTests {
                 .map(TestXbrlInstances.Measure::measure)
                 .toList();
 
-        ImmutableList<QName> expectedMeasures = ImmutableList.of(new QName(ISO4217_NS, "USD"));
+        List<QName> expectedMeasures = List.of(new QName(ISO4217_NS, "USD"));
 
         assertEquals(expectedMeasures, measures);
     }
 
     @Test
     void testQueryItemFactValue() {
-        ImmutableList<TestXbrlInstances.ItemFact> preferredStockAmountFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "PreferredStockAmount"));
+        List<TestXbrlInstances.ItemFact> preferredStockAmountFacts = instance.topLevelItemFacts(new QName(GAAP_NS, "PreferredStockAmount"));
 
         assertEquals(6, preferredStockAmountFacts.size());
 
-        ImmutableList<TestXbrlInstances.ItemFact> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
+        List<TestXbrlInstances.ItemFact> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
                 .stream()
                 .filter(f -> f.contextRef().equals("I-2007-PS-All"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, preferredStockAmountFacts2007PsAll.size());
 

@@ -16,9 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.examples.transformations;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Node;
@@ -27,14 +24,12 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
 import java.net.URISyntaxException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
@@ -85,7 +80,7 @@ class TemplatingExampleTest {
                 htmlElement.descendantElementStream(hasName("table"))
                         .findFirst()
                         .orElseThrow()
-                        .withAttributes(ImmutableMap.of())
+                        .withAttributes(Map.of())
                         .transformChildElementsToNodeLists(che ->
                                 che.childElementStream(hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
@@ -130,7 +125,7 @@ class TemplatingExampleTest {
                 htmlElement.descendantElementStream(hasName("table"))
                         .findFirst()
                         .orElseThrow()
-                        .withAttributes(ImmutableMap.of())
+                        .withAttributes(Map.of())
                         .transformChildElementsToNodeLists(che ->
                                 che.childElementStream(hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
@@ -176,7 +171,7 @@ class TemplatingExampleTest {
     }
 
     Element transform(Element catalogElement) {
-        Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
+        PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
         return Nodes.elem("html")
                 .plusChild(Nodes.elem("body")
@@ -193,14 +188,14 @@ class TemplatingExampleTest {
                                         .plusChildren(
                                                 catalogElement.childElementStream(hasName("cd"))
                                                         .map(this::transformCdElement)
-                                                        .collect(ImmutableList.toImmutableList())
+                                                        .collect(Collectors.toUnmodifiableList())
                                         )
                         )
                 );
     }
 
     Element transformSortingOnArtist(Element catalogElement) {
-        Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
+        PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
         return Nodes.elem("html")
                 .plusChild(Nodes.elem("body")
@@ -221,14 +216,14 @@ class TemplatingExampleTest {
                                                                         .findAny().orElseThrow().text()
                                                         ))
                                                         .map(this::transformCdElement)
-                                                        .collect(ImmutableList.toImmutableList())
+                                                        .collect(Collectors.toUnmodifiableList())
                                         )
                         )
                 );
     }
 
     Element transformToParagraphs(Element catalogElement) {
-        Preconditions.checkArgument(catalogElement.name().equals(new QName("catalog")));
+        PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
         return Nodes.elem("html")
                 .plusChild(
@@ -237,13 +232,13 @@ class TemplatingExampleTest {
                                 .plusChildren(
                                         catalogElement.childElementStream(hasName("cd"))
                                                 .map(this::mapCdElemToParagraph)
-                                                .collect(ImmutableList.toImmutableList())
+                                                .collect(Collectors.toUnmodifiableList())
                                 )
                 );
     }
 
     private Element transformCdElement(Element cdElement) {
-        Preconditions.checkArgument(cdElement.name().equals(new QName("cd")));
+        PreconditionUtil.checkArgument(cdElement.name().equals(new QName("cd")));
 
         String title = cdElement.childElementStream(hasName("title"))
                 .findFirst().orElseThrow().text();
@@ -259,7 +254,7 @@ class TemplatingExampleTest {
     }
 
     private Element mapCdElemToParagraph(Element cdElement) {
-        Preconditions.checkArgument(cdElement.name().equals(new QName("cd")));
+        PreconditionUtil.checkArgument(cdElement.name().equals(new QName("cd")));
 
         return Nodes.elem("p")
                 .plusChildren(
@@ -276,7 +271,7 @@ class TemplatingExampleTest {
     }
 
     private List<Node> mapTitleElemToNodes(Element titleElement) {
-        Preconditions.checkArgument(titleElement.name().equals(new QName("title")));
+        PreconditionUtil.checkArgument(titleElement.name().equals(new QName("title")));
 
         return List.of(
                 Nodes.text("Title: "),
@@ -288,7 +283,7 @@ class TemplatingExampleTest {
     }
 
     private List<Node> mapArtistElemToNodes(Element artistElement) {
-        Preconditions.checkArgument(artistElement.name().equals(new QName("artist")));
+        PreconditionUtil.checkArgument(artistElement.name().equals(new QName("artist")));
 
         return List.of(
                 Nodes.text("Artist: "),

@@ -16,11 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomSource;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.jaxp.SchemaFactories;
 import org.junit.jupiter.api.BeforeAll;
@@ -135,7 +135,7 @@ class SchemaValidationTests {
                         .map(u -> docParserForSchema.parse(convertToUri(u)))
                         .toList();
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 schemaDocs.stream()
                         .allMatch(d -> hasName(XMLConstants.W3C_XML_SCHEMA_NS_URI, "schema").test(d.documentElement()))
         );

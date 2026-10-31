@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.core;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -24,6 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -140,10 +140,10 @@ class NamespaceScopeTests {
                         false),
                 Arguments.of(
                         SCOPE_LINK,
-                        new NamespaceScope(ImmutableMap.of("link", "http://www.xbrl.org/2003/NOT-linkbase")),
+                        new NamespaceScope(Map.of("link", "http://www.xbrl.org/2003/NOT-linkbase")),
                         false),
                 Arguments.of(
-                        new NamespaceScope(ImmutableMap.of("link", "http://www.xbrl.org/2003/NOT-linkbase")),
+                        new NamespaceScope(Map.of("link", "http://www.xbrl.org/2003/NOT-linkbase")),
                         SCOPE_LINK_XLINK,
                         false),
                 Arguments.of(
@@ -164,7 +164,7 @@ class NamespaceScopeTests {
                         true),
                 Arguments.of(
                         SCOPE_LINK_XLINK_XBRL_WITH_DEFAULT,
-                        new NamespaceScope(ImmutableMap.of(
+                        new NamespaceScope(Map.of(
                                 "link", LINK_NS, "xlink", "http://www.w3.org/1999/xlink",
                                 "xbrli", XBRLI_NS, "", "http://www.xbrl.org/2003/NOT-instance"
                         )),
@@ -180,24 +180,24 @@ class NamespaceScopeTests {
     private static final String GAAP_NS = "http://xasb.org/gaap";
 
     private static final NamespaceScope SCOPE_LINK =
-            new NamespaceScope(ImmutableMap.of(
+            new NamespaceScope(Map.of(
                     "link", LINK_NS
             ));
     private static final NamespaceScope SCOPE_XLINK =
-            new NamespaceScope(ImmutableMap.of(
+            new NamespaceScope(Map.of(
                     "xlink", "http://www.w3.org/1999/xlink"
             ));
     private static final NamespaceScope SCOPE_LINK_XLINK =
-            new NamespaceScope(ImmutableMap.of(
+            new NamespaceScope(Map.of(
                     "link", LINK_NS, "xlink", "http://www.w3.org/1999/xlink"
             ));
     private static final NamespaceScope SCOPE_LINK_XLINK_XBRL =
-            new NamespaceScope(ImmutableMap.of(
+            new NamespaceScope(Map.of(
                     "link", LINK_NS, "xlink", "http://www.w3.org/1999/xlink",
                     "xbrli", XBRLI_NS
             ));
     private static final NamespaceScope SCOPE_LINK_XLINK_XBRL_WITH_DEFAULT =
-            new NamespaceScope(ImmutableMap.of(
+            new NamespaceScope(Map.of(
                     "link", LINK_NS, "xlink", "http://www.w3.org/1999/xlink",
                     "xbrli", XBRLI_NS, "", XBRLI_NS
             ));

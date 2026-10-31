@@ -16,15 +16,16 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.namespace.QName;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareElementPredicates.hasName;
 
@@ -53,8 +54,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Identifier(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "identifier")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "identifier")));
+            PreconditionUtil.checkArgument(
                     element.parentElementOption().stream().anyMatch(hasName(XBRLI_NS, "entity"))
             );
             this.element = element;
@@ -79,8 +80,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public ExplicitMember(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLDI_NS, "explicitMember")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLDI_NS, "explicitMember")));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
             );
             this.element = element;
@@ -107,8 +108,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Segment(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "segment")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "segment")));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
             );
             this.element = element;
@@ -119,10 +120,10 @@ public class TestXbrlInstances {
             return element;
         }
 
-        public ImmutableList<ExplicitMember> explicitMembers() {
+        public List<ExplicitMember> explicitMembers() {
             return element.childElementStream(hasName(XBRLDI_NS, "explicitMember"))
                     .map(ExplicitMember::new)
-                    .collect(ImmutableList.toImmutableList());
+                    .toList();
         }
     }
 
@@ -131,8 +132,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Entity(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "entity")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "entity")));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
             );
             this.element = element;
@@ -160,8 +161,8 @@ public class TestXbrlInstances {
     public interface Period extends XbrlInstancePart {
 
         static Period fromElement(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "context"))
             );
 
@@ -178,8 +179,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public InstantPeriod(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
-            Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "instant")).findAny().isPresent());
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
+            PreconditionUtil.checkArgument(element.childElementStream(hasName(XBRLI_NS, "instant")).findAny().isPresent());
             this.element = element;
         }
 
@@ -203,9 +204,9 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public StartEndDatePeriod(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
-            Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "startDate")).findAny().isPresent());
-            Preconditions.checkArgument(element.childElementStream(hasName(XBRLI_NS, "endDate")).findAny().isPresent());
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "period")));
+            PreconditionUtil.checkArgument(element.childElementStream(hasName(XBRLI_NS, "startDate")).findAny().isPresent());
+            PreconditionUtil.checkArgument(element.childElementStream(hasName(XBRLI_NS, "endDate")).findAny().isPresent());
             this.element = element;
         }
 
@@ -238,7 +239,7 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Context(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "context")));
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "context")));
             this.element = element;
         }
 
@@ -271,8 +272,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Measure(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "measure")));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "measure")));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream().anyMatch(hasName(XBRLI_NS, "unit"))
             );
             this.element = element;
@@ -294,7 +295,7 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public Unit(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "unit")));
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "unit")));
             this.element = element;
         }
 
@@ -307,10 +308,10 @@ public class TestXbrlInstances {
             return element.attribute(new QName("id"));
         }
 
-        public ImmutableList<Measure> measures() {
+        public List<Measure> measures() {
             return element.childElementStream(hasName(XBRLI_NS, "measure"))
                     .map(Measure::new)
-                    .collect(ImmutableList.toImmutableList());
+                    .toList();
         }
     }
 
@@ -322,8 +323,8 @@ public class TestXbrlInstances {
         private final AncestryAwareNodes.Element element;
 
         public ItemFact(AncestryAwareNodes.Element element) {
-            Preconditions.checkArgument(!Set.of(XBRLI_NS, LINK_NS).contains(element.name().getNamespaceURI()));
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(!Set.of(XBRLI_NS, LINK_NS).contains(element.name().getNamespaceURI()));
+            PreconditionUtil.checkArgument(
                     element.ancestorElementStream()
                             .filter(e -> !hasName(XBRLI_NS, "xbrl").test(e))
                             .noneMatch(
@@ -363,18 +364,18 @@ public class TestXbrlInstances {
     public static final class XbrlInstance implements XbrlInstancePart {
 
         private final AncestryAwareNodes.Element element;
-        private final ImmutableMap<String, Context> contexts;
-        private final ImmutableMap<String, Unit> units;
+        private final Map<String, Context> contexts;
+        private final Map<String, Unit> units;
 
         private XbrlInstance(
                 AncestryAwareNodes.Element element,
-                ImmutableMap<String, Context> contexts,
-                ImmutableMap<String, Unit> units
+                Map<String, Context> contexts,
+                Map<String, Unit> units
         ) {
-            Preconditions.checkArgument(element.name().equals(new QName(XBRLI_NS, "xbrl")));
+            PreconditionUtil.checkArgument(element.name().equals(new QName(XBRLI_NS, "xbrl")));
             this.element = element;
-            this.contexts = contexts;
-            this.units = units;
+            this.contexts = Map.copyOf(contexts);
+            this.units = Map.copyOf(units);
         }
 
         @Override
@@ -382,38 +383,38 @@ public class TestXbrlInstances {
             return element;
         }
 
-        public ImmutableMap<String, Context> contexts() {
+        public Map<String, Context> contexts() {
             return contexts;
         }
 
-        public ImmutableMap<String, Unit> units() {
+        public Map<String, Unit> units() {
             return units;
         }
 
-        public ImmutableList<ItemFact> topLevelItemFacts() {
+        public List<ItemFact> topLevelItemFacts() {
             return element
                     .childElementStream(e -> !Set.of(XBRLI_NS, LINK_NS).contains(e.name().getNamespaceURI()))
                     .map(ItemFact::new)
-                    .collect(ImmutableList.toImmutableList());
+                    .toList();
         }
 
-        public ImmutableList<ItemFact> topLevelItemFacts(QName factName) {
+        public List<ItemFact> topLevelItemFacts(QName factName) {
             return topLevelItemFacts()
                     .stream()
                     .filter(f -> f.factName().equals(factName))
-                    .collect(ImmutableList.toImmutableList());
+                    .toList();
         }
 
         public static XbrlInstance from(AncestryAwareNodes.Element element) {
-            ImmutableMap<String, Context> contexts =
+            Map<String, Context> contexts =
                     element.childElementStream(hasName(XBRLI_NS, "context"))
                             .map(Context::new)
-                            .collect(ImmutableMap.toImmutableMap(Context::id, Function.identity()));
+                            .collect(Collectors.toUnmodifiableMap(Context::id, Function.identity()));
 
-            ImmutableMap<String, Unit> units =
+            Map<String, Unit> units =
                     element.childElementStream(hasName(XBRLI_NS, "unit"))
                             .map(Unit::new)
-                            .collect(ImmutableMap.toImmutableMap(Unit::id, Function.identity()));
+                            .collect(Collectors.toUnmodifiableMap(Unit::id, Function.identity()));
 
             return new XbrlInstance(element, contexts, units);
         }

@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.jaxp;
 
-import com.google.common.base.Preconditions;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
@@ -45,7 +45,7 @@ public class TransformerHandlers {
      */
     public static SAXTransformerFactory newSaxTransformerFactory() {
         TransformerFactory tf = TransformerFactory.newDefaultInstance();
-        Preconditions.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
+        PreconditionUtil.checkArgument(tf.getFeature(SAXTransformerFactory.FEATURE));
         tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         return (SAXTransformerFactory) tf;

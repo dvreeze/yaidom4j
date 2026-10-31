@@ -16,16 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -93,36 +88,36 @@ class XmlEqualityTests {
         String myNs = "http://xmlportfolio.com/xmlguild-examples";
 
         NamespaceScope nsScope = new NamespaceScope(
-                ImmutableMap.of("", atomNs, "xhtml", xhtmlNs, "my", myNs)
+                Map.of("", atomNs, "xhtml", xhtmlNs, "my", myNs)
         );
 
         return new Document(
                 Optional.empty(),
-                ImmutableList.of(
+                List.of(
                         new Element(
                                 new QName(atomNs, "feed", ""),
-                                ImmutableMap.of(),
+                                Map.of(),
                                 nsScope,
-                                ImmutableList.of(
+                                List.of(
                                         new Element(
                                                 new QName(atomNs, "title", ""),
-                                                ImmutableMap.of(),
+                                                Map.of(),
                                                 nsScope,
-                                                ImmutableList.of(new Text("Example Feed", false))
+                                                List.of(new Text("Example Feed", false))
                                         ),
                                         new Element(
                                                 new QName(atomNs, "rights", ""),
-                                                ImmutableMap.of(
+                                                Map.of(
                                                         new QName("type"), "xhtml",
                                                         new QName(myNs, "type", "my"), "silly"
                                                 ),
                                                 nsScope,
-                                                ImmutableList.of(
+                                                List.of(
                                                         new Element(
                                                                 new QName(xhtmlNs, "div", "xhtml"),
-                                                                ImmutableMap.of(),
+                                                                Map.of(),
                                                                 nsScope,
-                                                                ImmutableList.of(
+                                                                List.of(
                                                                         new Text(divText(), false)
                                                                 )
                                                         )
@@ -140,44 +135,44 @@ class XmlEqualityTests {
         String exampleNs = "http://xmlportfolio.com/xmlguild-examples";
 
         NamespaceScope nsScope1 = new NamespaceScope(
-                ImmutableMap.of("", atomNs)
+                Map.of("", atomNs)
         );
 
         NamespaceScope nsScope2 = new NamespaceScope(
-                ImmutableMap.of("", atomNs, "example", exampleNs)
+                Map.of("", atomNs, "example", exampleNs)
         );
 
         NamespaceScope nsScope3 = new NamespaceScope(
-                ImmutableMap.of("", xhtmlNs, "example", exampleNs)
+                Map.of("", xhtmlNs, "example", exampleNs)
         );
 
         return new Document(
                 Optional.empty(),
-                ImmutableList.of(
+                List.of(
                         new Element(
                                 new QName(atomNs, "feed", ""),
-                                ImmutableMap.of(),
+                                Map.of(),
                                 nsScope1,
-                                ImmutableList.of(
+                                List.of(
                                         new Element(
                                                 new QName(atomNs, "title", ""),
-                                                ImmutableMap.of(),
+                                                Map.of(),
                                                 nsScope1,
-                                                ImmutableList.of(new Text("Example Feed", false))
+                                                List.of(new Text("Example Feed", false))
                                         ),
                                         new Element(
                                                 new QName(atomNs, "rights", ""),
-                                                ImmutableMap.of(
+                                                Map.of(
                                                         new QName("type"), "xhtml",
                                                         new QName(exampleNs, "type", "example"), "silly"
                                                 ),
                                                 nsScope2,
-                                                ImmutableList.of(
+                                                List.of(
                                                         new Element(
                                                                 new QName(xhtmlNs, "div", ""),
-                                                                ImmutableMap.of(),
+                                                                Map.of(),
                                                                 nsScope3,
-                                                                ImmutableList.of(
+                                                                List.of(
                                                                         new Text(divText(), false)
                                                                 )
                                                         )

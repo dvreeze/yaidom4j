@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import org.jspecify.annotations.Nullable;
@@ -26,6 +25,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * "Immutable DOM" to W3C DOM converter.
@@ -53,7 +53,7 @@ public class ImmutableDomToJaxpDomConverter {
                 getSyntacticQName(element.name())
         );
 
-        ImmutableMap<String, String> namespaceDeclarations = parentScope.relativize(element.namespaceScope());
+        Map<String, String> namespaceDeclarations = parentScope.relativize(element.namespaceScope());
 
         for (var prefixNamespace : namespaceDeclarations.entrySet()) {
             String prefix = prefixNamespace.getKey();

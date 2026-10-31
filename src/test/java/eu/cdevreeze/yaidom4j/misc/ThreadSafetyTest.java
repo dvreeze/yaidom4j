@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
@@ -26,6 +24,7 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,11 +71,11 @@ class ThreadSafetyTest {
     void testThreadSafety() throws ExecutionException, InterruptedException {
         final AtomicReference<Element> elementHolder = new AtomicReference<>(createElement());
 
-        ImmutableList<ElementNavigationPath> elemNavigationPaths =
+        List<ElementNavigationPath> elemNavigationPaths =
                 AncestryAwareNodes.Element.create(Optional.empty(), elementHolder.get())
                         .descendantElementOrSelfStream()
                         .map(AncestryAwareNodes.Element::elementNavigationPath)
-                        .collect(ImmutableList.toImmutableList());
+                        .toList();
 
         List<CompletableFuture<Void>> updateFutures =
                 IntStream.range(0, NUMBER_OF_UPDATES)
@@ -119,7 +118,7 @@ class ThreadSafetyTest {
 
     private void updateAllElements(
             AtomicReference<Element> elementHolder,
-            ImmutableList<ElementNavigationPath> elementNavigationPaths
+            List<ElementNavigationPath> elementNavigationPaths
     ) {
         updateAllElements(
                 elementHolder,
@@ -130,7 +129,7 @@ class ThreadSafetyTest {
                     } else {
                         logger.trace("Current thread (updating element): {}", Thread.currentThread());
                         return elem.withChildren(
-                                ImmutableList.of(
+                                List.of(
                                         new Text(
                                                 String.valueOf(Integer.parseInt(elem.text()) + 1),
                                                 false
@@ -144,12 +143,12 @@ class ThreadSafetyTest {
 
     private void updateAllElements(
             AtomicReference<Element> elementHolder,
-            ImmutableList<ElementNavigationPath> elementNavigationPaths,
+            List<ElementNavigationPath> elementNavigationPaths,
             UnaryOperator<Element> f
     ) {
         if (!elementNavigationPaths.isEmpty()) {
             ElementNavigationPath lastPath = elementNavigationPaths.get(elementNavigationPaths.size() - 1);
-            ImmutableList<ElementNavigationPath> pathsButLast =
+            List<ElementNavigationPath> pathsButLast =
                     elementNavigationPaths.subList(0, elementNavigationPaths.size() - 1);
 
             elementHolder.updateAndGet(e ->
@@ -189,13 +188,13 @@ class ThreadSafetyTest {
                                     return ch;
                                 }
                             })
-                            .collect(ImmutableList.toImmutableList())
+                            .toList()
             );
         }
     }
 
-    private static ImmutableList<Integer> removeFirstEntry(ImmutableList<Integer> elementNavigationPath) {
-        Preconditions.checkArgument(!elementNavigationPath.isEmpty());
+    private static List<Integer> removeFirstEntry(List<Integer> elementNavigationPath) {
+        PreconditionUtil.checkArgument(!elementNavigationPath.isEmpty());
         return elementNavigationPath.subList(1, elementNavigationPath.size());
     }
 }

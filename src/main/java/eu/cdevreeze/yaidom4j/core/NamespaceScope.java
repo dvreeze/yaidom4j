@@ -16,16 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.core;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
+import eu.cdevreeze.yaidom4j.internal.SetOperations;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -38,15 +34,18 @@ import java.util.stream.Collectors;
  * <p>
  * This class does not implement interface {@link javax.xml.namespace.NamespaceContext}, because class {@link NamespaceScope}
  * does not consider "namespace declaration attributes" to be attributes.
+ * <p>
+ * This class is immutable, due to the fact that record component "inScopeNamespaces" is an "unmodifiable map".
  *
  * @author Chris de Vreeze
  */
-public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
+public record NamespaceScope(Map<String, String> inScopeNamespaces) {
 
     public NamespaceScope {
-        Preconditions.checkArgument(inScopeNamespaces.values().stream().noneMatch(String::isEmpty));
-        Preconditions.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XML_NS_PREFIX));
-        Preconditions.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XMLNS_ATTRIBUTE));
+        inScopeNamespaces = Map.copyOf(inScopeNamespaces);
+        PreconditionUtil.checkArgument(inScopeNamespaces.values().stream().noneMatch(String::isEmpty));
+        PreconditionUtil.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XML_NS_PREFIX));
+        PreconditionUtil.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XMLNS_ATTRIBUTE));
     }
 
     public Optional<String> defaultNamespaceOption() {
@@ -62,7 +61,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     }
 
     public Optional<String> findNamespaceOfPrefix(String prefix) {
-        Preconditions.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
+        PreconditionUtil.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
 
         if (XMLConstants.XML_NS_PREFIX.equals(prefix)) {
             return Optional.of(XMLConstants.XML_NS_URI);
@@ -78,7 +77,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * If the QName has a non-empty prefix but no namespace, an exception is thrown.
      */
     public boolean allowsElementName(QName name) {
-        Preconditions.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
+        PreconditionUtil.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
 
         return findNamespaceOfPrefix(name.getPrefix())
                 .orElse(XMLConstants.NULL_NS_URI)
@@ -92,7 +91,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * If the QName has a non-empty prefix but no namespace, an exception is thrown.
      */
     public boolean allowsAttributeName(QName name) {
-        Preconditions.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
+        PreconditionUtil.checkArgument(QNames.hasNamespaceIfPrefixNonEmpty(name));
 
         if (name.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX)) {
             return XMLConstants.NULL_NS_URI.equals(name.getNamespaceURI());
@@ -109,29 +108,26 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * allowed if the prefix is non-empty, but this method does not prevent that.
      */
     public NamespaceScope resolve(String prefix, String namespace) {
-        Preconditions.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
+        PreconditionUtil.checkArgument(!XMLConstants.XMLNS_ATTRIBUTE.equals(prefix));
 
         if (namespace.isEmpty()) {
             return new NamespaceScope(
                     inScopeNamespaces.entrySet().stream()
                             .filter(kv -> !kv.getKey().equals(prefix))
-                            .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
             );
         }
 
         if (prefix.equals(XMLConstants.XML_NS_PREFIX)) {
-            Preconditions.checkArgument(namespace.equals(XMLConstants.XML_NS_URI));
+            PreconditionUtil.checkArgument(namespace.equals(XMLConstants.XML_NS_URI));
             return this;
         } else {
             if (inScopeNamespaces.containsKey(prefix) && namespace.equals(inScopeNamespaces.get(prefix))) {
                 return this; // No unnecessary object creation needed in most cases
             } else {
-                return new NamespaceScope(
-                        ImmutableMap.<String, String>builderWithExpectedSize(1 + this.inScopeNamespaces.size())
-                                .putAll(this.inScopeNamespaces)
-                                .put(prefix, namespace)
-                                .buildKeepingLast()
-                );
+                Map<String, String> newInScopeNamespaces = new HashMap<>(inScopeNamespaces);
+                newInScopeNamespaces.put(prefix, namespace);
+                return new NamespaceScope(Map.copyOf(newInScopeNamespaces));
             }
         }
     }
@@ -140,7 +136,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         return new NamespaceScope(
                 this.inScopeNamespaces.entrySet().stream()
                         .filter(kv -> !prefix.equals(kv.getKey()))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }
 
@@ -151,7 +147,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * {@link NamespaceScope#withoutPrefixedNamespaceUndeclarations} on the parameter mapping helps to make the result valid in
      * XML 1.0).
      */
-    public NamespaceScope resolve(ImmutableMap<String, String> prefixNamespaceMap) {
+    public NamespaceScope resolve(Map<String, String> prefixNamespaceMap) {
         NamespaceScope accScope = this;
         for (var prefixNamespace : prefixNamespaceMap.entrySet()) {
             accScope = accScope.resolve(prefixNamespace.getKey(), prefixNamespace.getValue());
@@ -164,34 +160,34 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * the given parameter scope. The result may be invalid in XML 1.0, in which case removing namespace
      * un-declarations for prefixed namespaces would rectify that.
      */
-    public ImmutableMap<String, String> relativize(NamespaceScope other) {
+    public Map<String, String> relativize(NamespaceScope other) {
         if (this.equals(other)) {
-            return ImmutableMap.of();
+            return Map.of();
         }
 
         Set<String> undeclaredPrefixes =
-                Sets.difference(inScopeNamespaces.keySet(), other.inScopeNamespaces.keySet());
+                SetOperations.difference(inScopeNamespaces.keySet(), other.inScopeNamespaces.keySet());
         Map<String, String> namespaceUndeclarations = undeclaredPrefixes.stream()
                 .map(pref -> Map.entry(pref, ""))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Set<String> updatedPrefixes =
-                Sets.intersection(inScopeNamespaces.keySet(), other.inScopeNamespaces.keySet());
+                SetOperations.intersection(inScopeNamespaces.keySet(), other.inScopeNamespaces.keySet());
         Map<String, String> updatedNamespaceDeclarations = updatedPrefixes.stream()
                 .map(pref -> Map.entry(pref, Objects.requireNonNull(other.inScopeNamespaces.get(pref))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Set<String> newPrefixes =
-                Sets.difference(other.inScopeNamespaces.keySet(), inScopeNamespaces.keySet());
+                SetOperations.difference(other.inScopeNamespaces.keySet(), inScopeNamespaces.keySet());
         Map<String, String> newNamespaceDeclarations = newPrefixes.stream()
                 .map(pref -> Map.entry(pref, Objects.requireNonNull(other.inScopeNamespaces.get(pref))))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return ImmutableMap.<String, String>builder()
-                .putAll(namespaceUndeclarations)
-                .putAll(updatedNamespaceDeclarations)
-                .putAll(newNamespaceDeclarations)
-                .build();
+        Map<String, String> mappings = new HashMap<>();
+        mappings.putAll(namespaceUndeclarations);
+        mappings.putAll(updatedNamespaceDeclarations);
+        mappings.putAll(newNamespaceDeclarations);
+        return Map.copyOf(mappings);
     }
 
     /**
@@ -199,14 +195,14 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      */
     public QName resolveSyntacticElementQName(String syntacticQName) {
         String[] parts = syntacticQName.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
 
         if (parts.length == 1) {
             return defaultNamespaceOption().map(ns -> new QName(ns, parts[0])).orElse(new QName(parts[0]));
         } else if (parts[0].equals(XMLConstants.XML_NS_PREFIX)) {
             return new QName(XMLConstants.XML_NS_URI, parts[1], XMLConstants.XML_NS_PREFIX);
         } else {
-            Preconditions.checkArgument(inScopeNamespaces.containsKey(parts[0]));
+            PreconditionUtil.checkArgument(inScopeNamespaces.containsKey(parts[0]));
             String ns = inScopeNamespaces.get(parts[0]);
             return new QName(ns, parts[1], parts[0]);
         }
@@ -217,14 +213,14 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      */
     public QName resolveSyntacticAttributeQName(String syntacticQName) {
         String[] parts = syntacticQName.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
 
         if (parts.length == 1) {
             return new QName(parts[0]);
         } else if (parts[0].equals(XMLConstants.XML_NS_PREFIX)) {
             return new QName(XMLConstants.XML_NS_URI, parts[1], XMLConstants.XML_NS_PREFIX);
         } else {
-            Preconditions.checkArgument(withoutDefaultNamespace().inScopeNamespaces.containsKey(parts[0]));
+            PreconditionUtil.checkArgument(withoutDefaultNamespace().inScopeNamespaces.containsKey(parts[0]));
             String ns = withoutDefaultNamespace().inScopeNamespaces.get(parts[0]);
             return new QName(ns, parts[1], parts[0]);
         }
@@ -253,16 +249,18 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
     /**
      * Removes namespace un-declarations for non-empty prefixes. They are not allowed in XML 1.0. In XML 1.0 only the
      * default namespace can be un-declared. Hence, this method makes the namespace (un-)declarations valid in XML 1.0.
+     * <p>
+     * The result is returned as a new "unmodifiable map".
      */
-    public static ImmutableMap<String, String> withoutPrefixedNamespaceUndeclarations(
-            ImmutableMap<String, String> prefixNamespaceMap
+    public static Map<String, String> withoutPrefixedNamespaceUndeclarations(
+            Map<String, String> prefixNamespaceMap
     ) {
         if (prefixNamespaceMap.entrySet().stream().anyMatch(kv -> kv.getValue().isEmpty())) {
             return prefixNamespaceMap.entrySet().stream()
                     .filter(kv -> !kv.getValue().isEmpty() || kv.getKey().equals(XMLConstants.DEFAULT_NS_PREFIX))
-                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         } else {
-            return prefixNamespaceMap;
+            return Map.copyOf(prefixNamespaceMap);
         }
     }
 
@@ -271,8 +269,8 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
      * (but nonetheless checking that prefix "xml" refers to the correct namespace). Hence, this factory
      * method is more lenient than the constructor, which does not allow the "xml" prefix to be passed.
      */
-    public static NamespaceScope from(ImmutableMap<String, String> inScopeNamespaces) {
-        Preconditions.checkArgument(
+    public static NamespaceScope from(Map<String, String> inScopeNamespaces) {
+        PreconditionUtil.checkArgument(
                 Optional.ofNullable(inScopeNamespaces.get(XMLConstants.XML_NS_PREFIX))
                         .stream()
                         .allMatch(ns -> ns.equals(XMLConstants.XML_NS_URI))
@@ -281,7 +279,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         return new NamespaceScope(
                 inScopeNamespaces.entrySet().stream()
                         .filter(kv -> !kv.getKey().equals(XMLConstants.XML_NS_PREFIX))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }
 
@@ -289,7 +287,7 @@ public record NamespaceScope(ImmutableMap<String, String> inScopeNamespaces) {
         return NamespaceScope.EMPTY.resolve(prefix, namespace);
     }
 
-    private static final NamespaceScope EMPTY = new NamespaceScope(ImmutableMap.of());
+    private static final NamespaceScope EMPTY = new NamespaceScope(Map.of());
 
     public static NamespaceScope empty() {
         return EMPTY;

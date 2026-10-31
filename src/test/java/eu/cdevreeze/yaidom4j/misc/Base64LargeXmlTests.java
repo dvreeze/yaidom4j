@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
@@ -35,6 +33,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -122,7 +122,7 @@ class Base64LargeXmlTests {
                                         e.children()
                                                 .stream()
                                                 .filter(n -> !(n instanceof Text))
-                                                .collect(ImmutableList.toImmutableList())
+                                                .toList()
                                 )
                         )
                 )
@@ -150,14 +150,14 @@ class Base64LargeXmlTests {
     private static Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {
         return new Element(
                 new QName(ns, "dummyRoot", prefix),
-                ImmutableMap.of(),
+                Map.of(),
                 nsScope,
-                ImmutableList.of(
+                List.of(
                         new Element(
                                 new QName(ns, "dummyChild", prefix),
-                                ImmutableMap.of(),
+                                Map.of(),
                                 nsScope,
-                                ImmutableList.of(new Text(childElementText, false))
+                                List.of(new Text(childElementText, false))
                         )
                 )
         );

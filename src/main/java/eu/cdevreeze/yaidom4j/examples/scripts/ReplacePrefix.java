@@ -16,18 +16,18 @@
 
 package eu.cdevreeze.yaidom4j.examples.scripts;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Replaces the given namespace prefix (2nd program argument), if bound to the given namespace
@@ -47,12 +47,12 @@ public class ReplacePrefix {
         Objects.checkIndex(3, args.length);
         URI inputFile = new URI(args[0]);
         String oldPrefix = args[1];
-        Preconditions.checkArgument(!oldPrefix.isBlank());
+        PreconditionUtil.checkArgument(!oldPrefix.isBlank());
         String namespace = args[2];
-        Preconditions.checkArgument(!namespace.isBlank());
+        PreconditionUtil.checkArgument(!namespace.isBlank());
         String newPrefix = args[3];
-        Preconditions.checkArgument(!newPrefix.isBlank());
-        Preconditions.checkArgument(!newPrefix.equals(oldPrefix));
+        PreconditionUtil.checkArgument(!newPrefix.isBlank());
+        PreconditionUtil.checkArgument(!newPrefix.equals(oldPrefix));
 
         Document doc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(inputFile);
@@ -66,16 +66,16 @@ public class ReplacePrefix {
     // Programmatic access to the functionality
 
     public static Element replacePrefix(Element element, String oldPrefix, String namespace, String newPrefix) {
-        Preconditions.checkArgument(!oldPrefix.isBlank());
-        Preconditions.checkArgument(!namespace.isBlank());
-        Preconditions.checkArgument(!newPrefix.isBlank());
-        Preconditions.checkArgument(!newPrefix.equals(oldPrefix));
+        PreconditionUtil.checkArgument(!oldPrefix.isBlank());
+        PreconditionUtil.checkArgument(!namespace.isBlank());
+        PreconditionUtil.checkArgument(!newPrefix.isBlank());
+        PreconditionUtil.checkArgument(!newPrefix.equals(oldPrefix));
 
         checkElement(element, oldPrefix, namespace, newPrefix);
 
         Element transformedElement = transformElement(element, oldPrefix, namespace, newPrefix);
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.toClarkNode().equals(transformedElement.toClarkNode())
         );
 
@@ -83,11 +83,11 @@ public class ReplacePrefix {
     }
 
     private static void checkElement(Element element, String oldPrefix, String namespace, String newPrefix) {
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().findNamespaceOfPrefix(oldPrefix).stream().allMatch(namespace::equals))
         );
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().findNamespaceOfPrefix(newPrefix).stream().allMatch(namespace::equals))
         );
@@ -102,7 +102,7 @@ public class ReplacePrefix {
                                         .entrySet()
                                         .stream()
                                         .collect(
-                                                ImmutableMap.toImmutableMap(
+                                                Collectors.toUnmodifiableMap(
                                                         kv -> replacePrefix(kv.getKey(), oldPrefix, namespace, newPrefix),
                                                         Map.Entry::getValue
                                                 )),
@@ -116,7 +116,7 @@ public class ReplacePrefix {
 
     private static QName replacePrefix(QName name, String oldPrefix, String namespace, String newPrefix) {
         if (oldPrefix.equals(name.getPrefix())) {
-            Preconditions.checkArgument(namespace.equals(name.getNamespaceURI()));
+            PreconditionUtil.checkArgument(namespace.equals(name.getNamespaceURI()));
             return new QName(name.getNamespaceURI(), name.getLocalPart(), newPrefix);
         } else {
             return name;

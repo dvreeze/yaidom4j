@@ -16,11 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.examples.scripts;
 
-import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.namespace.QName;
 import java.net.URI;
@@ -57,14 +57,14 @@ public class ReplaceDefaultNamespaceByPrefix {
     // Programmatic access to the functionality
 
     public static Element replaceDefaultNamespaceByPrefix(Element element, String prefix) {
-        Preconditions.checkArgument(!prefix.isBlank());
+        PreconditionUtil.checkArgument(!prefix.isBlank());
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
 
         checkElement(element, prefix);
 
         Element transformedElement = transformElement(element, prefix, ns);
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.toClarkNode().equals(transformedElement.toClarkNode())
         );
 
@@ -73,11 +73,11 @@ public class ReplaceDefaultNamespaceByPrefix {
 
     private static void checkElement(Element element, String prefix) {
         String ns = element.namespaceScope().defaultNamespaceOption().orElseThrow();
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().defaultNamespaceOption().equals(Optional.of(ns)))
         );
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 element.elementStream()
                         .allMatch(e -> e.namespaceScope().findNamespaceOfPrefix(prefix).stream().allMatch(ns::equals))
         );
@@ -86,8 +86,8 @@ public class ReplaceDefaultNamespaceByPrefix {
     private static Element transformElement(Element element, String prefix, String namespace) {
         return element.transformDescendantElementsOrSelf(
                 elem -> {
-                    Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().isPresent());
-                    Preconditions.checkArgument(elem.namespaceScope().defaultNamespaceOption().equals(element.namespaceScope().defaultNamespaceOption()));
+                    PreconditionUtil.checkArgument(elem.namespaceScope().defaultNamespaceOption().isPresent());
+                    PreconditionUtil.checkArgument(elem.namespaceScope().defaultNamespaceOption().equals(element.namespaceScope().defaultNamespaceOption()));
 
                     return new Element(
                             elem.name().getPrefix().isEmpty() ?

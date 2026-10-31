@@ -16,12 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware.usingsaxon;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareDocument;
 import eu.cdevreeze.yaidom4j.dom.ancestryaware.AncestryAwareNodes;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomConsumingSaxEventGenerator;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.ImmutableDomProducingSaxHandler;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import net.sf.saxon.BasicTransformerFactory;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.ReceivingContentHandler;
@@ -129,7 +128,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(namespaces, namespaces2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var namespaces3 = xdmDoc
@@ -166,7 +165,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(names, names2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var names3 = xdmDoc
@@ -182,7 +181,7 @@ class SaxonEquivalenceTests {
     void testQueryPrefixOfRootElement() {
         assertEquals("books", rootElement().elementName().getPrefix());
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         assertEquals(
@@ -205,7 +204,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(Set.of(""), prefixes);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var prefixes2 = xdmDoc
@@ -238,7 +237,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(childElemCounts, childElemCounts2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Map<QName, Long> childElemCounts3 = xdmDoc
@@ -275,7 +274,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(magazineMonths, magazineMonths2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineMonths3 = xdmDoc
@@ -314,7 +313,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(magazineTitles, magazineTitles2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineTitles3 = xdmDoc
@@ -371,7 +370,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -414,7 +413,7 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryAuthorNames() {
         Function<AncestryAwareNodes.Element, String> getAuthorName = authorElem -> {
-            Preconditions.checkArgument(hasName(NS, "Author").test(authorElem));
+            PreconditionUtil.checkArgument(hasName(NS, "Author").test(authorElem));
 
             String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
                     .findFirst()
@@ -446,11 +445,11 @@ class SaxonEquivalenceTests {
 
         assertEquals(authorNames, authorNames2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Function<XdmNode, String> getAuthorNameInSaxon = authorElem -> {
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(
                     authorElem.getNodeName().getStructuredQName().toJaxpQName().equals(new QName(NS, "Author"))
             );
 
@@ -514,7 +513,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(bookIsbnsCoauthoredByJenniferWidom, bookIsbnsCoauthoredByJenniferWidom2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -573,7 +572,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(februaryMagazineTitles, februaryMagazineTitles2);
 
-        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), ImmutableList.of(rootElement()));
+        AncestryAwareDocument doc = new AncestryAwareDocument(Optional.empty(), List.of(rootElement()));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> februaryMagazineTitles3 = xdmDoc

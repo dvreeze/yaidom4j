@@ -16,9 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.core;
 
-import com.google.common.collect.ImmutableList;
-
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Element navigation path, to be interpreted against some "root element". An empty path
@@ -36,10 +36,16 @@ import java.util.Optional;
  * whereas the first entry in yaidom4j element navigation paths is a child element index relative to
  * some "root element", which is unknown to the element navigation path. The element() scheme XPointers
  * and element navigation paths have in common that indices refer to element nodes, not arbitrary nodes.
+ * <p>
+ * This class is immutable, due to the fact that record component "entries" is an "unmodifiable list".
  *
  * @author Chris de Vreeze
  */
-public record ElementNavigationPath(ImmutableList<Integer> entries) {
+public record ElementNavigationPath(List<Integer> entries) {
+
+    public ElementNavigationPath {
+        entries = List.copyOf(entries);
+    }
 
     public boolean isEmpty() {
         return entries().isEmpty();
@@ -73,17 +79,17 @@ public record ElementNavigationPath(ImmutableList<Integer> entries) {
 
     public ElementNavigationPath appendEntry(int childElementIndex) {
         return new ElementNavigationPath(
-                ImmutableList.<Integer>builder().addAll(entries()).add(childElementIndex).build()
+                Stream.concat(entries().stream(), Stream.of(childElementIndex)).toList()
         );
     }
 
     public ElementNavigationPath prependEntry(int childElementIndex) {
         return new ElementNavigationPath(
-                ImmutableList.<Integer>builder().add(childElementIndex).addAll(entries()).build()
+                Stream.concat(Stream.of(childElementIndex), entries().stream()).toList()
         );
     }
 
     public static ElementNavigationPath empty() {
-        return new ElementNavigationPath(ImmutableList.of());
+        return new ElementNavigationPath(List.of());
     }
 }

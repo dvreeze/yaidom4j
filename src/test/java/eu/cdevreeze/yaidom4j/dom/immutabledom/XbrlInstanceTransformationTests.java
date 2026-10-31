@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,6 +25,7 @@ import org.xml.sax.InputSource;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -66,13 +65,13 @@ class XbrlInstanceTransformationTests {
 
         Element newFactElem = new Element(
                 new QName(ns, "Loans", "d"),
-                ImmutableMap.of(
+                Map.of(
                         new QName("contextRef"), "I-2007",
                         new QName("unitRef"), "U-Monetary",
                         new QName("decimals"), "INF"
                 ),
                 instance.element().namespaceScope().resolve("d", ns),
-                ImmutableList.of(new Text(String.valueOf(2500), false))
+                List.of(new Text(String.valueOf(2500), false))
         );
 
         TestXbrlInstances.XbrlInstance newInstance = TestXbrlInstances.XbrlInstance.from(
@@ -88,7 +87,7 @@ class XbrlInstanceTransformationTests {
                 )
         );
 
-        ImmutableList<TestXbrlInstances.ItemFact> newFacts =
+        List<TestXbrlInstances.ItemFact> newFacts =
                 newInstance.topLevelItemFacts(new QName(ns, "Loans"));
 
         assertEquals(1, newFacts.size());

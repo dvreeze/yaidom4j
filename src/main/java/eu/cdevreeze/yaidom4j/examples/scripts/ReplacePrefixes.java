@@ -16,11 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.examples.scripts;
 
-import com.google.common.base.Preconditions;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.namespace.QName;
 import java.net.URI;
@@ -49,8 +49,8 @@ public class ReplacePrefixes {
     public record PrefixMapping(String namespace, String oldPrefix, String newPrefix) {
 
         public PrefixMapping {
-            Preconditions.checkArgument(!namespace.isBlank());
-            Preconditions.checkArgument(!newPrefix.isBlank());
+            PreconditionUtil.checkArgument(!namespace.isBlank());
+            PreconditionUtil.checkArgument(!newPrefix.isBlank());
         }
     }
 
@@ -90,7 +90,7 @@ public class ReplacePrefixes {
     }
 
     public static List<PrefixMapping> extractPrefixMappings(Element configElement) {
-        Preconditions.checkArgument(configElement.name().equals(new QName("namespaces")));
+        PreconditionUtil.checkArgument(configElement.name().equals(new QName("namespaces")));
 
         return configElement
                 .childElementStream(e -> e.name().equals(new QName("namespace")))
@@ -106,7 +106,7 @@ public class ReplacePrefixes {
 
     private static Element replacePrefix(Element element, PrefixMapping prefixMapping) {
         if (prefixMapping.oldPrefix().isBlank()) {
-            Preconditions.checkArgument(element.namespaceScope().defaultNamespaceOption().equals(Optional.of(prefixMapping.namespace())));
+            PreconditionUtil.checkArgument(element.namespaceScope().defaultNamespaceOption().equals(Optional.of(prefixMapping.namespace())));
             return ReplaceDefaultNamespaceByPrefix.replaceDefaultNamespaceByPrefix(element, prefixMapping.newPrefix);
         } else {
             return ReplacePrefix.replacePrefix(element, prefixMapping.oldPrefix(), prefixMapping.namespace(), prefixMapping.newPrefix());

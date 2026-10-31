@@ -16,10 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,14 +30,16 @@ import java.util.Optional;
  */
 public record AncestryAwareDocument(
         Optional<URI> uriOption,
-        ImmutableList<AncestryAwareNodes.CanBeDocumentChild> children
+        List<AncestryAwareNodes.CanBeDocumentChild> children
 ) {
 
     public AncestryAwareDocument {
+        children = List.copyOf(children);
+
         Objects.requireNonNull(uriOption);
         Objects.requireNonNull(children);
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 children.stream().filter(n -> n instanceof AncestryAwareNodes.Element).count() == 1
         );
     }
@@ -49,7 +51,7 @@ public record AncestryAwareDocument(
     public eu.cdevreeze.yaidom4j.dom.immutabledom.Document underlyingDocument() {
         return new eu.cdevreeze.yaidom4j.dom.immutabledom.Document(
                 uriOption,
-                children.stream().map(AncestryAwareNodes.CanBeDocumentChild::underlyingNode).collect(ImmutableList.toImmutableList())
+                children.stream().map(AncestryAwareNodes.CanBeDocumentChild::underlyingNode).toList()
         );
     }
 
@@ -72,7 +74,7 @@ public record AncestryAwareDocument(
                                 throw new RuntimeException("Unsupported document child node");
                             }
                         })
-                        .collect(ImmutableList.toImmutableList())
+                        .toList()
         );
     }
 }

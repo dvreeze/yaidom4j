@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.examples;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
@@ -32,6 +30,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -111,33 +110,33 @@ public class ShowElementCountsExampleUsingSax {
 
     private static Element convertElementCountsToXml(List<ElementNameCount> elementNameCounts) {
         var ns = "http://yaidom4j/showElementCounts";
-        var scope = NamespaceScope.from(ImmutableMap.of("", ns));
+        var scope = NamespaceScope.from(Map.of("", ns));
 
         return new Element(
                 new QName(ns, "elementNameCounts"),
-                ImmutableMap.of(),
+                Map.of(),
                 scope,
                 elementNameCounts.stream()
                         .map(nameCount -> new Element(
                                 new QName(ns, "elementNameCount"),
-                                ImmutableMap.of(),
+                                Map.of(),
                                 scope,
-                                ImmutableList.of(
+                                List.of(
                                         new Element(
                                                 new QName(ns, "elementName"),
-                                                ImmutableMap.of(),
+                                                Map.of(),
                                                 scope,
-                                                ImmutableList.of(new Text(nameCount.name().toString(), false))
+                                                List.of(new Text(nameCount.name().toString(), false))
                                         ),
                                         new Element(
                                                 new QName(ns, "count"),
-                                                ImmutableMap.of(),
+                                                Map.of(),
                                                 scope,
-                                                ImmutableList.of(new Text(String.valueOf(nameCount.count()), false))
+                                                List.of(new Text(String.valueOf(nameCount.count()), false))
                                         )
                                 )
                         ))
-                        .collect(ImmutableList.toImmutableList())
+                        .collect(Collectors.toUnmodifiableList())
         );
     }
 }

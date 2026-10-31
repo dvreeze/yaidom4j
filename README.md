@@ -2,21 +2,12 @@
 
 **Y**et **a**nother **I**mmutable (XML) **DOM** for **J**ava
 
-## TODO Remove dependency on Guava
-
-Even if Guava immutable collections are great in that they express immutability in the collection type, we should be able to do without this dependency.
-
-Indeed, we can work with "regular" type `java.util.List` as *thread-safe immutable Lists*, if:
-* We return `List` instances following the "unmodifiability" semantics of `java.util.stream.Stream.toList`
-* All elements of the `List` are non-null and *immutable* themselves
-* We document immutability, given that the type does not express this
-
 ## Introduction
 
 **Yaidom4j** is a small and easy-to-use Java XML library. It requires Java 17 or later.
 
 It mainly offers the following features:
-* An *immutable* and *thread-safe* XML DOM implementation, leveraging *Guava immutable collections*
+* An *immutable* and *thread-safe* XML DOM implementation
 * An easy-to-use *generic element query API*, leveraging the *Java Stream API*
 
 The element query API has multiple implementations, and more implementations can always be added.
@@ -182,7 +173,11 @@ Some characteristics of yaidom4j are as follows:
 * It is foremost an XML DOM *element query API*, with multiple implementations backed by different DOM implementations
 * It is also an *immutable thread-safe* DOM implementation (offering the element query API mentioned before)
 * It requires Java 17 or later
-* It depends on *Guava* for its *immutable collections*, and has no other dependencies
+* It depends on *effectively immutable collections*, using [unmodifiable collections](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html#unmodifiable)
+  * So no dependency on Guava and its immutable collections is needed
+  * Unlike Guava immutable collections, these immutable collections do not express immutability in terms of their collection types
+  * Instead, factory methods like `List.copyOf`, `List.of`, `Map.copyOf`,`Map.of` and `Stream.toList` express and enforce immutability
+  * These effectively immutable collections are also thread-safe; see [JEP 269](https://openjdk.org/jeps/269)
 * It has a *small conceptual surface area*, and a small, rather *stable API*
 * It is *not* a schema validator (against DTD or XSD), nor is it an O-X mapper, or XPath/XQuery processor, or HTML library
 * The *element query API* mostly returns *Java Streams*, which can be used in Java Stream pipelines
@@ -257,3 +252,6 @@ TODO:
   * Automatic dependency updates
   * Code analysis, security checks, test coverage
   * etc.
+
+Also, maybe we could get some inspiration from the upcoming simple JSON API that will be part of the JDK.
+Both the scope of the API (in that case for JSON, in our case for XML) and implementation details (think: immutability) may inspire us.

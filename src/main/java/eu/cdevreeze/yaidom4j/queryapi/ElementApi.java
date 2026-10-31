@@ -16,10 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.queryapi;
 
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -37,7 +37,10 @@ public interface ElementApi<E extends ElementApi<E>> {
 
     QName elementName();
 
-    ImmutableMap<QName, String> attributes();
+    /**
+     * Returns the attributes as an "unmodifiable map".
+     */
+    Map<QName, String> attributes();
 
     Optional<String> attributeOption(QName attrName);
 

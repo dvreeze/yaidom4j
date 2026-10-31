@@ -16,12 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.parser.AbstractContentHandler;
 import org.apache.james.mime4j.parser.MimeStreamParser;
@@ -34,6 +32,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -56,7 +55,7 @@ class MpmWithXmlTests {
         try (InputStream is = mpmUri.toURL().openStream()) {
             mimeParser.parse(is);
         }
-        ImmutableMap<ImmutableList<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
+        Map<List<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
 
         assertEquals(3, rootElements.size());
 
@@ -66,29 +65,29 @@ class MpmWithXmlTests {
 
         assertEquals(
                 firstElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(1))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(1))).toClarkNode()
         );
 
         assertEquals(
                 secondElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(3))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(3))).toClarkNode()
         );
 
         assertEquals(
                 thirdElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(4))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(4))).toClarkNode()
         );
 
         assertEquals(
-                ImmutableMap.of(
-                        ImmutableList.of(1), firstElement.toClarkNode(),
-                        ImmutableList.of(3), secondElement.toClarkNode(),
-                        ImmutableList.of(4), thirdElement.toClarkNode()
+                Map.of(
+                        List.of(1), firstElement.toClarkNode(),
+                        List.of(3), secondElement.toClarkNode(),
+                        List.of(4), thirdElement.toClarkNode()
                 ),
                 rootElements.entrySet()
                         .stream()
                         .map(kv -> Map.entry(kv.getKey(), kv.getValue().toClarkNode()))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }
 
@@ -102,7 +101,7 @@ class MpmWithXmlTests {
         try (InputStream is = mpmUri.toURL().openStream()) {
             mimeParser.parse(is);
         }
-        ImmutableMap<ImmutableList<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
+        Map<List<Integer>, Element> rootElements = handler.xmlCollectionByBodyPathInMpm();
 
         assertEquals(3, rootElements.size());
 
@@ -112,29 +111,29 @@ class MpmWithXmlTests {
 
         assertEquals(
                 firstElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(1))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(1))).toClarkNode()
         );
 
         assertEquals(
                 secondElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(2, 1))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(2, 1))).toClarkNode()
         );
 
         assertEquals(
                 thirdElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(ImmutableList.of(3))).toClarkNode()
+                Objects.requireNonNull(rootElements.get(List.of(3))).toClarkNode()
         );
 
         assertEquals(
-                ImmutableMap.of(
-                        ImmutableList.of(1), firstElement.toClarkNode(),
-                        ImmutableList.of(2, 1), secondElement.toClarkNode(),
-                        ImmutableList.of(3), thirdElement.toClarkNode()
+                Map.of(
+                        List.of(1), firstElement.toClarkNode(),
+                        List.of(2, 1), secondElement.toClarkNode(),
+                        List.of(3), thirdElement.toClarkNode()
                 ),
                 rootElements.entrySet()
                         .stream()
                         .map(kv -> Map.entry(kv.getKey(), kv.getValue().toClarkNode()))
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }
 
@@ -154,7 +153,7 @@ class MpmWithXmlTests {
 
         private final DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
 
-        private final Map<ImmutableList<Integer>, Element> xmlCollectionByBodyPathInMpm = new HashMap<>();
+        private final Map<List<Integer>, Element> xmlCollectionByBodyPathInMpm = new HashMap<>();
 
         private final List<Integer> bodyPathInMpm = new ArrayList<>();
 
@@ -165,13 +164,13 @@ class MpmWithXmlTests {
 
         @Override
         public void endMultipart() {
-            Preconditions.checkArgument(!bodyPathInMpm.isEmpty());
+            PreconditionUtil.checkArgument(!bodyPathInMpm.isEmpty());
             bodyPathInMpm.remove(bodyPathInMpm.size() - 1);
         }
 
         @Override
         public void startBodyPart() {
-            Preconditions.checkArgument(!bodyPathInMpm.isEmpty());
+            PreconditionUtil.checkArgument(!bodyPathInMpm.isEmpty());
             int previousPartIdx = bodyPathInMpm.get(bodyPathInMpm.size() - 1);
             bodyPathInMpm.set(bodyPathInMpm.size() - 1, 1 + previousPartIdx);
         }
@@ -180,14 +179,14 @@ class MpmWithXmlTests {
         public void body(BodyDescriptor bd, InputStream is) {
             if (bd.getMimeType().equals("text/xml")) {
                 Element element = docParser.parse(new InputSource(is)).documentElement();
-                xmlCollectionByBodyPathInMpm.put(ImmutableList.copyOf(bodyPathInMpm), element);
+                xmlCollectionByBodyPathInMpm.put(List.copyOf(bodyPathInMpm), element);
             }
         }
 
-        public ImmutableMap<ImmutableList<Integer>, Element> xmlCollectionByBodyPathInMpm() {
+        public Map<List<Integer>, Element> xmlCollectionByBodyPathInMpm() {
             return xmlCollectionByBodyPathInMpm.entrySet()
                     .stream()
-                    .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         }
     }
 }

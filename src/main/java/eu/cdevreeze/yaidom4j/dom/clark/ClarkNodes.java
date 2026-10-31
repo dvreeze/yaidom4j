@@ -16,11 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.dom.clark;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
 
@@ -62,16 +60,19 @@ public class ClarkNodes {
 
     public record Element(
             QName name,
-            ImmutableMap<QName, String> attributes,
-            ImmutableList<Node> children
+            Map<QName, String> attributes,
+            List<Node> children
     ) implements Node, ElementApi<Element>, TransformableElementApi<Element, Node> {
 
         public Element {
+            attributes = Map.copyOf(attributes);
+            children = List.copyOf(children);
+
             Objects.requireNonNull(name);
             Objects.requireNonNull(attributes);
             Objects.requireNonNull(children);
 
-            Preconditions.checkArgument(
+            PreconditionUtil.checkArgument(
                     attributes.keySet().stream()
                             .allMatch(attrName -> attrName.getNamespaceURI().isEmpty() || !attrName.getPrefix().isEmpty())
             );
@@ -221,7 +222,7 @@ public class ClarkNodes {
         }
 
         @Override
-        public Element withChildren(ImmutableList<Node> newChildren) {
+        public Element withChildren(List<Node> newChildren) {
             return new Element(
                     name(),
                     attributes(),
@@ -232,7 +233,7 @@ public class ClarkNodes {
         @Override
         public Element plusChild(Node newChild) {
             return withChildren(
-                    ImmutableList.<Node>builder().addAll(children).add(newChild).build()
+                    Stream.concat(children.stream(), Stream.of(newChild)).toList()
             );
         }
 
@@ -242,14 +243,14 @@ public class ClarkNodes {
         }
 
         @Override
-        public Element plusChildren(ImmutableList<Node> newChildren) {
+        public Element plusChildren(List<Node> newChildren) {
             return withChildren(
-                    ImmutableList.<Node>builder().addAll(children).addAll(newChildren).build()
+                    Stream.concat(children.stream(), newChildren.stream()).toList()
             );
         }
 
         @Override
-        public Element withAttributes(ImmutableMap<QName, String> newAttributes) {
+        public Element withAttributes(Map<QName, String> newAttributes) {
             return new Element(
                     name(),
                     newAttributes,
@@ -259,27 +260,23 @@ public class ClarkNodes {
 
         @Override
         public Element plusAttribute(QName attrName, String attrValue) {
-            return withAttributes(
-                    ImmutableMap.<QName, String>builder()
-                            .putAll(attributes)
-                            .put(attrName, attrValue)
-                            .buildKeepingLast()
-            );
+            Map<QName, String> newAttributes = new HashMap<>(attributes());
+            newAttributes.putAll(attributes);
+            newAttributes.put(attrName, attrValue);
+            return withAttributes(Map.copyOf(newAttributes));
         }
 
         @Override
         public Element plusAttributeOption(QName attrName, Optional<String> newAttrValueOption) {
-            return withAttributes(
-                    ImmutableMap.<QName, String>builder()
-                            .putAll(attributes)
-                            .putAll(
-                                    newAttrValueOption
-                                            .stream()
-                                            .map(v -> Map.entry(attrName, v))
-                                            .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
-                            )
-                            .buildKeepingLast()
+            Map<QName, String> newAttributes = new HashMap<>(attributes());
+            newAttributes.putAll(attributes);
+            newAttributes.putAll(
+                    newAttrValueOption
+                            .stream()
+                            .map(v -> Map.entry(attrName, v))
+                            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
             );
+            return withAttributes(newAttributes);
         }
 
         @Override
@@ -287,7 +284,7 @@ public class ClarkNodes {
             return withChildren(
                     children().stream()
                             .flatMap(ch -> f.apply(ch).stream())
-                            .collect(ImmutableList.toImmutableList())
+                            .toList()
             );
         }
 
@@ -362,7 +359,7 @@ public class ClarkNodes {
 
         @Override
         public Element removeInterElementWhitespace() {
-            ImmutableList<Node> children = children();
+            List<Node> children = children();
 
             // Naive implementation
             boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
@@ -384,7 +381,7 @@ public class ClarkNodes {
                                     return ch;
                                 }
                             })
-                            .collect(ImmutableList.toImmutableList())
+                            .toList()
             );
         }
 
@@ -411,9 +408,9 @@ public class ClarkNodes {
                     }
                     childNodeIndex += 1;
                 }
-                Preconditions.checkArgument(updatedChildren.size() == this.children().size());
+                PreconditionUtil.checkArgument(updatedChildren.size() == this.children().size());
 
-                return this.withChildren(ImmutableList.copyOf(updatedChildren));
+                return this.withChildren(List.copyOf(updatedChildren));
             }
         }
     }

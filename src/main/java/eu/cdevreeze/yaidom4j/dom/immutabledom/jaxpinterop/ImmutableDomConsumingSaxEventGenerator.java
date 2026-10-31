@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
 import org.xml.sax.Attributes;
@@ -26,6 +25,7 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.namespace.QName;
+import java.util.Map;
 
 /**
  * Producer of SAX events, taking an immutable DOM as input.
@@ -58,7 +58,7 @@ public class ImmutableDomConsumingSaxEventGenerator {
 
     public void processElement(Element element, NamespaceScope parentScope) {
         try {
-            ImmutableMap<String, String> nsDecls =
+            Map<String, String> nsDecls =
                     NamespaceScope.withoutPrefixedNamespaceUndeclarations(parentScope.relativize(element.namespaceScope()));
 
             for (var kv : nsDecls.entrySet()) {

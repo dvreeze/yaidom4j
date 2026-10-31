@@ -16,10 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,6 +27,7 @@ import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasAttributeValue;
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
@@ -73,14 +72,14 @@ class XbrlInstanceXmlQueryTests {
                         )
         ).findFirst().orElseThrow();
 
-        ImmutableMap<QName, QName> dimensionMembers =
+        Map<QName, QName> dimensionMembers =
                 context.select(
                                 childElements(hasName(XBRLI_NS, "entity"))
                                         .then(descendantElements(hasName(XBRLDI_NS, "explicitMember")))
                         ).map(this::explicitDimensionMember)
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ImmutableMap<QName, QName> expectedDimensionMembers = ImmutableMap.of(
+        Map<QName, QName> expectedDimensionMembers = Map.of(
                 new QName(GAAP_NS, "EntityAxis"), new QName(GAAP_NS, "ABCCompanyDomain"),
                 new QName(GAAP_NS, "BusinessSegmentAxis"), new QName(GAAP_NS, "ConsolidatedGroupDomain"),
                 new QName(GAAP_NS, "VerificationAxis"), new QName(GAAP_NS, "UnqualifiedOpinionMember"),
@@ -93,16 +92,16 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactContext() {
-        ImmutableList<Element> landFacts = xbrlDoc.documentElement().select(
+        List<Element> landFacts = xbrlDoc.documentElement().select(
                 childElements(hasName(GAAP_NS, "Land"))
-        ).collect(ImmutableList.toImmutableList());
+        ).toList();
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<Element> landFacts2005 = landFacts
+        List<Element> landFacts2005 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2005"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, landFacts2005.size());
 
@@ -115,14 +114,14 @@ class XbrlInstanceXmlQueryTests {
 
         assertNotNull(context);
 
-        ImmutableMap<QName, QName> dimensionMembers =
+        Map<QName, QName> dimensionMembers =
                 context.select(
                                 childElements(hasName(XBRLI_NS, "entity"))
                                         .then(descendantElements(hasName(XBRLDI_NS, "explicitMember")))
                         ).map(this::explicitDimensionMember)
-                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        ImmutableMap<QName, QName> expectedDimensionMembers = ImmutableMap.of(
+        Map<QName, QName> expectedDimensionMembers = Map.of(
                 new QName(GAAP_NS, "EntityAxis"), new QName(GAAP_NS, "ABCCompanyDomain"),
                 new QName(GAAP_NS, "BusinessSegmentAxis"), new QName(GAAP_NS, "ConsolidatedGroupDomain"),
                 new QName(GAAP_NS, "VerificationAxis"), new QName(GAAP_NS, "UnqualifiedOpinionMember"),
@@ -135,17 +134,17 @@ class XbrlInstanceXmlQueryTests {
 
     @Test
     void testQueryItemFactUnit() {
-        ImmutableList<Element> landFacts = xbrlDoc.documentElement().select(
+        List<Element> landFacts = xbrlDoc.documentElement().select(
                         childElements(hasName(GAAP_NS, "Land"))
                 )
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(3, landFacts.size());
 
-        ImmutableList<Element> landFacts2007 = landFacts
+        List<Element> landFacts2007 = landFacts
                 .stream()
                 .filter(hasAttributeValue("contextRef", "I-2007"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, landFacts2007.size());
 
@@ -174,23 +173,23 @@ class XbrlInstanceXmlQueryTests {
                 .map(e -> e.namespaceScope().resolveSyntacticQNameInContent(e.text()))
                 .toList();
 
-        ImmutableList<QName> expectedMeasures = ImmutableList.of(new QName(ISO4217_NS, "USD"));
+        List<QName> expectedMeasures = List.of(new QName(ISO4217_NS, "USD"));
 
         assertEquals(expectedMeasures, measures);
     }
 
     @Test
     void testQueryItemFactValue() {
-        ImmutableList<Element> preferredStockAmountFacts = xbrlDoc.documentElement().select(
+        List<Element> preferredStockAmountFacts = xbrlDoc.documentElement().select(
                 childElements(hasName(GAAP_NS, "PreferredStockAmount"))
-        ).collect(ImmutableList.toImmutableList());
+        ).toList();
 
         assertEquals(6, preferredStockAmountFacts.size());
 
-        ImmutableList<Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
+        List<Element> preferredStockAmountFacts2007PsAll = preferredStockAmountFacts
                 .stream()
                 .filter(f -> f.attribute(new QName("contextRef")).equals("I-2007-PS-All"))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         assertEquals(1, preferredStockAmountFacts2007PsAll.size());
 
@@ -200,7 +199,7 @@ class XbrlInstanceXmlQueryTests {
     }
 
     private Map.Entry<QName, QName> explicitDimensionMember(Element explicitDimension) {
-        Preconditions.checkArgument(hasName(XBRLDI_NS, "explicitMember").test(explicitDimension));
+        PreconditionUtil.checkArgument(hasName(XBRLDI_NS, "explicitMember").test(explicitDimension));
 
         return Map.entry(
                 explicitDimension.namespaceScope().resolveSyntacticQNameInContent(explicitDimension.attribute(new QName("dimension"))),

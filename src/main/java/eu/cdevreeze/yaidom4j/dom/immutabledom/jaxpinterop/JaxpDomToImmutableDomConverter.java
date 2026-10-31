@@ -16,11 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
@@ -33,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -50,7 +49,7 @@ public class JaxpDomToImmutableDomConverter {
     }
 
     public static Document convertDocument(org.w3c.dom.Document doc) {
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 Optional.ofNullable(doc.getDocumentElement().getLocalName()).isPresent(),
                 "Could not get the local name of the document element. Was the document created in a namespace-aware manner?"
         );
@@ -62,7 +61,7 @@ public class JaxpDomToImmutableDomConverter {
                 .or(() -> Optional.ofNullable(doc.getBaseURI()))
                 .map(JaxpDomToImmutableDomConverter::createUri);
 
-        ImmutableList<CanBeDocumentChild> children =
+        List<CanBeDocumentChild> children =
                 convertNodeListToList(doc.getChildNodes())
                         .stream()
                         .flatMap(n -> {
@@ -76,30 +75,30 @@ public class JaxpDomToImmutableDomConverter {
                                 return Stream.empty();
                             }
                         })
-                        .collect(ImmutableList.toImmutableList());
+                        .collect(Collectors.toUnmodifiableList());
 
         return new Document(uriOption, children);
     }
 
     public static Element convertElement(org.w3c.dom.Element elem, NamespaceScope parentNamespaceScope) {
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 Optional.ofNullable(elem.getLocalName()).isPresent(),
                 "Could not get the local name of the element. Was the element created in a namespace-aware manner?"
         );
 
         QName name = extractName(elem);
 
-        ImmutableMap<QName, String> attrs = extractAttributes(elem.getAttributes());
+        Map<QName, String> attrs = extractAttributes(elem.getAttributes());
 
         NamespaceScope newScope =
                 parentNamespaceScope.resolve(
                         NamespaceScope.withoutPrefixedNamespaceUndeclarations(extractNamespaceDeclarations(elem.getAttributes())));
-        Preconditions.checkArgument(parentNamespaceScope.withoutDefaultNamespace().subScopeOf(newScope.withoutDefaultNamespace()));
+        PreconditionUtil.checkArgument(parentNamespaceScope.withoutDefaultNamespace().subScopeOf(newScope.withoutDefaultNamespace()));
 
-        ImmutableList<Node> childNodes = convertNodeListToList(elem.getChildNodes())
+        List<Node> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
                 .flatMap(n -> convertNode(n, newScope).stream())
-                .collect(ImmutableList.toImmutableList());
+                .toList();
 
         return new Element(name, attrs, newScope, childNodes);
     }
@@ -160,22 +159,22 @@ public class JaxpDomToImmutableDomConverter {
             return false;
         }
         String[] parts = name.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
     }
 
     private static Map.Entry<String, String> extractNamespaceDeclaration(org.w3c.dom.Attr attr) {
         String name = attr.getName();
-        Preconditions.checkArgument(!name.equals(":"));
+        PreconditionUtil.checkArgument(!name.equals(":"));
         String[] parts = name.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
-        Preconditions.checkArgument(parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE));
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE));
         String prefix = (parts.length == 2) ? parts[1] : XMLConstants.DEFAULT_NS_PREFIX;
         String ns = attr.getValue();
         return Map.entry(prefix, ns);
     }
 
-    private static ImmutableMap<QName, String> extractAttributes(NamedNodeMap nodeMap) {
+    private static Map<QName, String> extractAttributes(NamedNodeMap nodeMap) {
         return IntStream.range(0, nodeMap.getLength())
                 .boxed()
                 .flatMap(i -> {
@@ -187,10 +186,10 @@ public class JaxpDomToImmutableDomConverter {
                         return Stream.of(Map.entry(extractName(attr), attr.getValue()));
                     }
                 })
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private static ImmutableMap<String, String> extractNamespaceDeclarations(NamedNodeMap nodeMap) {
+    private static Map<String, String> extractNamespaceDeclarations(NamedNodeMap nodeMap) {
         return IntStream.range(0, nodeMap.getLength())
                 .boxed()
                 .flatMap(i -> {
@@ -202,6 +201,6 @@ public class JaxpDomToImmutableDomConverter {
                         return Stream.empty();
                     }
                 })
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

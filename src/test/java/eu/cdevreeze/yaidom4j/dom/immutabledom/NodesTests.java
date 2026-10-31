@@ -16,8 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +25,8 @@ import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
@@ -99,7 +99,7 @@ class NodesTests {
 
     private static final String EXAMPLE_NS = "http://xmlportfolio.com/xmlguild-examples";
 
-    private static final NamespaceScope parentScope = NamespaceScope.from(ImmutableMap.of(
+    private static final NamespaceScope parentScope = NamespaceScope.from(Map.of(
                     "", ATOM_NS,
                     "xhtml", XHTML_NS,
                     "my", EXAMPLE_NS
@@ -161,10 +161,10 @@ class NodesTests {
         Element result = element.transformDescendantElementsOrSelf(
                 e -> {
                     if (hasName(XHTML_NS, "div").test(e)) {
-                        return e.withChildren(ImmutableList.of(new Text(e.text(), false)));
+                        return e.withChildren(List.of(new Text(e.text(), false)));
                     } else {
                         return e.withChildren(
-                                e.children().stream().filter(n -> !(n instanceof Comment)).collect(ImmutableList.toImmutableList()));
+                                e.children().stream().filter(n -> !(n instanceof Comment)).toList());
                     }
                 }
         );

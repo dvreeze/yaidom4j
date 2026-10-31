@@ -16,11 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -101,7 +99,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
                         extractPrefix(Objects.requireNonNull(qname))
                 );
 
-        ImmutableMap<QName, String> attributes = extractAttributes(attrs);
+        Map<QName, String> attributes = extractAttributes(attrs);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
                 Optional.ofNullable(currentElement),
@@ -111,14 +109,14 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         );
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
 
             currentRootElement = elem;
             currentElement = elem;
 
             docChildren.add(elem);
         } else {
-            Preconditions.checkArgument(currentElement != null);
+            PreconditionUtil.checkArgument(currentElement != null);
 
             currentElement.addChild(elem);
             currentElement = elem;
@@ -127,12 +125,12 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     @Override
     public void endElement(String uri, String localName, String qname) {
-        Preconditions.checkArgument(currentRootElement != null);
-        Preconditions.checkArgument(currentElement != null);
+        PreconditionUtil.checkArgument(currentRootElement != null);
+        PreconditionUtil.checkArgument(currentElement != null);
 
         // Per startElement call, pushContext() has been called exactly once, so call popContext() now
         namespaceSupport.popContext();
-        Preconditions.checkArgument(!namespaceContextHasAlreadyBeenPushed);
+        PreconditionUtil.checkArgument(!namespaceContextHasAlreadyBeenPushed);
 
         currentElement = currentElement.getParentElementOption().orElse(null);
     }
@@ -145,9 +143,9 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
         if (currentRootElement == null) {
             // Do nothing. This should not happen anyway.
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
         } else {
-            Preconditions.checkArgument(currentElement != null);
+            PreconditionUtil.checkArgument(currentElement != null);
 
             currentElement.addChild(text);
         }
@@ -158,7 +156,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         InternalNodes.InternalProcessingInstruction pi = new InternalNodes.InternalProcessingInstruction(target, data);
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
 
             docChildren.add(pi);
         } else {
@@ -190,7 +188,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     @Override
     public void endPrefixMapping(String prefix) {
-        Preconditions.checkArgument(!namespaceContextHasAlreadyBeenPushed);
+        PreconditionUtil.checkArgument(!namespaceContextHasAlreadyBeenPushed);
     }
 
     @Override
@@ -208,7 +206,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         var comment = new InternalNodes.InternalComment(new String(chars, start, length));
 
         if (currentRootElement == null) {
-            Preconditions.checkArgument(currentElement == null);
+            PreconditionUtil.checkArgument(currentElement == null);
 
             docChildren.add(comment);
         } else {
@@ -241,7 +239,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
                 docUriOption,
                 docChildren.stream()
                         .map(InternalNodes.InternalCanBeDocumentChild::toNode)
-                        .collect(ImmutableList.toImmutableList())
+                        .toList()
         );
     }
 
@@ -257,11 +255,11 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
             return "";
         }
         String[] parts = qname.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts.length == 2 ? parts[0] : "";
     }
 
-    private ImmutableMap<QName, String> extractAttributes(Attributes attrs) {
+    private Map<QName, String> extractAttributes(Attributes attrs) {
         return IntStream.range(0, attrs.getLength())
                 .boxed()
                 .flatMap(i -> {
@@ -275,7 +273,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
                         return Stream.of(Map.entry(new QName(ns, localName, extractPrefix(qname)), attrs.getValue(i)));
                     }
                 })
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static boolean isNamespaceDeclaration(String attrName) {
@@ -284,12 +282,12 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
             return false;
         }
         String[] parts = attrName.split(Pattern.quote(":"));
-        Preconditions.checkArgument(parts.length >= 1 && parts.length <= 2);
+        PreconditionUtil.checkArgument(parts.length >= 1 && parts.length <= 2);
         return parts[0].equals(XMLConstants.XMLNS_ATTRIBUTE);
     }
 
     private static NamespaceScope convertToNamespaceScope(NamespaceSupport namespaceSupport) {
-        Preconditions.checkArgument(!namespaceSupport.isNamespaceDeclUris());
+        PreconditionUtil.checkArgument(!namespaceSupport.isNamespaceDeclUris());
 
         List<String> prefixes = new ArrayList<>(Collections.list(namespaceSupport.getPrefixes()));
         Optional.ofNullable(namespaceSupport.getURI("")).ifPresent(prefixes::add);
@@ -305,6 +303,6 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         Map<String, String> nsBindings = new HashMap<>(nsBindingsWithoutDefaultNs);
         Optional.ofNullable(namespaceSupport.getURI("")).ifPresent(ns -> nsBindings.put("", ns));
 
-        return NamespaceScope.from(ImmutableMap.copyOf(nsBindings));
+        return NamespaceScope.from(Map.copyOf(nsBindings));
     }
 }

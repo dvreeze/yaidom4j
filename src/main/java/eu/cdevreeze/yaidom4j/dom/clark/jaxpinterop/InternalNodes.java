@@ -16,13 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,18 +45,18 @@ class InternalNodes {
 
         private final QName name;
 
-        private final ImmutableMap<QName, String> attributes;
+        private final Map<QName, String> attributes;
 
         private final List<InternalNode> children = new ArrayList<>();
 
         InternalElement(
                 Optional<InternalElement> parentElementOption,
                 QName name,
-                ImmutableMap<QName, String> attributes
+                Map<QName, String> attributes
         ) {
             this.parentElementOption = parentElementOption;
             this.name = name;
-            this.attributes = attributes;
+            this.attributes = Map.copyOf(attributes);
         }
 
         Optional<InternalElement> getParentElementOption() {
@@ -74,7 +73,7 @@ class InternalNodes {
             return new ClarkNodes.Element(
                     name,
                     attributes,
-                    children.stream().map(InternalNode::toNode).collect(ImmutableList.toImmutableList())
+                    children.stream().map(InternalNode::toNode).toList()
             );
         }
     }

@@ -16,7 +16,6 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkElementPredicates;
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkElementSteps;
@@ -33,6 +32,7 @@ import org.xml.sax.InputSource;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasLocalName;
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.ElementPredicates.hasName;
@@ -132,7 +132,7 @@ class SoapMessageQueryTests {
                         .count());
 
         Element editedSoapMessage = soapMessage.documentElement().notUndeclaringPrefixes(
-                NamespaceScope.from(ImmutableMap.of(
+                NamespaceScope.from(Map.of(
                         "env", ENV_NS,
                         "m", M_NS,
                         "n", N_NS,

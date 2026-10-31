@@ -16,10 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.dom.immutabledom;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,14 +30,16 @@ import java.util.Optional;
  */
 public record Document(
         Optional<URI> uriOption,
-        ImmutableList<CanBeDocumentChild> children
+        List<CanBeDocumentChild> children
 ) {
 
     public Document {
+        children = List.copyOf(children);
+
         Objects.requireNonNull(uriOption);
         Objects.requireNonNull(children);
 
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 children.stream().filter(n -> n instanceof Element).count() == 1
         );
     }
@@ -64,7 +66,7 @@ public record Document(
                                 return ch;
                             }
                         })
-                        .collect(ImmutableList.toImmutableList())
+                        .toList()
         );
     }
 }

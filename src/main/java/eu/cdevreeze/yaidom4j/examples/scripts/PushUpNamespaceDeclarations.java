@@ -16,13 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.examples.scripts;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Document;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.XMLConstants;
 import java.net.URI;
@@ -49,7 +48,7 @@ public class PushUpNamespaceDeclarations {
                 .parse(inputFile);
 
         // A parsed XML 1.0 document element has no prefixed namespace undeclarations
-        Preconditions.checkArgument(
+        PreconditionUtil.checkArgument(
                 doc.documentElement().equals(
                         doc.documentElement().withParentAttributeScope(NamespaceScope.empty())
                 )
@@ -87,17 +86,17 @@ public class PushUpNamespaceDeclarations {
                         )
                 );
 
-        ImmutableMap<String, String> stablePrefixNamespaces = prefixNamespaces.entrySet()
+        Map<String, String> stablePrefixNamespaces = prefixNamespaces.entrySet()
                 .stream()
                 .filter(kv -> kv.getValue().size() == 1)
                 .map(kv -> Map.entry(kv.getKey(), kv.getValue().get(0)))
-                .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
         NamespaceScope startScope = NamespaceScope.from(stablePrefixNamespaces);
 
         Element resultElement = element.withParentAttributeScope(startScope);
 
-        Preconditions.checkArgument(element.toClarkNode().equals(resultElement.toClarkNode()));
+        PreconditionUtil.checkArgument(element.toClarkNode().equals(resultElement.toClarkNode()));
 
         return resultElement;
     }

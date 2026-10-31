@@ -16,12 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.transformationapi;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 
 import javax.xml.namespace.QName;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -45,7 +44,7 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     /**
      * Functionally updates the list of children of this element.
      */
-    E withChildren(ImmutableList<N> newChildren);
+    E withChildren(List<N> newChildren);
 
     /**
      * Calls method {@link TransformableElementApi#withChildren} to functionally add one child node at the end
@@ -60,12 +59,12 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     /**
      * Calls method {@link TransformableElementApi#withChildren} to functionally add zero or more child nodes at the end
      */
-    E plusChildren(ImmutableList<N> newChildren);
+    E plusChildren(List<N> newChildren);
 
     /**
      * Functionally updates this element by replacing the collection of attributes.
      */
-    E withAttributes(ImmutableMap<QName, String> newAttributes);
+    E withAttributes(Map<QName, String> newAttributes);
 
     /**
      * Calls method {@link TransformableElementApi#withAttributes} to functionally add or update one attribute
