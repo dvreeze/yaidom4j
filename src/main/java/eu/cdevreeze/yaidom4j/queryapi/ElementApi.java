@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * (such as Saxon XDM item wrappers) or even domain-specific element hierarchies (such as
  * the elements in an XML Schema, whose common super-type extends/implements this query API interface).
  *
- * @param <E> The specific element type itself
+ * @param <E> The specific element type itself (note the use of F-bounded polymorphism)
  * @author Chris de Vreeze
  */
 public interface ElementApi<E extends ElementApi<E>> {

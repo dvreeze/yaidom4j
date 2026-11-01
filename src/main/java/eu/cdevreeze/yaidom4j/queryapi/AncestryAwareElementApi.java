@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 /**
  * Ancestry-aware element query API, extending {@link ElementApi}.
  *
- * @param <E> The specific element type itself
+ * @param <E> The specific element type itself (note the use of F-bounded polymorphism)
  * @author Chris de Vreeze
  */
 public interface AncestryAwareElementApi<E extends AncestryAwareElementApi<E>> extends ElementApi<E> {
