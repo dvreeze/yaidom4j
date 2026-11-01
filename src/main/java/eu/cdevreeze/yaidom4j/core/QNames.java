@@ -20,11 +20,11 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 /**
- * Utility checking QNames.
+ * Package-private utility checking QNames.
  *
  * @author Chris de Vreeze
  */
-public class QNames {
+class QNames {
 
     private QNames() {
     }
@@ -33,7 +33,7 @@ public class QNames {
      * {@link QName} correctness check, returning true if either the prefix is empty, or the namespace
      * URI is non-empty.
      */
-    public static boolean hasNamespaceIfPrefixNonEmpty(QName name) {
+    static boolean hasNamespaceIfPrefixNonEmpty(QName name) {
         return name.getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX) || !name.getNamespaceURI().equals(XMLConstants.NULL_NS_URI);
     }
 }
