@@ -68,11 +68,11 @@ class TemplatingExampleTest {
                                 Nodes.elem("tr")
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("title"))
-                                                        .findFirst().map(e -> e.withName(new QName("td")))
+                                                        .findFirst().map(e -> e.withName(new QName("td"))).orElse(null)
                                         )
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("artist"))
-                                                        .findFirst().map(e -> e.withName(new QName("td")))
+                                                        .findFirst().map(e -> e.withName(new QName("td"))).orElse(null)
                                         )
                         );
 
@@ -113,11 +113,11 @@ class TemplatingExampleTest {
                                 Nodes.elem("tr")
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("title"))
-                                                        .findFirst().map(e -> e.withName(new QName("td")))
+                                                        .findFirst().map(e -> e.withName(new QName("td"))).orElse(null)
                                         )
                                         .plusChildOption(
                                                 cdElem.childElementStream(hasName("artist"))
-                                                        .findFirst().map(e -> e.withName(new QName("td")))
+                                                        .findFirst().map(e -> e.withName(new QName("td"))).orElse(null)
                                         )
                         );
 

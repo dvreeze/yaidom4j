@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop;
 
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.*;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ class InternalNodes {
 
     static final class InternalElement implements InternalCanBeDocumentChild {
 
-        private final Optional<InternalElement> parentElementOption;
+        private final @Nullable InternalElement parentElementOrNull;
 
         private final QName name;
 
@@ -59,19 +60,19 @@ class InternalNodes {
         private final List<InternalNode> children = new ArrayList<>();
 
         InternalElement(
-                Optional<InternalElement> parentElementOption,
+                @Nullable InternalElement parentElementOrNull,
                 QName name,
                 Map<QName, String> attributes,
                 NamespaceScope namespaceScope
         ) {
-            this.parentElementOption = parentElementOption;
+            this.parentElementOrNull = parentElementOrNull;
             this.name = name;
             this.attributes = Map.copyOf(attributes);
             this.namespaceScope = namespaceScope;
         }
 
         Optional<InternalElement> getParentElementOption() {
-            return parentElementOption;
+            return Optional.ofNullable(parentElementOrNull);
         }
 
         NamespaceScope namespaceScope() {

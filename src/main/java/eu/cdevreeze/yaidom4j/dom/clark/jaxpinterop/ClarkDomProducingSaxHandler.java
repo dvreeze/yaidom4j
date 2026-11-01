@@ -27,7 +27,6 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -67,7 +66,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
         Map<QName, String> attributes = extractAttributes(attrs);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
-                Optional.ofNullable(currentElement),
+                currentElement,
                 name,
                 attributes
         );

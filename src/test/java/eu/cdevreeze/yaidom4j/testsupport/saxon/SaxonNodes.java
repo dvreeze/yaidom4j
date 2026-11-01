@@ -25,6 +25,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.streams.Steps;
 import net.sf.saxon.tree.NamespaceNode;
+import org.jspecify.annotations.NullMarked;
 
 import javax.xml.namespace.QName;
 import java.net.URI;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
  *
  * @author Chris de Vreeze
  */
+@NullMarked
 public class SaxonNodes {
 
     private SaxonNodes() {

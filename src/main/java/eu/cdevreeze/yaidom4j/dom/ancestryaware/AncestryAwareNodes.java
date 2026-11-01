@@ -19,6 +19,7 @@ package eu.cdevreeze.yaidom4j.dom.ancestryaware;
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.queryapi.AncestryAwareElementApi;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -70,33 +71,33 @@ public class AncestryAwareNodes {
      */
     private static final class ElementTree {
 
-        private final Optional<URI> docUriOption;
+        private final @Nullable URI docUriOrNull;
         private final Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap;
 
         private ElementTree(
-                Optional<URI> docUriOption,
+                @Nullable URI docUriOrNull,
                 Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
         ) {
-            this.docUriOption = docUriOption;
+            this.docUriOrNull = docUriOrNull;
             this.elementMap = Map.copyOf(Objects.requireNonNull(elementMap));
         }
 
         Element rootElement() {
-            return new Element(this, docUriOption, ElementNavigationPath.empty());
+            return new Element(this, docUriOrNull, ElementNavigationPath.empty());
         }
 
         static ElementTree create(
-                Optional<URI> docUriOption,
+                @Nullable URI docUriOrNull,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
         ) {
             ElementNavigationPath navigationPath = ElementNavigationPath.empty();
             Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap = new HashMap<>();
-            buildElementCache(docUriOption, navigationPath, underlyingRootElement, elementMap);
-            return new ElementTree(docUriOption, Map.copyOf(elementMap));
+            buildElementCache(docUriOrNull, navigationPath, underlyingRootElement, elementMap);
+            return new ElementTree(docUriOrNull, Map.copyOf(elementMap));
         }
 
         private static void buildElementCache(
-                Optional<URI> docUriOption,
+                @Nullable URI docUriOrNull,
                 ElementNavigationPath elementNavigationPath,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element element,
                 Map<ElementNavigationPath, eu.cdevreeze.yaidom4j.dom.immutabledom.Element> elementMap
@@ -107,7 +108,7 @@ public class AncestryAwareNodes {
             for (var childElement : element.childElementStream().toList()) {
                 // Recursion
                 buildElementCache(
-                        docUriOption,
+                        docUriOrNull,
                         elementNavigationPath.appendEntry(idx),
                         childElement,
                         elementMap
@@ -125,12 +126,12 @@ public class AncestryAwareNodes {
     public static final class Element implements CanBeDocumentChild, AncestryAwareElementApi<Element> {
 
         private final ElementTree elementTree;
-        private final Optional<URI> docUriOption;
+        private final @Nullable URI docUriOrNull;
         private final ElementNavigationPath navigationPath;
 
-        private Element(ElementTree elementTree, Optional<URI> docUriOption, ElementNavigationPath navigationPath) {
+        private Element(ElementTree elementTree, @Nullable URI docUriOrNull, ElementNavigationPath navigationPath) {
             this.elementTree = elementTree;
-            this.docUriOption = docUriOption;
+            this.docUriOrNull = docUriOrNull;
             this.navigationPath = Objects.requireNonNull(navigationPath);
         }
 
@@ -198,7 +199,7 @@ public class AncestryAwareNodes {
 
         @Override
         public Optional<URI> docUriOption() {
-            return docUriOption;
+            return Optional.ofNullable(docUriOrNull);
         }
 
         @Override
@@ -214,7 +215,7 @@ public class AncestryAwareNodes {
 
             Collections.reverse(xmlBaseUris); // Java 21 offers the more functional "reversed" method
 
-            Optional<URI> uriOption = docUriOption;
+            Optional<URI> uriOption = Optional.ofNullable(docUriOrNull);
 
             for (URI u : xmlBaseUris) {
                 // See http://stackoverflow.com/questions/22203111/is-javas-uri-resolve-incompatible-with-rfc-3986-when-the-relative-uri-contains
@@ -287,7 +288,7 @@ public class AncestryAwareNodes {
 
         @Override
         public Optional<Element> parentElementOption() {
-            return navigationPath.withoutLastEntryOption().map(p -> new Element(elementTree, docUriOption, p));
+            return navigationPath.withoutLastEntryOption().map(p -> new Element(elementTree, docUriOrNull, p));
         }
 
         @Override
@@ -324,7 +325,7 @@ public class AncestryAwareNodes {
 
             for (var underlyingChildNode : underlyingElement().children()) {
                 if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element) {
-                    children.add(new Element(elementTree, docUriOption, navigationPath.appendEntry(elementIdx)));
+                    children.add(new Element(elementTree, docUriOrNull, navigationPath.appendEntry(elementIdx)));
                     elementIdx += 1;
                 } else if (underlyingChildNode instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Text t) {
                     children.add(new Text(t.value(), t.isCData()));
@@ -342,7 +343,7 @@ public class AncestryAwareNodes {
         public Stream<Element> childElementStream() {
             return IntStream.range(0, (int) underlyingElement().childElementStream().count())
                     .mapToObj(navigationPath::appendEntry)
-                    .map(e -> new Element(elementTree, docUriOption, e));
+                    .map(e -> new Element(elementTree, docUriOrNull, e));
         }
 
         @Override
@@ -407,10 +408,10 @@ public class AncestryAwareNodes {
          * Factory method for {@link Element} creation
          */
         public static Element create(
-                Optional<URI> docUriOption,
+                @Nullable URI docUriOrNull,
                 eu.cdevreeze.yaidom4j.dom.immutabledom.Element underlyingRootElement
         ) {
-            return ElementTree.create(docUriOption, underlyingRootElement).rootElement();
+            return ElementTree.create(docUriOrNull, underlyingRootElement).rootElement();
         }
     }
 

@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.testsupport.saxon;
 
 import eu.cdevreeze.yaidom4j.queryapi.ElementPredicateFactoryApi;
+import org.jspecify.annotations.NullMarked;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -30,6 +31,7 @@ import static eu.cdevreeze.yaidom4j.testsupport.saxon.SaxonNodes.Text;
  *
  * @author Chris de Vreeze
  */
+@NullMarked
 public class SaxonElementPredicates {
 
     private SaxonElementPredicates() {

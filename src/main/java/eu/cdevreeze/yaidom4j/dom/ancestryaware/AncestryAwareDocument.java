@@ -64,7 +64,7 @@ public record AncestryAwareDocument(
                 underlyingDocument.children().stream()
                         .map(n -> {
                             if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Element e) {
-                                return AncestryAwareNodes.Element.create(underlyingDocument.uriOption(), e);
+                                return AncestryAwareNodes.Element.create(underlyingDocument.uriOption().orElse(null), e);
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.Comment c) {
                                 return new AncestryAwareNodes.Comment(c.value());
                             } else if (n instanceof eu.cdevreeze.yaidom4j.dom.immutabledom.ProcessingInstruction pi) {

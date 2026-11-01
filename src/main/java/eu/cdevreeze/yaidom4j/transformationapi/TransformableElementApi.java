@@ -17,11 +17,11 @@
 package eu.cdevreeze.yaidom4j.transformationapi;
 
 import eu.cdevreeze.yaidom4j.core.ElementNavigationPath;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -54,7 +54,7 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     /**
      * Calls method {@link TransformableElementApi#withChildren} to functionally add at most one child node at the end
      */
-    E plusChildOption(Optional<N> newChildOption);
+    E plusChildOption(@Nullable N newChildOrNull);
 
     /**
      * Calls method {@link TransformableElementApi#withChildren} to functionally add zero or more child nodes at the end
@@ -74,7 +74,7 @@ public interface TransformableElementApi<E extends TransformableElementApi<E, N>
     /**
      * Calls method {@link TransformableElementApi#withAttributes} to functionally add or update at most one attribute
      */
-    E plusAttributeOption(QName attrName, Optional<String> newAttrValueOption);
+    E plusAttributeOption(QName attrName, @Nullable String newAttrValueOrNull);
 
     /**
      * Returns an adapted copy of this element where the children are replaced by the results of applying

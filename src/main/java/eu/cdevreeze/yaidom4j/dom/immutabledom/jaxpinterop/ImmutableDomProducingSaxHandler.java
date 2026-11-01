@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  */
 public class ImmutableDomProducingSaxHandler extends DefaultHandler implements LexicalHandler {
 
-    private Optional<URI> docUriOption = Optional.empty();
+    private @Nullable URI docUriOrNull = null;
 
     private final List<InternalNodes.InternalCanBeDocumentChild> docChildren = new ArrayList<>();
 
@@ -74,7 +74,8 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     @Override
     public void setDocumentLocator(Locator locator) {
-        Optional.ofNullable(locator.getSystemId()).ifPresent(u -> docUriOption = Optional.of(URI.create(u)));
+        Optional.ofNullable(locator.getSystemId())
+                .ifPresent(u -> docUriOrNull = URI.create(u));
     }
 
     @Override
@@ -102,7 +103,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
         Map<QName, String> attributes = extractAttributes(attrs);
 
         InternalNodes.InternalElement elem = new InternalNodes.InternalElement(
-                Optional.ofNullable(currentElement),
+                currentElement,
                 name,
                 attributes,
                 namespaceScope
@@ -236,7 +237,7 @@ public class ImmutableDomProducingSaxHandler extends DefaultHandler implements L
 
     public Document resultingDocument() {
         return new Document(
-                docUriOption,
+                Optional.ofNullable(docUriOrNull),
                 docChildren.stream()
                         .map(InternalNodes.InternalCanBeDocumentChild::toNode)
                         .toList()

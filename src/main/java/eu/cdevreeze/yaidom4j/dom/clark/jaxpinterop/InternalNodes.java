@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.dom.clark.jaxpinterop;
 
 import eu.cdevreeze.yaidom4j.dom.clark.ClarkNodes;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ class InternalNodes {
 
     static final class InternalElement implements InternalNode {
 
-        private final Optional<InternalElement> parentElementOption;
+        private final @Nullable InternalElement parentElementOrNull;
 
         private final QName name;
 
@@ -50,17 +51,17 @@ class InternalNodes {
         private final List<InternalNode> children = new ArrayList<>();
 
         InternalElement(
-                Optional<InternalElement> parentElementOption,
+                @Nullable InternalElement parentElementOrNull,
                 QName name,
                 Map<QName, String> attributes
         ) {
-            this.parentElementOption = parentElementOption;
+            this.parentElementOrNull = parentElementOrNull;
             this.name = name;
             this.attributes = Map.copyOf(attributes);
         }
 
         Optional<InternalElement> getParentElementOption() {
-            return parentElementOption;
+            return Optional.ofNullable(parentElementOrNull);
         }
 
         void addChild(InternalNode childNode) {

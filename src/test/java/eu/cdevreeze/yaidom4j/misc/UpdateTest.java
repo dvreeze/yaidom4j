@@ -29,7 +29,6 @@ import org.xml.sax.InputSource;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -142,7 +141,7 @@ class UpdateTest {
         Element updatedElement1 = element.transformDescendantElementsOrSelf(this::addOneToElement);
 
         Set<ElementNavigationPath> allElementNavigationPaths =
-                AncestryAwareNodes.Element.create(Optional.empty(), element)
+                AncestryAwareNodes.Element.create(null, element)
                         .descendantElementOrSelfStream()
                         .map(AncestryAwareNodes.Element::elementNavigationPath)
                         .collect(Collectors.toSet());

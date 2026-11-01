@@ -24,7 +24,6 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParser;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentParsers;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinter;
 import eu.cdevreeze.yaidom4j.dom.immutabledom.jaxpinterop.DocumentPrinters;
-import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import org.xml.sax.InputSource;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -72,7 +70,7 @@ class ThreadSafetyTest {
         final AtomicReference<Element> elementHolder = new AtomicReference<>(createElement());
 
         List<ElementNavigationPath> elemNavigationPaths =
-                AncestryAwareNodes.Element.create(Optional.empty(), elementHolder.get())
+                AncestryAwareNodes.Element.create(null, elementHolder.get())
                         .descendantElementOrSelfStream()
                         .map(AncestryAwareNodes.Element::elementNavigationPath)
                         .toList();
@@ -191,10 +189,5 @@ class ThreadSafetyTest {
                             .toList()
             );
         }
-    }
-
-    private static List<Integer> removeFirstEntry(List<Integer> elementNavigationPath) {
-        PreconditionUtil.checkArgument(!elementNavigationPath.isEmpty());
-        return elementNavigationPath.subList(1, elementNavigationPath.size());
     }
 }

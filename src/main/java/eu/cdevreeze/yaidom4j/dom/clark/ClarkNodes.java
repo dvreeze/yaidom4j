@@ -21,6 +21,7 @@ import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.transformationapi.TransformableElementApi;
+import org.jspecify.annotations.Nullable;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -236,8 +237,8 @@ public class ClarkNodes {
         }
 
         @Override
-        public Element plusChildOption(Optional<Node> newChildOption) {
-            return newChildOption.map(this::plusChild).orElse(this);
+        public Element plusChildOption(@Nullable Node newChildOrNull) {
+            return Optional.ofNullable(newChildOrNull).map(this::plusChild).orElse(this);
         }
 
         @Override
@@ -265,11 +266,11 @@ public class ClarkNodes {
         }
 
         @Override
-        public Element plusAttributeOption(QName attrName, Optional<String> newAttrValueOption) {
+        public Element plusAttributeOption(QName attrName, @Nullable String newAttrValueOption) {
             Map<QName, String> newAttributes = new HashMap<>(attributes());
             newAttributes.putAll(attributes);
             newAttributes.putAll(
-                    newAttrValueOption
+                    Optional.ofNullable(newAttrValueOption)
                             .stream()
                             .map(v -> Map.entry(attrName, v))
                             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
