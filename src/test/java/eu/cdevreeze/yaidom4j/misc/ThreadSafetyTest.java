@@ -125,11 +125,13 @@ class ThreadSafetyTest {
                     if (elem.text().isBlank()) {
                         return elem;
                     } else {
-                        logger.trace("Current thread (updating element): {}", Thread.currentThread());
+                        int oldValue = Integer.parseInt(elem.text());
+                        int newValue = oldValue + 1;
+                        logger.trace("Current thread (updating element from {} to {}): {}", oldValue, newValue, Thread.currentThread());
                         return elem.withChildren(
                                 List.of(
                                         new Text(
-                                                String.valueOf(Integer.parseInt(elem.text()) + 1),
+                                                String.valueOf(newValue),
                                                 false
                                         )
                                 )
