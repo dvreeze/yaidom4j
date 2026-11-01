@@ -30,7 +30,7 @@ import java.util.function.UnaryOperator;
 /**
  * Element transformation API, implemented by some element implementations.
  *
- * @param <E> The specific element type itself
+ * @param <E> The specific element type itself (note the use of F-bounded polymorphism)
  * @param <N> The node super-type of the element type and of all other node types (text, comment etc.)
  * @author Chris de Vreeze
  */
