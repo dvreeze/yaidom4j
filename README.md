@@ -255,3 +255,7 @@ TODO:
 
 Also, maybe we could get some inspiration from the upcoming simple JSON API that will be part of the JDK.
 Both the scope of the API (in that case for JSON, in our case for XML) and implementation details (think: immutability) may inspire us.
+
+Moreover, maybe we should follow the XPath Data Model (and [XPath Axes](https://developer.mozilla.org/en-US/docs/Web/XML/XPath/Reference/Axes)) more closely:
+* Documents etc. are nodes too, but introduce `Node` subtype `CanBeChildNode` for document children and element children
+* Introduce methods like `childStream`, `descendantOrSelfStream` etc., where `childElementStream` and `descendantOrSelfElementStream` etc. are "convenience methods" returning only element nodes
