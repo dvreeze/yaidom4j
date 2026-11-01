@@ -239,17 +239,18 @@ do model XML InfoSet information items that yaidom4j itself is not interested in
 
 ## Evolving the library
 
-In a broad sense, yaidom4j is envisioned to remain pretty much what it is now. Yet there is still a lot to
+In a broad sense, yaidom4j is envisioned to remain roughly what it is now. Yet there is still a lot to
 improve. See for example the TODOs below.
 
 TODO:
 * Stabilize API (and keep it small and simple)
+  * Also, do we really need Clark nodes and "ancestry-aware" nodes, or can we achieve their benefits in a different way?
 * Improve performance, but not at the expense of clarity and simplicity of the API
-* Add useful "scripts"
+* Add useful "scripts" (or should we keep them outside the main source code tree?)
 * Add and improve documentation
 * Improve the process around maintaining and releasing the library; e.g.:
   * Release notes
-  * Automatic dependency updates
+  * Automatic dependency updates (?)
   * Code analysis, security checks, test coverage
   * etc.
 
