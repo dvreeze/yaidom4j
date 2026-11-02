@@ -246,6 +246,9 @@ improve. See for example the TODOs below.
 TODO:
 * Stabilize API (and keep it small and simple)
   * Also, do we really need Clark nodes and "ancestry-aware" nodes, or can we achieve their benefits in a different way?
+  * Or, alternatively, could we just offer the "ancestry-aware" nodes as XML node implementation (reducing the now "regular" nodes to internal implementation details, like the "green" trees in red-green trees)
+  * The latter alternative would not necessarily hide the "green" trees as internal implementation details, but could still make them publicly available, explicitly calling their nodes "green XML tree nodes"
+  * For more on red-green trees, see [Roslyn compiler's red-green trees](https://ericlippert.com/2012/06/08/red-green-trees/)
 * Improve performance, but not at the expense of clarity and simplicity of the API
 * Add useful "scripts" (or should we keep them outside the main source code tree?)
 * Add and improve documentation
@@ -261,3 +264,4 @@ Both the scope of the API (in that case for JSON, in our case for XML) and imple
 Moreover, maybe we should follow the XPath Data Model (and [XPath Axes](https://developer.mozilla.org/en-US/docs/Web/XML/XPath/Reference/Axes)) more closely:
 * Documents etc. are nodes too, but introduce `Node` subtype `CanBeChildNode` for document children and element children
 * Introduce methods like `childStream`, `descendantOrSelfStream` etc., where `childElementStream` and `descendantOrSelfElementStream` etc. are "convenience methods" returning only element nodes
+  * On the other hand, according to the XPath specification only documents and elements can have children and therefore descendants, so what would be the point of those XPath axes for non-element nodes?
