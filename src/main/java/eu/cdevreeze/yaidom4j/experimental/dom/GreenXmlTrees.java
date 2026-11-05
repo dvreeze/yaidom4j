@@ -107,6 +107,16 @@ public class GreenXmlTrees {
 
         // TODO
 
+        public Document {
+            children = List.copyOf(children);
+
+            Objects.requireNonNull(uriOption);
+
+            PreconditionUtil.checkArgument(
+                    children.stream().filter(n -> n instanceof Element).count() == 1
+            );
+        }
+
         @Override
         public Stream<Node> childStream() {
             return children.stream().map(n -> n);
