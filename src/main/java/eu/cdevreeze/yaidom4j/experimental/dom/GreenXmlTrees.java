@@ -22,6 +22,7 @@ import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeElementApi;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeNodeApi;
 
 import javax.xml.namespace.QName;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,74 +46,119 @@ public class GreenXmlTrees {
         // Non-instantiable
     }
 
-    public sealed interface Node permits CanBeChild, Document, Attribute, Namespace {
+    public sealed interface Node extends GreenTreeNodeApi<Node> permits CanBeChild, Document, Attribute, Namespace {
+
+        @Override
+        default Stream<Node> childStream(Predicate<? super Node> predicate) {
+            Objects.requireNonNull(predicate);
+
+            return childStream().filter(predicate);
+        }
+
+        @Override
+        default Stream<Node> descendantOrSelfStream() {
+            Stream<Node> selfStream = Stream.of(this);
+            // Recursion
+            Stream<Node> descendantStream =
+                    childStream().flatMap(Node::descendantOrSelfStream);
+            return Stream.concat(selfStream, descendantStream);
+        }
+
+        @Override
+        default Stream<Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
+            Objects.requireNonNull(predicate);
+
+            return descendantOrSelfStream().filter(predicate);
+        }
+
+        @Override
+        default Stream<Node> descendantStream() {
+            return childStream().flatMap(Node::descendantOrSelfStream);
+        }
+
+        @Override
+        default Stream<Node> descendantStream(Predicate<? super Node> predicate) {
+            Objects.requireNonNull(predicate);
+
+            return descendantStream().filter(predicate);
+        }
+
+        @Override
+        default Stream<Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
+            Objects.requireNonNull(predicate);
+
+            if (predicate.test(this)) {
+                return Stream.of(this);
+            } else {
+                // Recursion
+                return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
+            }
+        }
+
+        @Override
+        default Stream<Node> topmostDescendantStream(Predicate<? super Node> predicate) {
+            Objects.requireNonNull(predicate);
+
+            return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
+        }
     }
 
-    public record Document() implements Node {
+    public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
+
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return children.stream().map(n -> n);
+        }
     }
 
     public record Attribute(QName name, String value) implements Node {
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return Stream.empty();
+        }
     }
 
     public record Namespace(String prefix, String namespaceUri) implements Node {
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return Stream.empty();
+        }
     }
 
-    public sealed interface CanBeChild extends Node, GreenTreeNodeApi<CanBeChild> permits Element, Text, Comment, ProcessingInstruction {
-
-        @Override
-        default Stream<CanBeChild> childStream() {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> childStream(Predicate<? super CanBeChild> predicate) {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> descendantOrSelfStream() {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> descendantOrSelfStream(Predicate<? super CanBeChild> predicate) {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> descendantStream() {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> descendantStream(Predicate<? super CanBeChild> predicate) {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> topmostDescendantOrSelfStream(Predicate<? super CanBeChild> predicate) {
-            return Stream.empty();
-        }
-
-        @Override
-        default Stream<CanBeChild> topmostDescendantStream(Predicate<? super CanBeChild> predicate) {
-            return Stream.empty();
-        }
+    public sealed interface CanBeChild extends Node permits Element, Text, Comment, ProcessingInstruction {
     }
 
     public record Text(String value) implements CanBeChild {
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return Stream.empty();
+        }
     }
 
     public record Comment(String value) implements CanBeChild {
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return Stream.empty();
+        }
     }
 
     public record ProcessingInstruction(String target, String data) implements CanBeChild {
         // TODO
+
+        @Override
+        public Stream<Node> childStream() {
+            return Stream.empty();
+        }
     }
 
     public record Element(
@@ -225,62 +271,8 @@ public class GreenXmlTrees {
         }
 
         @Override
-        public Stream<CanBeChild> childStream() {
-            return children.stream();
-        }
-
-        @Override
-        public Stream<CanBeChild> childStream(Predicate<? super CanBeChild> predicate) {
-            Objects.requireNonNull(predicate);
-
-            return childStream().filter(predicate);
-        }
-
-        @Override
-        public Stream<CanBeChild> descendantOrSelfStream() {
-            Stream<CanBeChild> selfStream = Stream.of(this);
-            // Recursion
-            Stream<CanBeChild> descendantStream =
-                    childStream().flatMap(CanBeChild::descendantOrSelfStream);
-            return Stream.concat(selfStream, descendantStream);
-        }
-
-        @Override
-        public Stream<CanBeChild> descendantOrSelfStream(Predicate<? super CanBeChild> predicate) {
-            Objects.requireNonNull(predicate);
-
-            return descendantOrSelfStream().filter(predicate);
-        }
-
-        @Override
-        public Stream<CanBeChild> descendantStream() {
-            return childStream().flatMap(CanBeChild::descendantOrSelfStream);
-        }
-
-        @Override
-        public Stream<CanBeChild> descendantStream(Predicate<? super CanBeChild> predicate) {
-            Objects.requireNonNull(predicate);
-
-            return descendantStream().filter(predicate);
-        }
-
-        @Override
-        public Stream<CanBeChild> topmostDescendantOrSelfStream(Predicate<? super CanBeChild> predicate) {
-            Objects.requireNonNull(predicate);
-
-            if (predicate.test(this)) {
-                return Stream.of(this);
-            } else {
-                // Recursion
-                return childElementStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
-            }
-        }
-
-        @Override
-        public Stream<CanBeChild> topmostDescendantStream(Predicate<? super CanBeChild> predicate) {
-            Objects.requireNonNull(predicate);
-
-            return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
+        public Stream<Node> childStream() {
+            return children.stream().map(n -> n);
         }
 
         public List<Namespace> namespaceNodes() {
