@@ -33,7 +33,7 @@ import java.net.URI;
  * Utility to create W3C DOM parsers and use them.
  * <p>
  * The parsed DOM tree can be converted to an immutable DOM tree native to yaidom4j, using class
- * {@link eu.cdevreeze.yaidom4j.dom.experimental.jaxpinterop.JaxpDomToImmutableDomConverter}.
+ * {@link eu.cdevreeze.yaidom4j.experimental.parse.JaxpDomToImmutableDomConverter}.
  *
  * @author Chris de Vreeze
  */

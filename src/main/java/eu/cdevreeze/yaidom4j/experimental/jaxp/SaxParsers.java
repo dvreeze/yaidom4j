@@ -33,7 +33,7 @@ import java.net.URI;
 /**
  * Utility to create SAX parsers and use them.
  * <p>
- * If the SAX handler is an {@link eu.cdevreeze.yaidom4j.experimental.parse.DomProducingSaxHandler},
+ * If the SAX handler is an {@link eu.cdevreeze.yaidom4j.experimental.parse.DocumentProducingSaxHandler},
  * the SAX parser creates an immutable DOM tree.
  *
  * @author Chris de Vreeze

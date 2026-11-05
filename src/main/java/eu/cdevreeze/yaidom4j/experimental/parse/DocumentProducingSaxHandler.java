@@ -44,7 +44,7 @@ import java.util.stream.Stream;
  *
  * @author Chris de Vreeze
  */
-public class DomProducingSaxHandler extends DefaultHandler implements LexicalHandler {
+public class DocumentProducingSaxHandler extends DefaultHandler implements LexicalHandler {
 
     private @Nullable URI docUriOrNull = null;
 
@@ -139,8 +139,6 @@ public class DomProducingSaxHandler extends DefaultHandler implements LexicalHan
 
     @Override
     public void characters(char[] chars, int start, int length) {
-        boolean isCData = this.currentlyInCData;
-
         InternalNodes.InternalText text = new InternalNodes.InternalText(new String(chars, start, length));
 
         if (currentRootElement == null) {
@@ -241,7 +239,6 @@ public class DomProducingSaxHandler extends DefaultHandler implements LexicalHan
                 Optional.ofNullable(docUriOrNull),
                 docChildren.stream()
                         .map(InternalNodes.InternalCanBeChild::toGreenTreeNode)
-                        .map(n -> (GreenXmlTrees.CanBeChild) n)
                         .toList()
         );
         return new Document(greenTreeDoc);

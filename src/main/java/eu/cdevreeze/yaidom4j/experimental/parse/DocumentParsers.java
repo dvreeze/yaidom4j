@@ -84,7 +84,7 @@ public class DocumentParsers {
         }
 
         public Document parse(InputSource inputSource) {
-            DomProducingSaxHandler saxHandler = new DomProducingSaxHandler();
+            DocumentProducingSaxHandler saxHandler = new DocumentProducingSaxHandler();
             Optional<URI> optDocUri = Optional.ofNullable(inputSource.getSystemId()).map(URI::create);
             SaxParsers.parse(inputSource, saxHandler, saxParserFactory);
             Document rawDoc = saxHandler.resultingDocument();
