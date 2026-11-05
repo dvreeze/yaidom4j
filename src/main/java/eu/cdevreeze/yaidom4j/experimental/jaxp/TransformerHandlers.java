@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 /**
  * Utility to create {@link TransformerHandler} instances.
  * <p>
- * The created {@link TransformerHandler} instances can be used with class {@link eu.cdevreeze.yaidom4j.experimental.print.ImmutableDomConsumingSaxEventGenerator}
+ * The created {@link TransformerHandler} instances can be used with class {@link eu.cdevreeze.yaidom4j.experimental.print.DocumentConsumingSaxEventGenerator}
  * to output an immutable DOM tree. The idea is to first set a {@link javax.xml.transform.Result} on the {@link TransformerHandler} (which
  * is a SAX handler), and then to generate SAX events on that {@link TransformerHandler}.
  *
