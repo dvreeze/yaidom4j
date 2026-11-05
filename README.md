@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**Yaidom4j** is a small and easy-to-use Java XML library. It requires Java 17 or later.
+**Yaidom4j** is a small and easy-to-use Java XML library. It requires Java 25 or later.
 
 It mainly offers the following features:
 * An *immutable* and *thread-safe* XML DOM implementation
@@ -172,7 +172,7 @@ List<String> februaryMagazineTitles = doc.documentElement().select(
 Some characteristics of yaidom4j are as follows:
 * It is foremost an XML DOM *element query API*, with multiple implementations backed by different DOM implementations
 * It is also an *immutable thread-safe* DOM implementation (offering the element query API mentioned before)
-* It requires Java 17 or later
+* It requires Java 25 or later
 * It depends on *effectively immutable collections*, using [unmodifiable collections](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html#unmodifiable)
   * So no dependency on Guava and its immutable collections is needed
   * Unlike Guava immutable collections, these immutable collections do not express immutability in terms of their collection types

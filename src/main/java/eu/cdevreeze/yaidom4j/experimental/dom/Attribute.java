@@ -1,0 +1,70 @@
+/*
+ * Copyright 2024-2026 Chris de Vreeze
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package eu.cdevreeze.yaidom4j.experimental.dom;
+
+import org.jspecify.annotations.Nullable;
+
+import javax.xml.namespace.QName;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+/**
+ * Immutable attribute node.
+ * <p>
+ * Not a record class, and using reference equality rather than (in this case) very expensive value equality.
+ *
+ * @author Chris de Vreeze
+ */
+public final class Attribute implements Node {
+
+    private final int offset;
+    private final @Nullable Node parentOrNull;
+    private final GreenXmlTrees.Attribute greenTreeNode;
+
+    public Attribute(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Attribute greenTreeNode) {
+        this.offset = offset;
+        this.parentOrNull = parentOrNull;
+        this.greenTreeNode = greenTreeNode;
+    }
+
+    @Override
+    public int offset() {
+        return offset;
+    }
+
+    public Optional<Node> parentOption() {
+        return Optional.ofNullable(parentOrNull);
+    }
+
+    @Override
+    public GreenXmlTrees.Attribute greenTreeNode() {
+        return greenTreeNode;
+    }
+
+    @Override
+    public Stream<Node> childStream() {
+        return Stream.empty();
+    }
+
+    public QName name() {
+        return greenTreeNode.name();
+    }
+
+    public String value() {
+        return greenTreeNode.value();
+    }
+}

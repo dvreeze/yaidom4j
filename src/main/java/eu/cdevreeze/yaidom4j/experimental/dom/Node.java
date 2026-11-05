@@ -18,6 +18,7 @@ package eu.cdevreeze.yaidom4j.experimental.dom;
 
 import eu.cdevreeze.yaidom4j.experimental.queryapi.NodeApi;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -28,7 +29,7 @@ import java.util.stream.Stream;
  *
  * @author Chris de Vreeze
  */
-public interface Node extends NodeApi<Node> { // TODO sealed, permits etc.
+public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document, Attribute, Namespace {
 
     /**
      * Returns the 0-based offset of this node as child node of the parent, if any.
@@ -121,5 +122,20 @@ public interface Node extends NodeApi<Node> { // TODO sealed, permits etc.
         Objects.requireNonNull(predicate);
 
         return ancestorStream().filter(predicate);
+    }
+
+    default Node rootNode() {
+        return ancestorOrSelfStream().toList().reversed().getFirst();
+    }
+
+    /**
+     * Returns the zero-based node navigation path of this node relative to the root node.
+     * That is, returns <code>ancestorOrSelfStream().map(Node::offset).toList().reversed()</code>.
+     */
+    default List<Integer> nodeNavigationPath() {
+        // Immutable List
+        return List.copyOf(
+                ancestorOrSelfStream().map(Node::offset).toList().reversed()
+        );
     }
 }
