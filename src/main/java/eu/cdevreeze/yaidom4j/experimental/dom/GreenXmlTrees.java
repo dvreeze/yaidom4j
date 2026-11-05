@@ -21,6 +21,7 @@ import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeElementApi;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeNodeApi;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.List;
@@ -120,6 +121,28 @@ public class GreenXmlTrees {
         @Override
         public Stream<Node> childStream() {
             return children.stream().map(n -> n);
+        }
+
+        public Document withUri(URI uri) {
+            return new Document(Optional.of(uri), children);
+        }
+
+        /**
+         * Removes all inter-element whitespace, through the equally named method on the document element.
+         */
+        public Document removeInterElementWhitespace() {
+            return new Document(
+                    uriOption(),
+                    children().stream()
+                            .map(ch -> {
+                                if (ch instanceof Element e) {
+                                    return e.removeInterElementWhitespace();
+                                } else {
+                                    return ch;
+                                }
+                            })
+                            .toList()
+            );
         }
     }
 
@@ -303,6 +326,124 @@ public class GreenXmlTrees {
                             .map(kv -> new Attribute(kv.getKey(), kv.getValue()))
                             .toList()
             );
+        }
+
+        /**
+         * Functionally updates this element by replacing the collection of child nodes.
+         * <p>
+         * When calling this function, take care to align the in-scope namespaces in order to
+         * prevent invalid XML 1.0 from being created. After all, prefixed namespace undeclarations
+         * are not allowed in XML 1.0.
+         */
+        public Element withChildren(List<CanBeChild> newChildren) {
+            return new Element(
+                    name(),
+                    attributes(),
+                    namespaceScope(),
+                    List.copyOf(newChildren)
+            );
+        }
+
+        // Custom element transformations
+
+        public Element removeInterElementWhitespace() {
+            List<GreenXmlTrees.CanBeChild> children = children();
+
+            // Naive implementation
+            boolean hasElementChild = children.stream().anyMatch(n -> n instanceof GreenXmlTrees.Element);
+            boolean hasOnlyInterElementWhitespaceTextChildren = hasElementChild &&
+                    children.stream().allMatch(ch -> !(ch instanceof Text(String value)) || value.isBlank());
+
+            List<GreenXmlTrees.CanBeChild> filteredChildren =
+                    hasOnlyInterElementWhitespaceTextChildren ?
+                            children.stream().filter(ch -> !(ch instanceof GreenXmlTrees.Text)).toList() :
+                            children;
+
+            return withChildren(
+                    filteredChildren.stream()
+                            .map(ch -> {
+                                if (ch instanceof GreenXmlTrees.Element che) {
+                                    // Recursion
+                                    return che.removeInterElementWhitespace();
+                                } else {
+                                    return ch;
+                                }
+                            })
+                            .toList()
+            );
+        }
+    }
+
+    public static final class ElementPredicates {
+
+        private ElementPredicates() {
+            // Non-instantiable
+        }
+
+        public static Predicate<Element> hasName(QName name) {
+            return e -> e.name().equals(name);
+        }
+
+        public static Predicate<Element> hasName(String namespace, String localName) {
+            return e -> e.name().getNamespaceURI().equals(namespace) && e.name().getLocalPart().equals(localName);
+        }
+
+        public static Predicate<Element> hasName(String noNamespaceName) {
+            return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+        }
+
+        public static Predicate<Element> hasLocalName(String localName) {
+            return e -> e.name().getLocalPart().equals(localName);
+        }
+
+        public static Predicate<Element> hasAttributeWithName(QName attrName) {
+            return e -> e.attributeOption(attrName).isPresent();
+        }
+
+        public static Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+            return hasAttributeWithName(new QName(attrNamespace, attrLocalName));
+        }
+
+        public static Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+            return hasAttributeWithName(new QName(attrNoNamespaceName));
+        }
+
+        public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
+            return e -> e.attributes().entrySet().stream()
+                    .anyMatch(kv -> kv.getKey().equals(attrName) && attrValuePredicate.test(kv.getValue()));
+        }
+
+        public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+            return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValuePredicate);
+        }
+
+        public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+            return hasAttributeValue(new QName(attrNoNamespaceName), attrValuePredicate);
+        }
+
+        public static Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+            return hasAttributeValue(attrName, s -> s.equals(attrValue));
+        }
+
+        public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+            return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValue);
+        }
+
+        public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+            return hasAttributeValue(new QName(attrNoNamespaceName), attrValue);
+        }
+
+        public static Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+            return e -> e.children().stream().allMatch(ch -> ch instanceof Text) &&
+                    textPredicate.test(e.text());
+        }
+
+        public static Predicate<Element> hasOnlyText(String text) {
+            return hasOnlyText(s -> s.equals(text));
+        }
+
+        public static Predicate<Element> hasOnlyTextAfterStripping(String text) {
+            return hasOnlyText(s -> s.strip().equals(text));
         }
     }
 }

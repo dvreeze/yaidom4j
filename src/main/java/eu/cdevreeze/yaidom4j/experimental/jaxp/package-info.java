@@ -1,0 +1,29 @@
+/*
+ * Copyright 2024-2026 Chris de Vreeze
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * JAXP utilities, used by yaidom4j but not depending on it. The utilities in this package can even be used
+ * without using anything else in yaidom4j, e.g. to create secure JAXP factory objects, or to make XML parsing
+ * and serialization slightly easier.
+ * <p>
+ * This package depends on no other packages in yaidom4j.
+ *
+ * @author Chris de Vreeze
+ */
+@NullMarked
+package eu.cdevreeze.yaidom4j.experimental.jaxp;
+
+import org.jspecify.annotations.NullMarked;

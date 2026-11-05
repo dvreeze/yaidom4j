@@ -75,4 +75,15 @@ public final class Document implements Node {
                 childStream().map(n -> (CanBeChild) n).toList()
         );
     }
+
+    public Document withUri(URI uri) {
+        return new Document(greenTreeNode.withUri(uri));
+    }
+
+    /**
+     * Removes all inter-element whitespace, through the equally named method on the document element.
+     */
+    public Document removeInterElementWhitespace() {
+        return new Document(greenTreeNode.removeInterElementWhitespace());
+    }
 }
