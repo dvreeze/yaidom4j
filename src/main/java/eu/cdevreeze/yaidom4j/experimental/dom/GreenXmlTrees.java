@@ -347,22 +347,20 @@ public class GreenXmlTrees {
         // Custom element transformations
 
         public Element removeInterElementWhitespace() {
-            List<GreenXmlTrees.CanBeChild> children = children();
-
             // Naive implementation
-            boolean hasElementChild = children.stream().anyMatch(n -> n instanceof GreenXmlTrees.Element);
+            boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
             boolean hasOnlyInterElementWhitespaceTextChildren = hasElementChild &&
                     children.stream().allMatch(ch -> !(ch instanceof Text(String value)) || value.isBlank());
 
-            List<GreenXmlTrees.CanBeChild> filteredChildren =
+            List<CanBeChild> filteredChildren =
                     hasOnlyInterElementWhitespaceTextChildren ?
-                            children.stream().filter(ch -> !(ch instanceof GreenXmlTrees.Text)).toList() :
+                            children.stream().filter(ch -> !(ch instanceof Text)).toList() :
                             children;
 
             return withChildren(
                     filteredChildren.stream()
                             .map(ch -> {
-                                if (ch instanceof GreenXmlTrees.Element che) {
+                                if (ch instanceof Element che) {
                                     // Recursion
                                     return che.removeInterElementWhitespace();
                                 } else {
