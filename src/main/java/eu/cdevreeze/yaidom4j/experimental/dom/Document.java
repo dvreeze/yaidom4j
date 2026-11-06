@@ -76,6 +76,13 @@ public final class Document implements Node {
         );
     }
 
+    public Element documentElement() {
+        return childStream().filter(n -> n instanceof Element)
+                .map(n -> (Element) n)
+                .findFirst()
+                .orElseThrow();
+    }
+
     public Document withUri(URI uri) {
         return new Document(greenTreeNode.withUri(uri));
     }

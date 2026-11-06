@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +39,12 @@ import java.util.stream.Stream;
  * The different node types are consistent with the XPath Data Model. Per node type the properties are
  * a small subset of those found in the XPath Data Model. For example, green trees do not know anything
  * about ancestor nodes, and typing information is absent.
+ * <p>
+ * This class also contains a friendly Node creation API. It is shamelessly copied, adapted and enhanced from
+ * <a href="https://www.saxonica.com/html/documentation12/javadoc/net/sf/saxon/sapling/Saplings.html">Saxon Sapling</a>.
+ * So credits go to <a href="https://www.saxonica.com">Saxonica</a> for that API. On the other hand,
+ * yaidom4j already fits this API perfectly, because in essence it is roughly based on the XPath Data Model
+ * information items (yet simplified), which deeply underlies the Saxon XML processor library.
  *
  * @author Chris de Vreeze
  */
@@ -102,6 +109,8 @@ public class GreenXmlTrees {
 
             return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
         }
+
+        GreenClarkTrees.Node toClarkNode();
     }
 
     public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
@@ -127,6 +136,13 @@ public class GreenXmlTrees {
             return new Document(Optional.of(uri), children);
         }
 
+        public Element documentElement() {
+            return childStream().filter(n -> n instanceof Element)
+                    .map(n -> (Element) n)
+                    .findFirst()
+                    .orElseThrow();
+        }
+
         /**
          * Removes all inter-element whitespace, through the equally named method on the document element.
          */
@@ -144,6 +160,16 @@ public class GreenXmlTrees {
                             .toList()
             );
         }
+
+        @Override
+        public GreenClarkTrees.Document toClarkNode() {
+            return new GreenClarkTrees.Document(
+                    uriOption,
+                    children.stream()
+                            .map(ch -> (GreenClarkTrees.CanBeChild) ch.toClarkNode())
+                            .toList()
+            );
+        }
     }
 
     public record Attribute(QName name, String value) implements Node {
@@ -153,6 +179,11 @@ public class GreenXmlTrees {
         public Stream<Node> childStream() {
             return Stream.empty();
         }
+
+        @Override
+        public GreenClarkTrees.Attribute toClarkNode() {
+            return new GreenClarkTrees.Attribute(name, value);
+        }
     }
 
     public record Namespace(String prefix, String namespaceUri) implements Node {
@@ -161,6 +192,11 @@ public class GreenXmlTrees {
         @Override
         public Stream<Node> childStream() {
             return Stream.empty();
+        }
+
+        @Override
+        public GreenClarkTrees.Node toClarkNode() {
+            throw new RuntimeException("No Clark equivalent of a namespace node");
         }
     }
 
@@ -174,6 +210,11 @@ public class GreenXmlTrees {
         public Stream<Node> childStream() {
             return Stream.empty();
         }
+
+        @Override
+        public GreenClarkTrees.Text toClarkNode() {
+            return new GreenClarkTrees.Text(value);
+        }
     }
 
     public record Comment(String value) implements CanBeChild {
@@ -183,6 +224,11 @@ public class GreenXmlTrees {
         public Stream<Node> childStream() {
             return Stream.empty();
         }
+
+        @Override
+        public GreenClarkTrees.Comment toClarkNode() {
+            return new GreenClarkTrees.Comment(value);
+        }
     }
 
     public record ProcessingInstruction(String target, String data) implements CanBeChild {
@@ -191,6 +237,11 @@ public class GreenXmlTrees {
         @Override
         public Stream<Node> childStream() {
             return Stream.empty();
+        }
+
+        @Override
+        public GreenClarkTrees.ProcessingInstruction toClarkNode() {
+            return new GreenClarkTrees.ProcessingInstruction(target, data);
         }
     }
 
@@ -344,7 +395,56 @@ public class GreenXmlTrees {
             );
         }
 
+        public Element transformChildElements(UnaryOperator<Element> f) {
+            return withChildren(
+                    children.stream().map(ch ->
+                            switch (ch) {
+                                case Element e -> f.apply(e);
+                                default -> ch;
+                            }
+                    ).toList()
+            );
+        }
+
+        public Element transformDescendantOrSelfElements(UnaryOperator<Element> f) {
+            // Recursion
+            Element descendantResult =
+                    transformChildElements(che -> che.transformDescendantOrSelfElements(f));
+            return f.apply(descendantResult);
+        }
+
+        @Override
+        public GreenClarkTrees.Element toClarkNode() {
+            return new GreenClarkTrees.Element(
+                    name,
+                    attributes,
+                    children().stream()
+                            .map(ch -> (GreenClarkTrees.CanBeChild) ch.toClarkNode())
+                            .toList()
+            );
+        }
+
         // Custom element transformations
+
+        /**
+         * Returns the "same element", except that there are no prefixed namespace un-declarations
+         * (which are not allowed in XML 1.0), and the given parent scope (without its default
+         * namespace, if any) is taken as the "starting point". If this element is valid in XML 1.0,
+         * then this element and its descendant elements will (functionally) get the extra (non-empty)
+         * prefixes in the parent scope that do not conflict with the element's own namespace scope.
+         */
+        public Element withParentAttributeScope(NamespaceScope parentScope) {
+            NamespaceScope newScope =
+                    parentScope.withoutDefaultNamespace().resolve(namespaceScope().inScopeNamespaces());
+
+            // The namespace scope additions are completely safe:
+            PreconditionUtil.checkArgument(namespaceScope().subScopeOf(newScope));
+            PreconditionUtil.checkArgument(namespaceScope().defaultNamespaceOption().equals(newScope.defaultNamespaceOption()));
+
+            // Recursion
+            return new Element(name(), attributes(), newScope, children())
+                    .transformChildElements(che -> che.withParentAttributeScope(newScope));
+        }
 
         public Element removeInterElementWhitespace() {
             // Naive implementation
@@ -443,5 +543,50 @@ public class GreenXmlTrees {
         public static Predicate<Element> hasOnlyTextAfterStripping(String text) {
             return hasOnlyText(s -> s.strip().equals(text));
         }
+    }
+
+    // Node creation API
+
+    public static Document doc() {
+        return new Document(Optional.empty(), List.of());
+    }
+
+    public static Document doc(URI docUri) {
+        return new Document(Optional.of(docUri), List.of());
+    }
+
+    /**
+     * Creates an empty Element node. If the element name has a namespace, the prefix and namespace
+     * make up the one-element namespace scope of the created element. Otherwise, the namespace scope
+     * of the element is empty.
+     * <p>
+     * Consider calling {@link Element#withParentAttributeScope(NamespaceScope)} on the result
+     * to safely add prefix-namespace bindings.
+     */
+    public static Element elem(QName name) {
+        return new Element(
+                name,
+                Map.of(),
+                name.getNamespaceURI().isEmpty() ?
+                        NamespaceScope.empty() :
+                        NamespaceScope.of(name.getPrefix(), name.getNamespaceURI()),
+                List.of()
+        );
+    }
+
+    public static Element elem(String noNamespaceName) {
+        return elem(new QName(noNamespaceName));
+    }
+
+    public static Text text(String value) {
+        return new Text(value);
+    }
+
+    public static Comment comment(String value) {
+        return new Comment(value);
+    }
+
+    public static ProcessingInstruction pi(String target, String data) {
+        return new ProcessingInstruction(target, data);
     }
 }
