@@ -330,6 +330,14 @@ public class GreenClarkTrees {
             );
         }
 
+        public Element withAttributes(Map<QName, String> newAttributes) {
+            return new Element(
+                    name(),
+                    Map.copyOf(newAttributes),
+                    children()
+            );
+        }
+
         public Element transformChildElements(UnaryOperator<Element> f) {
             return withChildren(
                     children.stream().map(ch ->

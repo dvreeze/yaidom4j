@@ -395,6 +395,20 @@ public class GreenXmlTrees {
             );
         }
 
+        /**
+         * Functionally updates this element by replacing the collection of attributes.
+         * <p>
+         * For prefixed attributes, take care to use only prefixes that are in scope.
+         */
+        public Element withAttributes(Map<QName, String> newAttributes) {
+            return new Element(
+                    name(),
+                    Map.copyOf(newAttributes),
+                    namespaceScope(),
+                    children()
+            );
+        }
+
         public Element transformChildElements(UnaryOperator<Element> f) {
             return withChildren(
                     children.stream().map(ch ->
