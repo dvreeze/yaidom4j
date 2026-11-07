@@ -48,4 +48,13 @@ module eu.cdevreeze.yaidom4j {
     // Abstract query (and transformation API) implemented by the "DOM" implementations above
     exports eu.cdevreeze.yaidom4j.queryapi;
     exports eu.cdevreeze.yaidom4j.transformationapi;
+
+    // Experimental new API
+
+    exports eu.cdevreeze.yaidom4j.experimental.jaxp;
+    exports eu.cdevreeze.yaidom4j.experimental.core;
+    exports eu.cdevreeze.yaidom4j.experimental.queryapi;
+    exports eu.cdevreeze.yaidom4j.experimental.dom;
+    exports eu.cdevreeze.yaidom4j.experimental.parse;
+    exports eu.cdevreeze.yaidom4j.experimental.print;
 }
