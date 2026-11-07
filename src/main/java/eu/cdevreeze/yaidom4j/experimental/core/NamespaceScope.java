@@ -48,6 +48,12 @@ public record NamespaceScope(Map<String, String> inScopeNamespaces) {
         PreconditionUtil.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XMLNS_ATTRIBUTE));
     }
 
+    public Map<String, String> completeInScopeNamespaces() {
+        Map<String, String> namespaces = new HashMap<>(inScopeNamespaces);
+        namespaces.put(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
+        return Map.copyOf(namespaces);
+    }
+
     public Optional<String> defaultNamespaceOption() {
         return findNamespaceOfPrefix(XMLConstants.DEFAULT_NS_PREFIX);
     }

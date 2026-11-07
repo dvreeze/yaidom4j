@@ -114,8 +114,6 @@ public class GreenClarkTrees {
 
     public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
 
-        // TODO
-
         public Document {
             children = List.copyOf(children);
 
@@ -162,7 +160,11 @@ public class GreenClarkTrees {
     }
 
     public record Attribute(QName name, String value) implements Node {
-        // TODO
+
+        public Attribute {
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -174,7 +176,10 @@ public class GreenClarkTrees {
     }
 
     public record Text(String value) implements CanBeChild {
-        // TODO
+
+        public Text {
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -183,7 +188,10 @@ public class GreenClarkTrees {
     }
 
     public record Comment(String value) implements CanBeChild {
-        // TODO
+
+        public Comment {
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -192,7 +200,11 @@ public class GreenClarkTrees {
     }
 
     public record ProcessingInstruction(String target, String data) implements CanBeChild {
-        // TODO
+
+        public ProcessingInstruction {
+            Objects.requireNonNull(target);
+            Objects.requireNonNull(data);
+        }
 
         @Override
         public Stream<Node> childStream() {

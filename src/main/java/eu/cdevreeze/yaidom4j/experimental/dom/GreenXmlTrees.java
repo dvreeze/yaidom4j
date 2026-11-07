@@ -115,8 +115,6 @@ public class GreenXmlTrees {
 
     public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
 
-        // TODO
-
         public Document {
             children = List.copyOf(children);
 
@@ -173,7 +171,11 @@ public class GreenXmlTrees {
     }
 
     public record Attribute(QName name, String value) implements Node {
-        // TODO
+
+        public Attribute {
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -187,7 +189,11 @@ public class GreenXmlTrees {
     }
 
     public record Namespace(String prefix, String namespaceUri) implements Node {
-        // TODO
+
+        public Namespace {
+            Objects.requireNonNull(prefix);
+            Objects.requireNonNull(namespaceUri);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -204,7 +210,10 @@ public class GreenXmlTrees {
     }
 
     public record Text(String value) implements CanBeChild {
-        // TODO
+
+        public Text {
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -218,7 +227,10 @@ public class GreenXmlTrees {
     }
 
     public record Comment(String value) implements CanBeChild {
-        // TODO
+
+        public Comment {
+            Objects.requireNonNull(value);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -232,7 +244,11 @@ public class GreenXmlTrees {
     }
 
     public record ProcessingInstruction(String target, String data) implements CanBeChild {
-        // TODO
+
+        public ProcessingInstruction {
+            Objects.requireNonNull(target);
+            Objects.requireNonNull(data);
+        }
 
         @Override
         public Stream<Node> childStream() {
@@ -360,9 +376,8 @@ public class GreenXmlTrees {
         }
 
         public List<Namespace> namespaceNodes() {
-            // TODO Add built-in namespaces?
             return List.copyOf(
-                    namespaceScope().inScopeNamespaces()
+                    namespaceScope().completeInScopeNamespaces()
                             .entrySet()
                             .stream()
                             .map(kv -> new Namespace(kv.getKey(), kv.getValue()))

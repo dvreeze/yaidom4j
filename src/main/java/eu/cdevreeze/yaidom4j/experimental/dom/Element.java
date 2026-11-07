@@ -20,6 +20,7 @@ import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.ElementApi;
 import org.jspecify.annotations.Nullable;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Gatherers;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -38,6 +40,8 @@ import java.util.stream.Stream;
  * @author Chris de Vreeze
  */
 public final class Element implements CanBeChild, ElementApi<Element> {
+
+    private static final QName XML_BASE_QNAME = new QName(XMLConstants.XML_NS_URI, "base");
 
     private final int offset;
     private final @Nullable Node parentOrNull;
@@ -74,7 +78,21 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public Optional<URI> baseUriOption() {
-        return Optional.empty(); // TODO
+        List<URI> xmlBaseUrisReversed = ancestorOrSelfElementStream()
+                .flatMap(e -> e.attributeOption(XML_BASE_QNAME).stream())
+                .map(URI::create)
+                .toList();
+
+        List<URI> xmlBaseUris = xmlBaseUrisReversed.reversed(); // Since Java 21
+
+        // See http://stackoverflow.com/questions/22203111/is-javas-uri-resolve-incompatible-with-rfc-3986-when-the-relative-uri-contains
+
+        // Stream gatherers have been available since Java 24
+        return xmlBaseUris.stream().gather(Gatherers.fold(
+                this::docUriOption,
+                (Optional<URI> currUriOption, URI base) ->
+                        Optional.of(currUriOption.map(b -> b.resolve(base)).orElse(base))
+        )).findFirst().orElse(Optional.empty());
     }
 
     @Override
