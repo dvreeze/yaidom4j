@@ -31,13 +31,13 @@ import java.util.stream.Stream;
  */
 public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
 
-    Optional<N> parentOption();
+    Optional<? extends N> parentOption();
 
-    Stream<N> ancestorOrSelfStream();
+    Stream<? extends N> ancestorOrSelfStream();
 
-    Stream<N> ancestorOrSelfStream(Predicate<? super N> predicate);
+    Stream<? extends N> ancestorOrSelfStream(Predicate<? super N> predicate);
 
-    Stream<N> ancestorStream();
+    Stream<? extends N> ancestorStream();
 
-    Stream<N> ancestorStream(Predicate<? super N> predicate);
+    Stream<? extends N> ancestorStream(Predicate<? super N> predicate);
 }
