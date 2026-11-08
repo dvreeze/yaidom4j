@@ -31,7 +31,7 @@ import eu.cdevreeze.yaidom4j.experimental.jaxp.TransformerHandlers;
  * DocumentPrinter docPrinter = DocumentPrinters.instance();
  * String docAsString = docPrinter.print(document);
  *}
- * Document printing is configurable. THe simple code snippet above is equivalent to:
+ * Document printing is configurable. The simple code snippet above is equivalent to:
  * {@snippet :
  * DocumentPrinter docPrinter = DocumentPrinters
  *     .builder(TransformerHandlers.newSaxTransformerFactory())
