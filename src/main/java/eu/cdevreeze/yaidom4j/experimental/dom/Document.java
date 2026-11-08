@@ -43,7 +43,7 @@ public final class Document implements Node {
     }
 
     @Override
-    public Optional<? extends Node> parentOption() {
+    public Optional<Node> parentOption() {
         return Optional.empty();
     }
 
@@ -53,7 +53,7 @@ public final class Document implements Node {
     }
 
     @Override
-    public Stream<? extends Node> childStream() {
+    public Stream<Node> childStream() {
         List<GreenXmlTrees.CanBeChild> children = greenTreeNode.children();
         int numberOfChildren = children.size();
         return IntStream.range(0, numberOfChildren)

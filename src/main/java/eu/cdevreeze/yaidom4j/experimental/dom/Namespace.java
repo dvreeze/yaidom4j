@@ -45,7 +45,7 @@ public final class Namespace implements Node {
         return offset;
     }
 
-    public Optional<? extends Node> parentOption() {
+    public Optional<Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }
 
@@ -55,7 +55,7 @@ public final class Namespace implements Node {
     }
 
     @Override
-    public Stream<? extends Node> childStream() {
+    public Stream<Node> childStream() {
         return Stream.empty();
     }
 

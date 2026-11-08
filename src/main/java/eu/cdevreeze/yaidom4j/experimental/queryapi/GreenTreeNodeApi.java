@@ -29,19 +29,19 @@ import java.util.stream.Stream;
  */
 public interface GreenTreeNodeApi<N extends GreenTreeNodeApi<N>> {
 
-    Stream<? extends N> childStream();
+    Stream<N> childStream();
 
-    Stream<? extends N> childStream(Predicate<? super N> predicate);
+    Stream<N> childStream(Predicate<? super N> predicate);
 
-    Stream<? extends N> descendantOrSelfStream();
+    Stream<N> descendantOrSelfStream();
 
-    Stream<? extends N> descendantOrSelfStream(Predicate<? super N> predicate);
+    Stream<N> descendantOrSelfStream(Predicate<? super N> predicate);
 
-    Stream<? extends N> descendantStream();
+    Stream<N> descendantStream();
 
-    Stream<? extends N> descendantStream(Predicate<? super N> predicate);
+    Stream<N> descendantStream(Predicate<? super N> predicate);
 
-    Stream<? extends N> topmostDescendantOrSelfStream(Predicate<? super N> predicate);
+    Stream<N> topmostDescendantOrSelfStream(Predicate<? super N> predicate);
 
-    Stream<? extends N> topmostDescendantStream(Predicate<? super N> predicate);
+    Stream<N> topmostDescendantStream(Predicate<? super N> predicate);
 }

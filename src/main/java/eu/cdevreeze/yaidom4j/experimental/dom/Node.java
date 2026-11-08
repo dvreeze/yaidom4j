@@ -38,47 +38,47 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     int offset();
 
     @Override
-    Optional<? extends Node> parentOption();
+    Optional<Node> parentOption();
 
     GreenXmlTrees.Node greenTreeNode();
 
     @Override
-    default Stream<? extends Node> childStream(Predicate<? super Node> predicate) {
+    default Stream<Node> childStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return childStream().filter(predicate);
     }
 
     @Override
-    default Stream<? extends Node> descendantOrSelfStream() {
-        Stream<? extends Node> selfStream = Stream.of(this);
+    default Stream<Node> descendantOrSelfStream() {
+        Stream<Node> selfStream = Stream.of(this);
         // Recursion
-        Stream<? extends Node> descendantStream =
+        Stream<Node> descendantStream =
                 childStream().flatMap(Node::descendantOrSelfStream);
         return Stream.concat(selfStream, descendantStream);
     }
 
     @Override
-    default Stream<? extends Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
+    default Stream<Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return descendantOrSelfStream().filter(predicate);
     }
 
     @Override
-    default Stream<? extends Node> descendantStream() {
+    default Stream<Node> descendantStream() {
         return childStream().flatMap(Node::descendantOrSelfStream);
     }
 
     @Override
-    default Stream<? extends Node> descendantStream(Predicate<? super Node> predicate) {
+    default Stream<Node> descendantStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return descendantStream().filter(predicate);
     }
 
     @Override
-    default Stream<? extends Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
+    default Stream<Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         if (predicate.test(this)) {
@@ -90,14 +90,14 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     }
 
     @Override
-    default Stream<? extends Node> topmostDescendantStream(Predicate<? super Node> predicate) {
+    default Stream<Node> topmostDescendantStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
     }
 
     @Override
-    default Stream<? extends Node> ancestorOrSelfStream() {
+    default Stream<Node> ancestorOrSelfStream() {
         // Recursive
         return Stream.concat(
                 Stream.of(this),
@@ -106,19 +106,19 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     }
 
     @Override
-    default Stream<? extends Node> ancestorOrSelfStream(Predicate<? super Node> predicate) {
+    default Stream<Node> ancestorOrSelfStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return ancestorOrSelfStream().filter(predicate);
     }
 
     @Override
-    default Stream<? extends Node> ancestorStream() {
+    default Stream<Node> ancestorStream() {
         return parentOption().stream().flatMap(Node::ancestorOrSelfStream);
     }
 
     @Override
-    default Stream<? extends Node> ancestorStream(Predicate<? super Node> predicate) {
+    default Stream<Node> ancestorStream(Predicate<? super Node> predicate) {
         Objects.requireNonNull(predicate);
 
         return ancestorStream().filter(predicate);

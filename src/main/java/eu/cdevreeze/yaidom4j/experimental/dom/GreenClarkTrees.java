@@ -58,42 +58,42 @@ public class GreenClarkTrees {
     public sealed interface Node extends GreenTreeNodeApi<Node> permits CanBeChild, Document, Attribute {
 
         @Override
-        default Stream<? extends Node> childStream(Predicate<? super Node> predicate) {
+        default Stream<Node> childStream(Predicate<? super Node> predicate) {
             Objects.requireNonNull(predicate);
 
             return childStream().filter(predicate);
         }
 
         @Override
-        default Stream<? extends Node> descendantOrSelfStream() {
-            Stream<? extends Node> selfStream = Stream.of(this);
+        default Stream<Node> descendantOrSelfStream() {
+            Stream<Node> selfStream = Stream.of(this);
             // Recursion
-            Stream<? extends Node> descendantStream =
+            Stream<Node> descendantStream =
                     childStream().flatMap(Node::descendantOrSelfStream);
             return Stream.concat(selfStream, descendantStream);
         }
 
         @Override
-        default Stream<? extends Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
+        default Stream<Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
             Objects.requireNonNull(predicate);
 
             return descendantOrSelfStream().filter(predicate);
         }
 
         @Override
-        default Stream<? extends Node> descendantStream() {
+        default Stream<Node> descendantStream() {
             return childStream().flatMap(Node::descendantOrSelfStream);
         }
 
         @Override
-        default Stream<? extends Node> descendantStream(Predicate<? super Node> predicate) {
+        default Stream<Node> descendantStream(Predicate<? super Node> predicate) {
             Objects.requireNonNull(predicate);
 
             return descendantStream().filter(predicate);
         }
 
         @Override
-        default Stream<? extends Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
+        default Stream<Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
             Objects.requireNonNull(predicate);
 
             if (predicate.test(this)) {
@@ -105,7 +105,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        default Stream<? extends Node> topmostDescendantStream(Predicate<? super Node> predicate) {
+        default Stream<Node> topmostDescendantStream(Predicate<? super Node> predicate) {
             Objects.requireNonNull(predicate);
 
             return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
@@ -125,7 +125,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return children.stream().map(n -> n);
         }
 
@@ -167,7 +167,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return Stream.empty();
         }
     }
@@ -182,7 +182,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return Stream.empty();
         }
     }
@@ -194,7 +194,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return Stream.empty();
         }
     }
@@ -207,7 +207,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return Stream.empty();
         }
     }
@@ -318,7 +318,7 @@ public class GreenClarkTrees {
         }
 
         @Override
-        public Stream<? extends Node> childStream() {
+        public Stream<Node> childStream() {
             return children.stream().map(n -> n);
         }
 
