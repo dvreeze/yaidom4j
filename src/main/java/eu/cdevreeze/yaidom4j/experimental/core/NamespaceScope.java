@@ -48,6 +48,9 @@ public record NamespaceScope(Map<String, String> inScopeNamespaces) {
         PreconditionUtil.checkArgument(!inScopeNamespaces.containsKey(XMLConstants.XMLNS_ATTRIBUTE));
     }
 
+    /**
+     * The in-scope namespaces, including the namespace bound to prefix "xml".
+     */
     public Map<String, String> completeInScopeNamespaces() {
         Map<String, String> namespaces = new HashMap<>(inScopeNamespaces);
         namespaces.put(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
