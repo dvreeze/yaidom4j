@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.testsupport.saxon;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenClarkTrees;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
@@ -28,14 +30,6 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.streams.Steps;
 import net.sf.saxon.tree.NamespaceNode;
 import org.jspecify.annotations.NullMarked;
-
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Saxon node wrappers.

@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.conformance.xmltest;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Element;
@@ -26,17 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.ElementPredicates.hasName;
 import static org.junit.jupiter.api.Assertions.assertSame;

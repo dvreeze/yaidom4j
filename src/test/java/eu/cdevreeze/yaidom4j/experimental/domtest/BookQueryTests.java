@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.domtest;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Element;
 import eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
@@ -23,13 +25,6 @@ import eu.cdevreeze.yaidom4j.experimental.parse.DocumentProducingSaxHandler;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.InputSource;
-
-import java.io.InputStream;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

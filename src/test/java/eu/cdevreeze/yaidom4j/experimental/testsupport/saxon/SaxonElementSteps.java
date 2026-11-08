@@ -16,13 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.testsupport.saxon;
 
+import module java.base;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.streams.Step;
 import net.sf.saxon.s9api.streams.Steps;
-
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static net.sf.saxon.s9api.streams.Predicates.isElement;
 

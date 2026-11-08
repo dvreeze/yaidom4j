@@ -16,18 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.domtest;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeElementApi;
 import org.junit.jupiter.api.Test;
-
-import javax.xml.namespace.QName;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

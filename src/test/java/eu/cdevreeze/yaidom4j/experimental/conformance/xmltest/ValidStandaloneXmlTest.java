@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.conformance.xmltest;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenClarkTrees;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Document;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
@@ -27,19 +29,6 @@ import net.sf.saxon.s9api.streams.Steps;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;

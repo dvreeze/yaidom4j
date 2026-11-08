@@ -16,6 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parsetest;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenClarkTrees;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.DocumentBuilders;
@@ -29,20 +31,6 @@ import net.sf.saxon.s9api.XdmNode;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
