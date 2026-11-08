@@ -22,9 +22,6 @@ import java.util.stream.Stream;
 
 /**
  * Node query API, extending {@link GreenTreeNodeApi}.
- * <p>
- * Note that this query API is a convenience API, as an alternative to {@link NodeApi} where it is
- * desired to query for element nodes.
  *
  * @param <N> The specific node type itself (note the use of F-bounded polymorphism)
  * @author Chris de Vreeze
