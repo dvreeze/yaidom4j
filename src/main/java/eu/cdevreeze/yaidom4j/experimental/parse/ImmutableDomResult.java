@@ -26,6 +26,17 @@ import javax.xml.transform.sax.SAXResult;
  * This class extends class {@link SAXResult}, which is an implementation detail, but needed in order to plug into
  * the Transformer API. {@link SAXResult} methods such as {@link SAXResult#setHandler} and {@link SAXResult#setLexicalHandler}
  * should never be called.
+ * <p>
+ * Example code:
+ * {@snippet :
+ * TransformerHandler th = TransformerHandlers.newTransformerHandler();
+ * ImmutableDomResult domResult = new ImmutableDomResult();
+ * th.setResult(domResult);
+ * XMLReader saxReader = SaxParsers.newNonValidatingSaxParserFactory().newSAXParser().getXMLReader();
+ * saxReader.setContentHandler(th);
+ * saxReader.parse(new InputSource(url.openStream()));
+ * Document doc = domResult.getDocument();
+ * }
  *
  * @author Chris de Vreeze
  */

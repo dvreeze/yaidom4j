@@ -38,6 +38,12 @@ import java.util.stream.Stream;
 /**
  * W3C DOM to "immutable DOM" converter. It is expected that W3C documents have been parsed/created
  * in a namespace-aware manner, or else an exception is likely to be thrown.
+ * <p>
+ * Example code:
+ * {@snippet :
+ * org.w3c.dom.Document w3cDoc = DocumentBuilders.parse(url.toURI());
+ * Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
+ * }
  *
  * @author Chris de Vreeze
  */

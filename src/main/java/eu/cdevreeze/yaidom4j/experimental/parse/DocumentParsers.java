@@ -30,6 +30,12 @@ import java.util.Optional;
  * Simple utility to parse input XML into immutable Documents, offering a fluent API.
  * <p>
  * Do not use this utility when the parsed documents take too much memory.
+ * <p>
+ * Example code:
+ * {@snippet :
+ * DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
+ * Document doc = docParser.parse(new InputSource(url.openStream()));
+ * }
  *
  * @author Chris de Vreeze
  */

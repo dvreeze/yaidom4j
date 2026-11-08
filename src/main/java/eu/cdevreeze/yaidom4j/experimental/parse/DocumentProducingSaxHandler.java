@@ -41,6 +41,13 @@ import java.util.stream.Stream;
  * <p>
  * It is expected that W3C documents have been parsed/created in a namespace-aware manner, or else
  * an exception is likely to be thrown.
+ * <p>
+ * Example code:
+ * {@snippet :
+ * DocumentProducingSaxHandler handler = new DocumentProducingSaxHandler();
+ * SaxParsers.parse(url.toURI(), handler);
+ * Document doc = handler.resultingDocument();
+ * }
  *
  * @author Chris de Vreeze
  */
