@@ -46,7 +46,7 @@ public final class Attribute implements Node {
         return offset;
     }
 
-    public Optional<Node> parentOption() {
+    public Optional<? extends Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }
 
@@ -56,7 +56,7 @@ public final class Attribute implements Node {
     }
 
     @Override
-    public Stream<Node> childStream() {
+    public Stream<? extends Node> childStream() {
         return Stream.empty();
     }
 

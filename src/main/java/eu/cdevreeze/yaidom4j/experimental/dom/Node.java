@@ -38,7 +38,7 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     int offset();
 
     @Override
-    Optional<Node> parentOption();
+    Optional<? extends Node> parentOption();
 
     GreenXmlTrees.Node greenTreeNode();
 

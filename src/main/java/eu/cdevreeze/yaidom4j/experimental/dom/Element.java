@@ -58,7 +58,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
         return offset;
     }
 
-    public Optional<Node> parentOption() {
+    public Optional<? extends Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }
 
@@ -214,7 +214,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     }
 
     @Override
-    public Stream<Node> childStream() {
+    public Stream<? extends Node> childStream() {
         List<GreenXmlTrees.CanBeChild> children = greenTreeNode.children();
         int numberOfChildren = children.size();
         return IntStream.range(0, numberOfChildren)

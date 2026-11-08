@@ -71,7 +71,7 @@ public class SaxonNodes {
         GreenClarkTrees.Node toClarkNode();
 
         @Override
-        default Optional<Node> parentOption() {
+        default Optional<? extends Node> parentOption() {
             return xdmNode().select(Steps.parent())
                     .flatMap(n -> optionalNodeFrom(n).stream())
                     .findFirst()
@@ -79,74 +79,74 @@ public class SaxonNodes {
         }
 
         @Override
-        default Stream<Node> ancestorOrSelfStream() {
+        default Stream<? extends Node> ancestorOrSelfStream() {
             return xdmNode().select(Steps.ancestorOrSelf())
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> ancestorOrSelfStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> ancestorOrSelfStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.ancestorOrSelf(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> ancestorStream() {
+        default Stream<? extends Node> ancestorStream() {
             return xdmNode().select(Steps.ancestor())
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> ancestorStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> ancestorStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.ancestor(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> childStream() {
+        default Stream<? extends Node> childStream() {
             return xdmNode().select(Steps.child())
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> childStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> childStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.child(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> descendantOrSelfStream() {
+        default Stream<? extends Node> descendantOrSelfStream() {
             return xdmNode().select(Steps.descendantOrSelf())
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.descendantOrSelf(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> descendantStream() {
+        default Stream<? extends Node> descendantStream() {
             return xdmNode().select(Steps.descendant())
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> descendantStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> descendantStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.descendant(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
                     .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
-        default Stream<Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> topmostDescendantOrSelfStream(Predicate<? super Node> predicate) {
             // Inefficient
             return descendantOrSelfStream(predicate)
                     .filter(n -> n.ancestorStream().noneMatch(predicate));
         }
 
         @Override
-        default Stream<Node> topmostDescendantStream(Predicate<? super Node> predicate) {
+        default Stream<? extends Node> topmostDescendantStream(Predicate<? super Node> predicate) {
             // Inefficient
             return descendantStream(predicate)
                     .filter(n -> n.ancestorStream().noneMatch(predicate));
@@ -397,7 +397,7 @@ public class SaxonNodes {
             return Optional.ofNullable(xdmNode.getBaseURI());
         }
 
-        public Stream<Node> childNodeStream() {
+        public Stream<? extends Node> childNodeStream() {
             return xdmNode.select(Steps.child())
                     .flatMap(n -> SaxonNodes.optionalNodeFrom(n).stream());
         }
