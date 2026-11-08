@@ -47,7 +47,7 @@ import java.util.stream.Stream;
  * DocumentProducingSaxHandler handler = new DocumentProducingSaxHandler();
  * SaxParsers.parse(url.toURI(), handler);
  * Document doc = handler.resultingDocument();
- * }
+ *}
  *
  * @author Chris de Vreeze
  */

@@ -36,7 +36,7 @@ import javax.xml.transform.sax.SAXResult;
  * saxReader.setContentHandler(th);
  * saxReader.parse(new InputSource(url.openStream()));
  * Document doc = domResult.getDocument();
- * }
+ *}
  *
  * @author Chris de Vreeze
  */

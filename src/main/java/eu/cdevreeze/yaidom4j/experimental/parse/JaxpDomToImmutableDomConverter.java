@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * {@snippet :
  * org.w3c.dom.Document w3cDoc = DocumentBuilders.parse(url.toURI());
  * Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
- * }
+ *}
  *
  * @author Chris de Vreeze
  */

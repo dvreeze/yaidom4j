@@ -35,7 +35,7 @@ import java.util.Optional;
  * {@snippet :
  * DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
  * Document doc = docParser.parse(new InputSource(url.openStream()));
- * }
+ *}
  *
  * @author Chris de Vreeze
  */

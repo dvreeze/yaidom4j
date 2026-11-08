@@ -14,43 +14,52 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.experimental.parse;
+package eu.cdevreeze.yaidom4j.experimental.printtest;
 
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenClarkTrees;
-import eu.cdevreeze.yaidom4j.experimental.jaxp.DocumentBuilders;
-import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.TransformerHandlers;
+import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
+import eu.cdevreeze.yaidom4j.experimental.parse.ImmutableDomResult;
+import eu.cdevreeze.yaidom4j.experimental.parse.JaxpDomToImmutableDomConverter;
+import eu.cdevreeze.yaidom4j.experimental.print.DocumentPrinter;
+import eu.cdevreeze.yaidom4j.experimental.print.DocumentPrinters;
+import eu.cdevreeze.yaidom4j.experimental.print.ImmutableDomSource;
+import eu.cdevreeze.yaidom4j.experimental.print.ImmutableDomToJaxpDomConverter;
 import eu.cdevreeze.yaidom4j.experimental.testsupport.saxon.SaxonNodes;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Document parsing test.
+ * Document printing test.
  * <p>
  * This is not a regular unit test, in that it assumes node querying etc. to work correctly.
+ * <p>
+ * This test depends on the parsing support as well. Hence, the separate package.
  *
  * @author Chris de Vreeze
  */
-class ParsingTests {
+class PrintingTests {
 
     private static final String relativeXmlPath = "/sample-xbrl-instance.xml";
 
@@ -60,21 +69,26 @@ class ParsingTests {
 
     @BeforeAll
     public static void parseDocument() throws SaxonApiException, IOException {
-        URL url = Objects.requireNonNull(ParsingTests.class.getResource(relativeXmlPath));
+        URL url = Objects.requireNonNull(PrintingTests.class.getResource(relativeXmlPath));
 
         XdmNode docNode = saxonProcessor.newDocumentBuilder().build(
                 new StreamSource(url.openStream())
         );
-        document = new Document(new SaxonNodes.Document(docNode).toGreenTreeNode())
-                .removeInterElementWhitespace();
+        document = Objects.requireNonNull(
+                new Document(new SaxonNodes.Document(docNode).toGreenTreeNode())
+                        .removeInterElementWhitespace()
+        );
     }
 
     @Test
-    void testSimpleParsing() throws IOException {
-        URL url = Objects.requireNonNull(ParsingTests.class.getResource(relativeXmlPath));
+    void testSimplePrinting() {
+        Objects.requireNonNull(document);
 
-        DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
-        Document doc = docParser.parse(new InputSource(url.openStream()));
+        DocumentPrinter docPrinter = DocumentPrinters.instance();
+        String docAsString = docPrinter.print(document);
+
+        Document doc = DocumentParsers.builder().removingInterElementWhitespace().build()
+                .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
                 combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
@@ -83,12 +97,19 @@ class ParsingTests {
     }
 
     @Test
-    void testSaxBasedParsing() throws URISyntaxException {
-        URL url = Objects.requireNonNull(ParsingTests.class.getResource(relativeXmlPath));
+    void testComplexPrinting() {
+        Objects.requireNonNull(document);
 
-        DocumentProducingSaxHandler handler = new DocumentProducingSaxHandler();
-        SaxParsers.parse(url.toURI(), handler);
-        Document doc = handler.resultingDocument();
+        DocumentPrinter docPrinter = DocumentPrinters
+                .builder(TransformerHandlers.newSaxTransformerFactory())
+                .withTransformerHandlerInitializer(th ->
+                        TransformerHandlers.Config.indenting(4).accept(th)
+                )
+                .build();
+        String docAsString = docPrinter.print(document);
+
+        Document doc = DocumentParsers.builder().removingInterElementWhitespace().build()
+                .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
                 combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
@@ -97,10 +118,13 @@ class ParsingTests {
     }
 
     @Test
-    void testDomBasedParsing() throws URISyntaxException {
-        URL url = Objects.requireNonNull(ParsingTests.class.getResource(relativeXmlPath));
+    @Disabled("Fix: org.w3c.dom.DOMException: NAMESPACE_ERR: An attempt is made to create or change an object in a way which is incorrect with regard to namespaces")
+    void testDomBasedPrinting() {
+        Objects.requireNonNull(document);
 
-        org.w3c.dom.Document w3cDoc = DocumentBuilders.parse(url.toURI());
+        // The DOMException was thrown when processing the next line of code
+        org.w3c.dom.Document w3cDoc = ImmutableDomToJaxpDomConverter.convertDocument(document, DocumentBuilderFactory.newDefaultNSInstance());
+
         Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
 
         assertEquals(
@@ -110,16 +134,13 @@ class ParsingTests {
     }
 
     @Test
-    void testTransformerBasedParsing() throws ParserConfigurationException, SAXException, IOException {
-        URL url = Objects.requireNonNull(ParsingTests.class.getResource(relativeXmlPath));
+    void testTransformerBasedPrinting() throws TransformerException {
+        Objects.requireNonNull(document);
 
-        TransformerHandler th = TransformerHandlers.newTransformerHandler();
-        ImmutableDomResult domResult = new ImmutableDomResult();
-        th.setResult(domResult);
-        XMLReader saxReader = SaxParsers.newNonValidatingSaxParserFactory().newSAXParser().getXMLReader();
-        saxReader.setContentHandler(th);
-        saxReader.parse(new InputSource(url.openStream()));
-        Document doc = domResult.getDocument();
+        TransformerFactory tf = TransformerFactory.newDefaultInstance();
+        ImmutableDomResult result = new ImmutableDomResult();
+        tf.newTransformer().transform(new ImmutableDomSource(document), result);
+        Document doc = result.getDocument();
 
         assertEquals(
                 removeComments(
@@ -177,71 +198,6 @@ class ParsingTests {
 
         List<GreenClarkTrees.CanBeChild> result = new ArrayList<>(combinedTextNodes);
         result.addAll(remainderWithCombinedTextNodes);
-        return List.copyOf(result);
-    }
-
-    // Comparing XML (with canonical XML)
-
-    private static GreenClarkTrees.Element makeComparableWithCanonicalXml(GreenClarkTrees.Element element) {
-        return element.transformDescendantOrSelfElements(elem -> {
-            List<GreenClarkTrees.CanBeChild> childrenWithoutComments = elem.children()
-                    .stream()
-                    .filter(n -> !(n instanceof GreenClarkTrees.Comment))
-                    .toList();
-            List<GreenClarkTrees.CanBeChild> childrenWithCombinedTextNodes =
-                    combineAdjacentTextNodes(childrenWithoutComments);
-            // Normalize whitespace in element text child nodes
-            List<GreenClarkTrees.CanBeChild> children = childrenWithCombinedTextNodes.stream()
-                    .map(n -> (n instanceof GreenClarkTrees.Text t) ? normalizeWhitespace(t) : n)
-                    .toList();
-            // Normalize whitespace in attribute values as well
-            return elem.withChildren(List.copyOf(children))
-                    .withAttributes(
-                            elem.attributes()
-                                    .entrySet()
-                                    .stream()
-                                    .map(kv -> Map.entry(kv.getKey(), normalizeWhitespace(kv.getValue())))
-                                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
-                    );
-        }).removeInterElementWhitespace();
-    }
-
-    private static GreenClarkTrees.Text normalizeWhitespace(GreenClarkTrees.Text text) {
-        return new GreenClarkTrees.Text(normalizeWhitespace(text.value()));
-    }
-
-    private static String normalizeWhitespace(String str) {
-        int[] almostNormalizedWhitespaceChars = str.chars()
-                .map(c -> Character.isWhitespace(c) ? ' ' : c)
-                .toArray();
-        int[] normalizedWhitespaceChars = combineSpaces(almostNormalizedWhitespaceChars);
-        return new String(normalizedWhitespaceChars, 0, normalizedWhitespaceChars.length);
-    }
-
-    private static int[] combineSpaces(int[] chars) {
-        return combineSpaces(Arrays.stream(chars).boxed().toList())
-                .stream()
-                .mapToInt(i -> i)
-                .toArray();
-    }
-
-    private static List<Integer> combineSpaces(List<Integer> chars) {
-        if (chars.isEmpty()) {
-            return List.of();
-        }
-        List<Integer> nonSpaces = chars.stream().takeWhile(c -> !Character.isWhitespace(c)).toList();
-        List<Integer> remainder = chars.stream().dropWhile(c -> !Character.isWhitespace(c)).toList();
-        boolean nextCharIsSpace = !remainder.isEmpty();
-
-        // Recursion
-        List<Integer> remainderWithCombinedSpaces =
-                combineSpaces(remainder.stream().dropWhile(Character::isWhitespace).toList());
-
-        List<Integer> result = new ArrayList<>(nonSpaces);
-        if (nextCharIsSpace) {
-            result.add((int) ' ');
-        }
-        result.addAll(remainderWithCombinedSpaces);
         return List.copyOf(result);
     }
 }

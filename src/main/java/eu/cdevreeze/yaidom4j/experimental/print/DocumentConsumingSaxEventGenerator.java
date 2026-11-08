@@ -33,6 +33,8 @@ import java.util.Map;
  * This class can be used to serialize an immutable DOM document, by passing a {@link javax.xml.transform.sax.TransformerHandler}
  * as the parameter {@link ContentHandler} in the constructor, followed by calling method {@link DocumentConsumingSaxEventGenerator#processDocument}
  * on the created instance of this class.
+ * <p>
+ * This class is used internally by class {@link DocumentPrinters}.
  *
  * @author Chris de Vreeze
  */

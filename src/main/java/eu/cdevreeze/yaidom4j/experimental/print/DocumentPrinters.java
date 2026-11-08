@@ -30,6 +30,22 @@ import java.util.function.Consumer;
 
 /**
  * Simple utility to print immutable Documents to a {@link String} or {@link Result}, offering a fluent API.
+ * <p>
+ * Example code:
+ * {@snippet :
+ * DocumentPrinter docPrinter = DocumentPrinters.instance();
+ * String docAsString = docPrinter.print(document);
+ *}
+ * Document printing is configurable. THe simple code snippet above is equivalent to:
+ * {@snippet :
+ * DocumentPrinter docPrinter = DocumentPrinters
+ *     .builder(TransformerHandlers.newSaxTransformerFactory())
+ *     .withTransformerHandlerInitializer(th ->
+ *         TransformerHandlers.Config.indenting(4).accept(th)
+ *     )
+ *     .build();
+ * String docAsString = docPrinter.print(document);
+ *}
  *
  * @author Chris de Vreeze
  */
