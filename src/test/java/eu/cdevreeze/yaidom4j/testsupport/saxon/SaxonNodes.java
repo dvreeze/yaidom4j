@@ -46,7 +46,7 @@ public class SaxonNodes {
     private SaxonNodes() {
     }
 
-    public static Optional<? extends Node> optionalNodeFrom(XdmNode xdmNode) {
+    public static Optional<Node> optionalNodeFrom(XdmNode xdmNode) {
         return switch (xdmNode.getNodeKind()) {
             case ELEMENT -> Optional.of(new Element(xdmNode));
             case TEXT -> Optional.of(new Text(xdmNode));
