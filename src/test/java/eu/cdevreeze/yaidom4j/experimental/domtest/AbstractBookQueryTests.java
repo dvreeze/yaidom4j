@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.experimental.dom;
+package eu.cdevreeze.yaidom4j.experimental.domtest;
 
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeElementApi;
@@ -35,10 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Immutable DOM query tests against books.xml file.
  * <p>
  * This is not a regular unit test, in that it assumes parsing etc. to work correctly.
+ * <p>
+ * This test depends on the parsing support as well. Hence, the separate package.
  *
  * @author Chris de Vreeze
  */
-public abstract class AbstractBookQueryTests<E extends GreenTreeElementApi<E>> {
+abstract class AbstractBookQueryTests<E extends GreenTreeElementApi<E>> {
 
     private static final String NS = "http://bookstore";
 

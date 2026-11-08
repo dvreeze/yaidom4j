@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.yaidom4j.experimental.dom;
+package eu.cdevreeze.yaidom4j.experimental.domtest;
 
+import eu.cdevreeze.yaidom4j.experimental.dom.Element;
+import eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates;
+import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.experimental.parse.DocumentProducingSaxHandler;
-import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
