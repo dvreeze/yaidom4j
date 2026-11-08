@@ -87,7 +87,7 @@ public class SaxonNodes {
         @Override
         default Stream<Node> ancestorOrSelfStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.ancestorOrSelf(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
-                    .flatMap(n -> Element.optionallyFrom(n).stream());
+                    .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
@@ -99,7 +99,7 @@ public class SaxonNodes {
         @Override
         default Stream<Node> ancestorStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.ancestor(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
-                    .flatMap(n -> Element.optionallyFrom(n).stream());
+                    .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
@@ -111,7 +111,7 @@ public class SaxonNodes {
         @Override
         default Stream<Node> childStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.child(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
-                    .flatMap(n -> Element.optionallyFrom(n).stream());
+                    .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
@@ -123,7 +123,7 @@ public class SaxonNodes {
         @Override
         default Stream<Node> descendantOrSelfStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.descendantOrSelf(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
-                    .flatMap(n -> Element.optionallyFrom(n).stream());
+                    .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
@@ -135,7 +135,7 @@ public class SaxonNodes {
         @Override
         default Stream<Node> descendantStream(Predicate<? super Node> predicate) {
             return xdmNode().select(Steps.descendant(n -> optionalNodeFrom(n).map(predicate::test).orElse(false)))
-                    .flatMap(n -> Element.optionallyFrom(n).stream());
+                    .flatMap(n -> optionalNodeFrom(n).stream());
         }
 
         @Override
