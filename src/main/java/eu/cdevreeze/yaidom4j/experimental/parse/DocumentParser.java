@@ -16,10 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
-import org.xml.sax.InputSource;
-
-import java.net.URI;
 
 /**
  * Document parser API.

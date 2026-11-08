@@ -16,9 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.util.function.Predicate;
+import module java.base;
+import module java.xml;
 
 /**
  * Element predicates.

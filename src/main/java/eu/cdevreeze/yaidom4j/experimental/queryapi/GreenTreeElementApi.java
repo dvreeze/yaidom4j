@@ -16,11 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.queryapi;
 
-import javax.xml.namespace.QName;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import module java.base;
+import module java.xml;
 
 /**
  * Object-oriented element query API. This API is implemented by yaidom4j

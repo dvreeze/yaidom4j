@@ -16,24 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
-import org.w3c.dom.Attr;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * W3C DOM to "immutable DOM" converter. It is expected that W3C documents have been parsed/created

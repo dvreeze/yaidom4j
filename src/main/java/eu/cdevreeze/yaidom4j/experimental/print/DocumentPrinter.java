@@ -16,10 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.experimental.print;
 
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.Element;
-
-import javax.xml.transform.Result;
 
 /**
  * Document printer API.

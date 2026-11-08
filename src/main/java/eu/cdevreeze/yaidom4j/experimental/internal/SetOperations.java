@@ -16,8 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.experimental.internal;
 
-import java.util.HashSet;
-import java.util.Set;
+import module java.base;
 
 /**
  * Operations on {@link Set} (in the absence of a Guava dependency).

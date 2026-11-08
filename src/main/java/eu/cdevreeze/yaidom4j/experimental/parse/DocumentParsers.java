@@ -16,15 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
-import org.xml.sax.InputSource;
-
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.util.Optional;
 
 /**
  * Simple utility to parse input XML into immutable Documents, offering a fluent API.

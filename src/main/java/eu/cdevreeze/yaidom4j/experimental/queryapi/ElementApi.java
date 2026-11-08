@@ -16,12 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.queryapi;
 
+import module java.base;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
-
-import java.net.URI;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Element query API, extending {@link GreenTreeElementApi}.

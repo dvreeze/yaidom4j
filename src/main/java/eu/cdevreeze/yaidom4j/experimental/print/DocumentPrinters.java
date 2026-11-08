@@ -16,17 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.experimental.print;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.Element;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.TransformerHandlers;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.util.function.Consumer;
 
 /**
  * Simple utility to print immutable Documents to a {@link String} or {@link Result}, offering a fluent API.

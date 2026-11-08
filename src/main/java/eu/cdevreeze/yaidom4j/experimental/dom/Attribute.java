@@ -16,11 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
+import module java.base;
+import module java.xml;
 import org.jspecify.annotations.Nullable;
-
-import javax.xml.namespace.QName;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Immutable attribute node.

@@ -16,19 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.jaxp;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.validation.Schema;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
+import module java.base;
+import module java.xml;
 
 /**
  * Utility to create SAX parsers and use them.

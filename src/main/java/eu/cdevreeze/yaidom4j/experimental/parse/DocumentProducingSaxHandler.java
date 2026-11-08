@@ -16,25 +16,14 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.NamespaceSupport;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * SAX handler that produces an immutable DOM document. An instance should be used only once!

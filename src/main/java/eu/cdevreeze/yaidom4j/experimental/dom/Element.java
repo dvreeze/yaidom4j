@@ -16,21 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.ElementApi;
 import org.jspecify.annotations.Nullable;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Gatherers;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Immutable element node.

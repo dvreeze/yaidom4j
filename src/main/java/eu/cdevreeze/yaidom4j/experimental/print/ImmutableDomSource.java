@@ -16,18 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.experimental.print;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.TransformerHandlers;
 import org.jspecify.annotations.Nullable;
-import org.xml.sax.*;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.XMLFilterImpl;
-
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import java.util.Objects;
+import org.xml.sax.ContentHandler;
 
 /**
  * Immutable DOM document as {@link javax.xml.transform.Source}. Inspired by class JAXBSource.

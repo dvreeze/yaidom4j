@@ -16,11 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import module java.base;
 
 /**
  * Immutable document node.

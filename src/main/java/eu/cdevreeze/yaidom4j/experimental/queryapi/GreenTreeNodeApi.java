@@ -16,8 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.experimental.queryapi;
 
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import module java.base;
 
 /**
  * Object-oriented node query API. This API is implemented by yaidom4j

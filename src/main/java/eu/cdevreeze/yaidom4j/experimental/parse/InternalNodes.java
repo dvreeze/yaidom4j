@@ -16,15 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
 import org.jspecify.annotations.Nullable;
-
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Package private builders for immutable DOM nodes. This enables immutable DOM creation via SAX, for example.

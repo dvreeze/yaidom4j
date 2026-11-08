@@ -16,18 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.jaxp;
 
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
+import module java.base;
+import module java.xml;
 
 /**
  * Utility to create W3C DOM parsers and use them.

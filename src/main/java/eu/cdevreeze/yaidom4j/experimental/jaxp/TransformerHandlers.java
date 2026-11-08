@@ -16,15 +16,9 @@
 
 package eu.cdevreeze.yaidom4j.experimental.jaxp;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import java.util.function.Consumer;
 
 /**
  * Utility to create {@link TransformerHandler} instances.

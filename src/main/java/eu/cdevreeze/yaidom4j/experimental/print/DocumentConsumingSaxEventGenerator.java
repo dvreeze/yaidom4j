@@ -16,16 +16,12 @@
 
 package eu.cdevreeze.yaidom4j.experimental.print;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.AttributesImpl;
-
-import javax.xml.namespace.QName;
-import java.util.Map;
 
 /**
  * Producer of SAX events, taking an immutable DOM as input.

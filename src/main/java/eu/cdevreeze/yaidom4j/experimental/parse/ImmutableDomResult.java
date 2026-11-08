@@ -16,9 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.parse;
 
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
-
-import javax.xml.transform.sax.SAXResult;
 
 /**
  * Immutable DOM document producing {@link javax.xml.transform.Result}.

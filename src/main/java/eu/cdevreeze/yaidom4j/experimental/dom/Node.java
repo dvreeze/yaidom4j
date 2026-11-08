@@ -16,13 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
+import module java.base;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.NodeApi;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Immutable ("red-green") XML node.

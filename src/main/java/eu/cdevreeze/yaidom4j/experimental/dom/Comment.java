@@ -16,10 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
+import module java.base;
 import org.jspecify.annotations.Nullable;
-
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Immutable comment node.

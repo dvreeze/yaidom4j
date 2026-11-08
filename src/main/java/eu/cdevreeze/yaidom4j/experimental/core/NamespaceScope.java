@@ -16,14 +16,10 @@
 
 package eu.cdevreeze.yaidom4j.experimental.core;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.internal.SetOperations;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Mapping from namespace prefixes to namespace strings. Instances of this class are used to represent

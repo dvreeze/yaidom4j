@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Module descriptor of yaidom4j. It mainly provides an XML element query API, both as abstract
  * API and as concrete XML element implementations offering that query API.
  * <p>
  * The concrete XML element implementations are immutable and thread-safe, without depending on
  * immutable collections such as those provided by Guava. Instead, immutability of collections is
- * achieved with calls such as {@link java.util.List#copyOf(Collection)} and {@link java.util.Map#copyOf(Map)}.
+ * achieved with calls such as {@link java.util.List#copyOf(java.util.Collection)} and {@link java.util.Map#copyOf(java.util.Map)}.
  * <p>
  * The dependency outside the JDK is only JSpecify for its "nullness" annotations. It is exposed in the API,
  * therefore it is a transitive dependency. Of the JDK, only modules java.base and java.xml are needed.

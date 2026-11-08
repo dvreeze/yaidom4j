@@ -16,16 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.print;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.experimental.dom.*;
 import org.jspecify.annotations.Nullable;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * "Immutable DOM" to W3C DOM converter.

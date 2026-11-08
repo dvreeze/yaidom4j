@@ -16,11 +16,8 @@
 
 package eu.cdevreeze.yaidom4j.experimental.jaxp;
 
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-
-import javax.xml.XMLConstants;
-import javax.xml.validation.SchemaFactory;
+import module java.base;
+import module java.xml;
 
 /**
  * Utility to create {@link SchemaFactory} instances.

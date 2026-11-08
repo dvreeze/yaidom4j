@@ -16,21 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
+import module java.base;
+import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeElementApi;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.GreenTreeNodeApi;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * "Minimal" XML nodes. That is, elements only have a name, attributes and children, and no
