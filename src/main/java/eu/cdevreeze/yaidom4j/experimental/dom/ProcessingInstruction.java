@@ -43,6 +43,7 @@ public final class ProcessingInstruction implements CanBeChild {
         return offset;
     }
 
+    @Override
     public Optional<Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }

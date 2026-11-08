@@ -43,6 +43,7 @@ public final class Namespace implements Node {
         return offset;
     }
 
+    @Override
     public Optional<Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }

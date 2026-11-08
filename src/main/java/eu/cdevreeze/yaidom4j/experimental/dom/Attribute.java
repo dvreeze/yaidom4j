@@ -44,6 +44,7 @@ public final class Attribute implements Node {
         return offset;
     }
 
+    @Override
     public Optional<Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }

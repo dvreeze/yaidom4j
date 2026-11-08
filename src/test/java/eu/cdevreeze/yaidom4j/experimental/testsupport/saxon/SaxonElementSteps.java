@@ -37,6 +37,10 @@ import static net.sf.saxon.s9api.streams.Predicates.isElement;
  */
 public class SaxonElementSteps {
 
+    private SaxonElementSteps() {
+        // Non-instantiable
+    }
+
     // Self element nodes
 
     public static Step<XdmNode> selfElements() {

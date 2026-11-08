@@ -48,6 +48,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
         return offset;
     }
 
+    @Override
     public Optional<Node> parentOption() {
         return Optional.ofNullable(parentOrNull);
     }
