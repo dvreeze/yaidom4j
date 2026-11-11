@@ -114,7 +114,7 @@ public class DocumentProducingSaxHandler extends DefaultHandler implements Lexic
 
             docChildren.add(elem);
         } else {
-            PreconditionUtil.checkArgument(currentElement != null);
+            Objects.requireNonNull(currentElement);
 
             currentElement.addChild(elem);
             currentElement = elem;
@@ -123,8 +123,8 @@ public class DocumentProducingSaxHandler extends DefaultHandler implements Lexic
 
     @Override
     public void endElement(String uri, String localName, String qname) {
-        PreconditionUtil.checkArgument(currentRootElement != null);
-        PreconditionUtil.checkArgument(currentElement != null);
+        Objects.requireNonNull(currentRootElement);
+        Objects.requireNonNull(currentElement);
 
         // Per startElement call, pushContext() has been called exactly once, so call popContext() now
         namespaceSupport.popContext();
@@ -141,7 +141,7 @@ public class DocumentProducingSaxHandler extends DefaultHandler implements Lexic
             // Do nothing. This should not happen anyway.
             PreconditionUtil.checkArgument(currentElement == null);
         } else {
-            PreconditionUtil.checkArgument(currentElement != null);
+            Objects.requireNonNull(currentElement);
 
             currentElement.addChild(text);
         }

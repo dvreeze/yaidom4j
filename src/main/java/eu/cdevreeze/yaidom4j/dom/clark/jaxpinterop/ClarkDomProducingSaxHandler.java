@@ -76,7 +76,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
 
             currentRootElement = elem;
         } else {
-            PreconditionUtil.checkArgument(currentElement != null);
+            Objects.requireNonNull(currentElement);
 
             currentElement.addChild(elem);
         }
@@ -85,8 +85,8 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
 
     @Override
     public void endElement(String uri, String localName, String qname) {
-        PreconditionUtil.checkArgument(currentRootElement != null);
-        PreconditionUtil.checkArgument(currentElement != null);
+        Objects.requireNonNull(currentRootElement);
+        Objects.requireNonNull(currentElement);
 
         currentElement = currentElement.getParentElementOption().orElse(null);
     }
@@ -101,7 +101,7 @@ public class ClarkDomProducingSaxHandler extends DefaultHandler implements Lexic
             // Do nothing. This should not happen anyway.
             PreconditionUtil.checkArgument(currentElement == null);
         } else {
-            PreconditionUtil.checkArgument(currentElement != null);
+            Objects.requireNonNull(currentElement);
 
             currentElement.addChild(text);
         }

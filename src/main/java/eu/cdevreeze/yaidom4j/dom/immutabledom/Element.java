@@ -427,7 +427,7 @@ public record Element(
                         pathsByFirstChildElemIndex.keySet(),
                         (childElemIdx, che) ->
                                 che.updateElement(
-                                        pathsByFirstChildElemIndex.get(childElemIdx)
+                                        Objects.requireNonNull(pathsByFirstChildElemIndex.get(childElemIdx))
                                                 .stream()
                                                 .map(ElementNavigationPath::withoutFirstEntry)
                                                 .collect(Collectors.toSet()),
