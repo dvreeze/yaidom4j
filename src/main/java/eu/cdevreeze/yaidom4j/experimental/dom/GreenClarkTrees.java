@@ -332,12 +332,38 @@ public class GreenClarkTrees {
             );
         }
 
+        public Element plusChild(CanBeChild newChild) {
+            return withChildren(
+                    Stream.concat(children.stream(), Stream.of(newChild)).toList()
+            );
+        }
+
+        /**
+         * Convenience method to set a Text child as the only child node
+         */
+        public Element withText(String textValue) {
+            return withChildren(List.of(new Text(textValue)));
+        }
+
+        /**
+         * Convenience method to add a Text child
+         */
+        public Element plusText(String textValue) {
+            return plusChild(new Text(textValue));
+        }
+
         public Element withAttributes(Map<QName, String> newAttributes) {
             return new Element(
                     name(),
                     Map.copyOf(newAttributes),
                     children()
             );
+        }
+
+        public Element plusAttribute(QName attrName, String attrValue) {
+            Map<QName, String> newAttributes = new HashMap<>(attributes());
+            newAttributes.put(attrName, attrValue);
+            return withAttributes(Map.copyOf(newAttributes));
         }
 
         public Element transformChildElements(UnaryOperator<Element> f) {
@@ -356,6 +382,10 @@ public class GreenClarkTrees {
             Element descendantResult =
                     transformChildElements(che -> che.transformDescendantOrSelfElements(f));
             return f.apply(descendantResult);
+        }
+
+        public Element transformSelfElement(UnaryOperator<Element> f) {
+            return f.apply(this);
         }
 
         // Custom element transformations

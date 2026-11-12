@@ -112,7 +112,7 @@ class PrintingTests {
         Objects.requireNonNull(document);
 
         // The DOMException was thrown when processing the next line of code
-        org.w3c.dom.Document w3cDoc = ImmutableDomToJaxpDomConverter.convertDocument(document, DocumentBuilderFactory.newDefaultNSInstance());
+        org.w3c.dom.Document w3cDoc = ImmutableDomToJaxpDomConverter.convertDocument(document.greenTreeNode(), DocumentBuilderFactory.newDefaultNSInstance());
 
         Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
 

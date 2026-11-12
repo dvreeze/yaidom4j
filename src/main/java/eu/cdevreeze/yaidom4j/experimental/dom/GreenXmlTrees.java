@@ -400,6 +400,26 @@ public class GreenXmlTrees {
             );
         }
 
+        public Element plusChild(CanBeChild newChild) {
+            return withChildren(
+                    Stream.concat(children.stream(), Stream.of(newChild)).toList()
+            );
+        }
+
+        /**
+         * Convenience method to set a Text child as the only child node
+         */
+        public Element withText(String textValue) {
+            return withChildren(List.of(new Text(textValue)));
+        }
+
+        /**
+         * Convenience method to add a Text child
+         */
+        public Element plusText(String textValue) {
+            return plusChild(new Text(textValue));
+        }
+
         /**
          * Functionally updates this element by replacing the collection of attributes.
          * <p>
@@ -412,6 +432,12 @@ public class GreenXmlTrees {
                     namespaceScope(),
                     children()
             );
+        }
+
+        public Element plusAttribute(QName attrName, String attrValue) {
+            Map<QName, String> newAttributes = new HashMap<>(attributes());
+            newAttributes.put(attrName, attrValue);
+            return withAttributes(Map.copyOf(newAttributes));
         }
 
         public Element transformChildElements(UnaryOperator<Element> f) {
@@ -430,6 +456,10 @@ public class GreenXmlTrees {
             Element descendantResult =
                     transformChildElements(che -> che.transformDescendantOrSelfElements(f));
             return f.apply(descendantResult);
+        }
+
+        public Element transformSelfElement(UnaryOperator<Element> f) {
+            return f.apply(this);
         }
 
         @Override

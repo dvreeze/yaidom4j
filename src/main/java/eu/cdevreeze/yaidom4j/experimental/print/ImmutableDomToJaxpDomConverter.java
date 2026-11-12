@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.experimental.print;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.experimental.dom.*;
+import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -34,7 +34,7 @@ public class ImmutableDomToJaxpDomConverter {
     private ImmutableDomToJaxpDomConverter() {
     }
 
-    public static org.w3c.dom.Document convertDocument(Document document, DocumentBuilderFactory dbf) {
+    public static org.w3c.dom.Document convertDocument(GreenXmlTrees.Document document, DocumentBuilderFactory dbf) {
         try {
             return convertDocument(document, dbf.newDocumentBuilder().newDocument());
         } catch (ParserConfigurationException e) {
@@ -42,7 +42,7 @@ public class ImmutableDomToJaxpDomConverter {
         }
     }
 
-    public static org.w3c.dom.Element convertElement(Element element, org.w3c.dom.Document w3cDomDocument, NamespaceScope parentScope) {
+    public static org.w3c.dom.Element convertElement(GreenXmlTrees.Element element, org.w3c.dom.Document w3cDomDocument, NamespaceScope parentScope) {
         org.w3c.dom.Element w3cDomElement = w3cDomDocument.createElementNS(
                 convertEmptyStringToNull(element.elementName().getNamespaceURI()),
                 getSyntacticQName(element.elementName())
@@ -88,29 +88,29 @@ public class ImmutableDomToJaxpDomConverter {
         return w3cDomElement;
     }
 
-    public static org.w3c.dom.Node convertNode(Node node, org.w3c.dom.Document w3cDomDocument, NamespaceScope parentScope) {
+    public static org.w3c.dom.Node convertNode(GreenXmlTrees.Node node, org.w3c.dom.Document w3cDomDocument, NamespaceScope parentScope) {
         return switch (node) {
-            case Element elem -> convertElement(elem, w3cDomDocument, parentScope);
-            case Text text -> convertText(text, w3cDomDocument);
-            case Comment comment -> convertComment(comment, w3cDomDocument);
-            case ProcessingInstruction pi -> convertProcessingInstruction(pi, w3cDomDocument);
+            case GreenXmlTrees.Element elem -> convertElement(elem, w3cDomDocument, parentScope);
+            case GreenXmlTrees.Text text -> convertText(text, w3cDomDocument);
+            case GreenXmlTrees.Comment comment -> convertComment(comment, w3cDomDocument);
+            case GreenXmlTrees.ProcessingInstruction pi -> convertProcessingInstruction(pi, w3cDomDocument);
             default -> throw new RuntimeException("Unknown node type (not possible)");
         };
     }
 
-    public static org.w3c.dom.Text convertText(Text text, org.w3c.dom.Document w3cDomDocument) {
+    public static org.w3c.dom.Text convertText(GreenXmlTrees.Text text, org.w3c.dom.Document w3cDomDocument) {
         return w3cDomDocument.createTextNode(text.value());
     }
 
-    public static org.w3c.dom.Comment convertComment(Comment comment, org.w3c.dom.Document w3cDomDocument) {
+    public static org.w3c.dom.Comment convertComment(GreenXmlTrees.Comment comment, org.w3c.dom.Document w3cDomDocument) {
         return w3cDomDocument.createComment(comment.value());
     }
 
-    public static org.w3c.dom.ProcessingInstruction convertProcessingInstruction(ProcessingInstruction pi, org.w3c.dom.Document w3cDomDocument) {
+    public static org.w3c.dom.ProcessingInstruction convertProcessingInstruction(GreenXmlTrees.ProcessingInstruction pi, org.w3c.dom.Document w3cDomDocument) {
         return w3cDomDocument.createProcessingInstruction(pi.target(), pi.data());
     }
 
-    private static org.w3c.dom.Document convertDocument(Document document, org.w3c.dom.Document w3cDomDocument) {
+    private static org.w3c.dom.Document convertDocument(GreenXmlTrees.Document document, org.w3c.dom.Document w3cDomDocument) {
         List<org.w3c.dom.Node> w3cDomDocumentChildren = document.children()
                 .stream()
                 .map(n -> convertNode(n, w3cDomDocument, NamespaceScope.empty()))
