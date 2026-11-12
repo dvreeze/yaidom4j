@@ -1,0 +1,124 @@
+/*
+ * Copyright 2024-2026 Chris de Vreeze
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package eu.cdevreeze.yaidom4j.experimental.domtest;
+
+import eu.cdevreeze.yaidom4j.experimental.dom.Document;
+import eu.cdevreeze.yaidom4j.experimental.dom.Element;
+import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.xml.sax.InputSource;
+
+import javax.xml.namespace.QName;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+
+import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasName;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * XML Base tests.
+ * <p>
+ * This is not a regular unit test, in that it assumes parsing etc. to work correctly.
+ *
+ * @author Chris de Vreeze
+ */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class XmlBaseTests {
+
+    private Document parseDocument(String nameOnClasspath) {
+        InputStream inputStream = XmlBaseTests.class.getResourceAsStream(nameOnClasspath);
+        return DocumentParsers.builder().removingInterElementWhitespace().build()
+                .parse(new InputSource(inputStream));
+    }
+
+    @Test
+    void testXmlBase() {
+        Document doc = parseDocument("/xml-base-example.xml");
+
+        assertEquals(Optional.empty(), doc.uriOption());
+
+        assertEquals(Optional.of(URI.create("http://example.org/today/")), doc.documentElement().baseUriOption());
+
+        Element firstParagraph =
+                doc.documentElement()
+                        .descendantOrSelfElementStream(hasName("paragraph"))
+                        .findFirst()
+                        .orElseThrow();
+
+        Element firstSimpleLink =
+                firstParagraph
+                        .childElementStream(hasName("link"))
+                        .findFirst()
+                        .orElseThrow();
+
+        String xlinkNamespace = "http://www.w3.org/1999/xlink";
+
+        assertEquals(doc.documentElement().baseUriOption(), firstSimpleLink.baseUriOption());
+
+        assertEquals(
+                Optional.of(URI.create("http://example.org/today/new.xml")),
+                firstSimpleLink
+                        .baseUriOption()
+                        .map(b -> b.resolve(firstSimpleLink.attribute(new QName(xlinkNamespace, "href"))))
+        );
+
+        Element olist =
+                doc.documentElement()
+                        .descendantOrSelfElementStream(hasName("olist"))
+                        .findFirst()
+                        .orElseThrow();
+
+        assertEquals(Optional.of(URI.create("http://example.org/hotpicks/")), olist.baseUriOption());
+
+        List<Element> remainingSimpleLinks =
+                doc.documentElement()
+                        .descendantOrSelfElementStream(hasName("link"))
+                        .toList()
+                        .subList(1, 4);
+
+        assertEquals(
+                List.of(
+                        URI.create("http://example.org/hotpicks/pick1.xml"),
+                        URI.create("http://example.org/hotpicks/pick2.xml"),
+                        URI.create("http://example.org/hotpicks/pick3.xml")
+                ),
+                remainingSimpleLinks.stream()
+                        .map(e -> e.baseUriOption().orElseThrow().resolve(e.attribute(new QName(xlinkNamespace, "href"))))
+                        .toList()
+        );
+    }
+
+    @Test
+    void testXmlBaseWithoutEscaping() {
+        Document doc = parseDocument("/rose.xml");
+
+        assertEquals(Optional.empty(), doc.uriOption());
+
+        assertEquals(URI.create("http://example.org/wine/"), doc.documentElement().baseUriOption().orElseThrow());
+
+        Element e2 =
+                doc.documentElement()
+                        .childElementStream(hasName("e2"))
+                        .findFirst()
+                        .orElseThrow();
+
+        assertEquals(URI.create("http://example.org/wine/rosé"), e2.baseUriOption().orElseThrow());
+    }
+}
