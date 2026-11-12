@@ -96,8 +96,8 @@ public class SaxonElementPredicates {
         return factory.hasOnlyText(text);
     }
 
-    public static Predicate<Element> hasOnlyStrippedText(String text) {
-        return factory.hasOnlyStrippedText(text);
+    public static Predicate<Element> hasOnlyTextAfterStripping(String text) {
+        return factory.hasOnlyTextAfterStripping(text);
     }
 
     /**
@@ -168,7 +168,7 @@ public class SaxonElementPredicates {
             return hasOnlyText(s -> s.equals(text));
         }
 
-        public Predicate<Element> hasOnlyStrippedText(String text) {
+        public Predicate<Element> hasOnlyTextAfterStripping(String text) {
             return hasOnlyText(s -> s.strip().equals(text));
         }
     }
