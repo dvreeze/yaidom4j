@@ -189,7 +189,7 @@ public class SaxonNodes {
                     xdmNode().select(Steps.child())
                             .flatMap(n -> optionalNodeFrom(n).stream())
                             .map(Node::toGreenTreeNode)
-                            .map(n -> (GreenXmlTrees.CanBeChild) n)
+                            .map(GreenXmlTrees.Node::asCanBeChild)
                             .toList()
             );
         }
@@ -202,7 +202,7 @@ public class SaxonNodes {
                     xdmNode().select(Steps.child())
                             .flatMap(n -> optionalNodeFrom(n).stream())
                             .map(Node::toClarkNode)
-                            .map(n -> (GreenClarkTrees.CanBeChild) n)
+                            .map(GreenClarkTrees.Node::asCanBeChild)
                             .toList()
             );
         }
@@ -334,7 +334,7 @@ public class SaxonNodes {
                     elementName(),
                     attributes(),
                     namespaceScope(),
-                    childNodeStream().map(Node::toGreenTreeNode).map(n -> (GreenXmlTrees.CanBeChild) n).toList()
+                    childNodeStream().map(Node::toGreenTreeNode).map(GreenXmlTrees.Node::asCanBeChild).toList()
             );
         }
 
@@ -344,7 +344,7 @@ public class SaxonNodes {
             return new GreenClarkTrees.Element(
                     elementName(),
                     attributes(),
-                    childNodeStream().map(Node::toClarkNode).map(n -> (GreenClarkTrees.CanBeChild) n).toList()
+                    childNodeStream().map(Node::toClarkNode).map(GreenClarkTrees.Node::asCanBeChild).toList()
             );
         }
 

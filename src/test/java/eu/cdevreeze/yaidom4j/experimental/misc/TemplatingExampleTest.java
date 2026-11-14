@@ -71,11 +71,11 @@ class TemplatingExampleTest {
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
                                                 cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("title"))
-                                                        .findFirst().map(e -> (GreenXmlTrees.CanBeChild) e.withName(new QName("td"))).stream().toList()
+                                                        .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
                                                 cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
-                                                        .findFirst().map(e -> (GreenXmlTrees.CanBeChild) e.withName(new QName("td"))).stream().toList()
+                                                        .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
@@ -117,11 +117,11 @@ class TemplatingExampleTest {
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
                                                 cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("title"))
-                                                        .findFirst().map(e -> (GreenXmlTrees.CanBeChild) e.withName(new QName("td"))).stream().toList()
+                                                        .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
                                                 cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
-                                                        .findFirst().map(e -> (GreenXmlTrees.CanBeChild) e.withName(new QName("td"))).stream().toList()
+                                                        .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
@@ -308,7 +308,7 @@ class TemplatingExampleTest {
                         .stream()
                         .flatMap(ch -> switch (ch) {
                             case GreenXmlTrees.Element che ->
-                                    f.apply(che).stream().map(c -> (GreenXmlTrees.CanBeChild) c);
+                                    f.apply(che).stream().map(GreenXmlTrees.Node::asCanBeChild);
                             default -> Stream.of(ch);
                         })
                         .toList()
