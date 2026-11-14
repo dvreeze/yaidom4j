@@ -115,6 +115,22 @@ public class GreenClarkTrees {
                 return nextNodeOption.flatMap(node -> node.navigate(remainingNodePath));
             }
         }
+
+        default Node asNode() {
+            return this;
+        }
+
+        default CanBeChild asCanBeChild() {
+            return (CanBeChild) this;
+        }
+
+        default Element asElement() {
+            return (Element) this;
+        }
+
+        default boolean isElement() {
+            return this instanceof Element;
+        }
     }
 
     public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
@@ -125,7 +141,7 @@ public class GreenClarkTrees {
             Objects.requireNonNull(uriOption);
 
             PreconditionUtil.checkArgument(
-                    children.stream().filter(n -> n instanceof Element).count() == 1
+                    children.stream().filter(Node::isElement).count() == 1
             );
         }
 
@@ -139,8 +155,8 @@ public class GreenClarkTrees {
         }
 
         public Element documentElement() {
-            return childStream().filter(n -> n instanceof Element)
-                    .map(n -> (Element) n)
+            return childStream().filter(Node::isElement)
+                    .map(Node::asElement)
                     .findFirst()
                     .orElseThrow();
         }
@@ -265,7 +281,7 @@ public class GreenClarkTrees {
 
         @Override
         public Stream<Element> childElementStream() {
-            return childStream().filter(n -> n instanceof Element).map(n -> (Element) n);
+            return childStream().filter(Node::isElement).map(Node::asElement);
         }
 
         @Override
@@ -421,7 +437,7 @@ public class GreenClarkTrees {
 
         public Element removeInterElementWhitespace() {
             // Naive implementation
-            boolean hasElementChild = children.stream().anyMatch(n -> n instanceof Element);
+            boolean hasElementChild = children.stream().anyMatch(Node::isElement);
             boolean hasOnlyInterElementWhitespaceTextChildren = hasElementChild &&
                     children.stream().allMatch(ch -> !(ch instanceof Text(String value)) || value.isBlank());
 

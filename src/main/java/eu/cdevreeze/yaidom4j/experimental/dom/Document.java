@@ -68,13 +68,13 @@ public final class Document implements Node {
     public List<CanBeChild> children() {
         // Immutable List
         return List.copyOf(
-                childStream().map(n -> (CanBeChild) n).toList()
+                childStream().map(Node::asCanBeChild).toList()
         );
     }
 
     public Element documentElement() {
-        return childStream().filter(n -> n instanceof Element)
-                .map(n -> (Element) n)
+        return childStream().filter(Node::isElement)
+                .map(Node::asElement)
                 .findFirst()
                 .orElseThrow();
     }

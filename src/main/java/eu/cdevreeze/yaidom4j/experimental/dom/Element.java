@@ -93,12 +93,12 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public Optional<Element> parentElementOption() {
-        return parentOption().filter(n -> n instanceof Element).map(n -> (Element) n);
+        return parentOption().filter(Node::isElement).map(Node::asElement);
     }
 
     @Override
     public Stream<Element> ancestorOrSelfElementStream() {
-        return ancestorOrSelfStream().filter(n -> n instanceof Element).map(n -> (Element) n);
+        return ancestorOrSelfStream().filter(Node::isElement).map(Node::asElement);
     }
 
     @Override
@@ -110,7 +110,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public Stream<Element> ancestorElementStream() {
-        return ancestorStream().filter(n -> n instanceof Element).map(n -> (Element) n);
+        return ancestorStream().filter(Node::isElement).map(Node::asElement);
     }
 
     @Override
@@ -147,7 +147,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public Stream<Element> childElementStream() {
-        return childStream().filter(n -> n instanceof Element).map(n -> (Element) n);
+        return childStream().filter(Node::isElement).map(Node::asElement);
     }
 
     @Override
@@ -220,7 +220,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     public List<CanBeChild> children() {
         // Immutable List
         return List.copyOf(
-                childStream().map(n -> (CanBeChild) n).toList()
+                childStream().map(Node::asCanBeChild).toList()
         );
     }
 }

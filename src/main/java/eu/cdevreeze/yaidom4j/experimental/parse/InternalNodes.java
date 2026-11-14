@@ -86,7 +86,7 @@ class InternalNodes {
                     name,
                     attributes,
                     namespaceScope,
-                    children.stream().map(InternalNode::toGreenTreeNode).map(n -> (GreenXmlTrees.CanBeChild) n).toList()
+                    children.stream().map(InternalNode::toGreenTreeNode).map(GreenXmlTrees.Node::asCanBeChild).toList()
             );
         }
     }

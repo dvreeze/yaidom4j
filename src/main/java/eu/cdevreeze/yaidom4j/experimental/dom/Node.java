@@ -158,4 +158,20 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
                         .stream().skip(1).toList()
         );
     }
+
+    default Node asNode() {
+        return this;
+    }
+
+    default CanBeChild asCanBeChild() {
+        return (CanBeChild) this;
+    }
+
+    default Element asElement() {
+        return (Element) this;
+    }
+
+    default boolean isElement() {
+        return this instanceof Element;
+    }
 }

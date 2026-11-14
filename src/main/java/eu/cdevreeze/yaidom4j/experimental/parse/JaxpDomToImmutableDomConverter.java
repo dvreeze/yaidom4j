@@ -88,7 +88,7 @@ public class JaxpDomToImmutableDomConverter {
         List<GreenXmlTrees.CanBeChild> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
                 .flatMap(n -> convertNode(n, newScope).stream())
-                .map(n -> (GreenXmlTrees.CanBeChild) n)
+                .map(GreenXmlTrees.Node::asCanBeChild)
                 .toList();
 
         return new GreenXmlTrees.Element(name, attrs, newScope, childNodes);
