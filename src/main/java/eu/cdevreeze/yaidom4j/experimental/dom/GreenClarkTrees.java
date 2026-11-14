@@ -336,6 +336,10 @@ public class GreenClarkTrees {
             );
         }
 
+        public Element withName(QName newName) {
+            return new Element(newName, attributes(), children());
+        }
+
         /**
          * Functionally updates this element by replacing the collection of child nodes.
          */
@@ -350,6 +354,12 @@ public class GreenClarkTrees {
         public Element plusChild(CanBeChild newChild) {
             return withChildren(
                     Stream.concat(children.stream(), Stream.of(newChild)).toList()
+            );
+        }
+
+        public Element plusChildren(List<CanBeChild> newChildren) {
+            return withChildren(
+                    Stream.concat(children.stream(), newChildren.stream()).toList()
             );
         }
 
@@ -397,6 +407,10 @@ public class GreenClarkTrees {
             Element descendantResult =
                     transformChildElements(che -> che.transformDescendantOrSelfElements(f));
             return f.apply(descendantResult);
+        }
+
+        public Element transformDescendantElements(UnaryOperator<Element> f) {
+            return transformChildElements(che -> che.transformDescendantOrSelfElements(f));
         }
 
         public Element transformSelfElement(UnaryOperator<Element> f) {

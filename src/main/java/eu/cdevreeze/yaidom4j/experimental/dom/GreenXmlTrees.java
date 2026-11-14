@@ -400,6 +400,17 @@ public class GreenXmlTrees {
         }
 
         /**
+         * Functionally updates the name of this element.
+         * <p>
+         * When calling this function, make sure to first add a namespace binding if needed.
+         * The safest way to do that is calling method {@link Element#withParentAttributeScope(NamespaceScope)},
+         * if the parameter name's prefix has not already been bound to another namespace.
+         */
+        public Element withName(QName newName) {
+            return new Element(newName, attributes(), namespaceScope(), children());
+        }
+
+        /**
          * Functionally updates this element by replacing the collection of child nodes.
          * <p>
          * When calling this function, take care to align the in-scope namespaces in order to
@@ -418,6 +429,12 @@ public class GreenXmlTrees {
         public Element plusChild(CanBeChild newChild) {
             return withChildren(
                     Stream.concat(children.stream(), Stream.of(newChild)).toList()
+            );
+        }
+
+        public Element plusChildren(List<CanBeChild> newChildren) {
+            return withChildren(
+                    Stream.concat(children.stream(), newChildren.stream()).toList()
             );
         }
 
@@ -471,6 +488,10 @@ public class GreenXmlTrees {
             Element descendantResult =
                     transformChildElements(che -> che.transformDescendantOrSelfElements(f));
             return f.apply(descendantResult);
+        }
+
+        public Element transformDescendantElements(UnaryOperator<Element> f) {
+            return transformChildElements(che -> che.transformDescendantOrSelfElements(f));
         }
 
         public Element transformSelfElement(UnaryOperator<Element> f) {
