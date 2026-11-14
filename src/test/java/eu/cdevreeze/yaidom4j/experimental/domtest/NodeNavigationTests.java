@@ -53,6 +53,12 @@ class NodeNavigationTests {
                 .toList();
 
         assertTrue(nodeNavigationPaths.size() > 1000);
+
+        assertTrue(
+                nodeNavigationPaths.stream().allMatch(
+                        p -> doc.navigate(p).isPresent()
+                )
+        );
     }
 
     @Test
