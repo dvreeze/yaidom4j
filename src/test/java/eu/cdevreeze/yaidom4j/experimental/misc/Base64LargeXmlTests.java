@@ -105,7 +105,7 @@ class Base64LargeXmlTests {
 
         GreenXmlTrees.Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
 
-        String wrapperXmlString = DocumentPrinters.instance().print(new Element(0, null, rootElem));
+        String wrapperXmlString = DocumentPrinters.instance().print(Element.of(rootElem));
 
         Document wrapperDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(new ByteArrayInputStream(wrapperXmlString.getBytes(UTF_8))));

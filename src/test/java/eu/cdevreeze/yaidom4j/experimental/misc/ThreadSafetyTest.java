@@ -70,7 +70,7 @@ class ThreadSafetyTest {
 
         // Node navigation paths starting with an element, not a document
         List<List<Integer>> nodeNavigationPaths =
-                new Element(0, null, elementHolder.get())
+                Element.of(elementHolder.get())
                         .descendantOrSelfElementStream()
                         .map(Node::nodeNavigationPath)
                         .toList();
@@ -104,7 +104,7 @@ class ThreadSafetyTest {
         );
 
         if (Boolean.parseBoolean(System.getProperty("debugThreadSafetyTest"))) {
-            System.out.println(docPrinter.print(new Element(0, null, endElement)));
+            System.out.println(docPrinter.print(Element.of(endElement)));
         }
     }
 

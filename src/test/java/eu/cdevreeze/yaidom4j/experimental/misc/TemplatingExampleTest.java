@@ -62,7 +62,7 @@ class TemplatingExampleTest {
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
             System.out.println();
-            System.out.println(docPrinter.print(new Element(0, null, htmlElement)));
+            System.out.println(docPrinter.print(Element.of(htmlElement)));
         }
 
         GreenXmlTrees.Element tableExtractedFromCatalog =
@@ -108,7 +108,7 @@ class TemplatingExampleTest {
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
             System.out.println();
-            System.out.println(docPrinter.print(new Element(0, null, htmlElement)));
+            System.out.println(docPrinter.print(Element.of(htmlElement)));
         }
 
         GreenXmlTrees.Element tableExtractedFromCatalog =
@@ -157,7 +157,7 @@ class TemplatingExampleTest {
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
             System.out.println();
-            System.out.println(docPrinter.print(new Element(0, null, htmlElement)));
+            System.out.println(docPrinter.print(Element.of(htmlElement)));
         }
 
         Set<String> titlesFromCatalog =

@@ -88,7 +88,7 @@ class NodeNavigationTests {
 
     @Test
     void testNavigationFromElement() {
-        Element docElem = new Element(0, null, parseDocument().documentElement().greenTreeNode());
+        Element docElem = Element.of(parseDocument().documentElement().greenTreeNode());
         List<Node> nodes = docElem.descendantOrSelfStream().toList();
         List<List<Integer>> nodeNavigationPaths = nodes.stream()
                 .map(Node::nodeNavigationPath)

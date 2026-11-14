@@ -224,6 +224,16 @@ public final class Element implements CanBeChild, ElementApi<Element> {
         );
     }
 
+    // Factories
+
+    /**
+     * Creates a top-level {@link Element} from the given {@link GreenXmlTrees.Element}.
+     * Hence, the returned element has no parent node, not even a document.
+     */
+    public static Element of(GreenXmlTrees.Element greenTreeElement) {
+        return new Element(0, null, greenTreeElement);
+    }
+
     // Element predicates
 
     public static Predicate<Element> hasName(QName name) {
