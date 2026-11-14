@@ -13,4 +13,6 @@ patch-module eu.cdevreeze.yaidom4j {
     add-exports eu.cdevreeze.yaidom4j.examples.transformations to org.junit.jupiter.api;
     add-exports eu.cdevreeze.yaidom4j.misc to org.junit.jupiter.api;
     add-exports eu.cdevreeze.yaidom4j.testsupport.saxon to org.junit.jupiter.api;
+
+    add-exports eu.cdevreeze.yaidom4j.experimental.misc to org.junit.jupiter.api;
 }

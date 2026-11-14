@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.experimental.dom;
 
 import module java.base;
+import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.queryapi.NodeApi;
 
 /**
@@ -119,18 +120,42 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
         return ancestorStream().filter(predicate);
     }
 
+    @Override
+    default Optional<Node> navigate(List<Integer> nodeNavigationPath) {
+        if (nodeNavigationPath.isEmpty()) {
+            return Optional.of(this);
+        } else {
+            int step = nodeNavigationPath.getFirst();
+            List<Integer> remainingNodePath = nodeNavigationPath.stream().skip(1).toList();
+
+            PreconditionUtil.checkArgument(step >= 0);
+            Optional<Node> nextNodeOption = this.childStream().skip(step).findFirst();
+            // Recursion
+            return nextNodeOption.flatMap(node -> node.navigate(remainingNodePath));
+        }
+    }
+
     default Node rootNode() {
         return ancestorOrSelfStream().toList().reversed().getFirst();
     }
 
     /**
      * Returns the zero-based node navigation path of this node relative to the root node.
-     * That is, returns <code>ancestorOrSelfStream().map(Node::offset).toList().reversed()</code>.
+     * That is, returns the equivalent of:
+     * {@snippet :
+     * ancestorOrSelfStream().map(Node::offset).toList().reversed()
+     *     .stream().skip(1).toList()
+     *}
+     * <p>
+     * Depending on whether the root of the node tree is a document or element node, the first step
+     * in the navigation path (if there is any) must be interpreted as being relative to the document
+     * or the uppermost element.
      */
     default List<Integer> nodeNavigationPath() {
         // Immutable List
         return List.copyOf(
                 ancestorOrSelfStream().map(Node::offset).toList().reversed()
+                        .stream().skip(1).toList()
         );
     }
 }

@@ -26,13 +26,43 @@ import module java.base;
  */
 public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
 
+    /**
+     * Returns the optional parent node of this node.
+     * <p>
+     * Note that a parent node can be either a document node or an element node.
+     * If the "root element" does not have a parent document, then the parent node (if any) is always an element node.
+     */
     Optional<N> parentOption();
 
+    /**
+     * Returns the stream of ancestor-or-self nodes, which is tne transitive closure of the parent axis,
+     * starting with this node itself.
+     * <p>
+     * See {@link NodeApi#parentOption()}.
+     */
     Stream<N> ancestorOrSelfStream();
 
+    /**
+     * Returns the equivalent of:
+     * {@snippet :
+     * ancestorOrSelfStream().filter(predicate)
+     *}
+     */
     Stream<N> ancestorOrSelfStream(Predicate<? super N> predicate);
 
+    /**
+     * Returns the stream of ancestor nodes, which is tne transitive closure of the parent axis,
+     * but excluding this node itself.
+     * <p>
+     * See {@link NodeApi#parentOption()}.
+     */
     Stream<N> ancestorStream();
 
+    /**
+     * Returns the equivalent of:
+     * {@snippet :
+     * ancestorStream().filter(predicate)
+     *}
+     */
     Stream<N> ancestorStream(Predicate<? super N> predicate);
 }

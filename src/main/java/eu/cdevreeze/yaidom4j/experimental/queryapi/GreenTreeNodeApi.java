@@ -43,4 +43,21 @@ public interface GreenTreeNodeApi<N extends GreenTreeNodeApi<N>> {
     Stream<N> topmostDescendantOrSelfStream(Predicate<? super N> predicate);
 
     Stream<N> topmostDescendantStream(Predicate<? super N> predicate);
+
+    /**
+     * Navigates to the node referred to by the zero-based node navigation path, returning the result
+     * wrapped in an {@link Optional} (so returning an empty Optional if no such node is found).
+     * <p>
+     * If the node navigation path is an empty collection, this node is returned (wrapped in an Optional).
+     * <p>
+     * If the node navigation path is a singleton collection, the single zero-based index or step in this
+     * singleton collection is a 0-based index of the next child node to be found, if any, wrapped in an Optional.
+     * <p>
+     * Otherwise, this process is repeated, until the final node is found, if any. That is, the following is returned:
+     * {@snippet :
+     * // Recursion
+     * nextNodeOption.flatMap(n -> n.navigate(nodeNavigationPath.stream().skip(1).toList()))
+     *}
+     */
+    Optional<N> navigate(List<Integer> nodeNavigationPath);
 }

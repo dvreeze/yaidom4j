@@ -100,6 +100,21 @@ public class GreenClarkTrees {
 
             return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
         }
+
+        @Override
+        default Optional<Node> navigate(List<Integer> nodeNavigationPath) {
+            if (nodeNavigationPath.isEmpty()) {
+                return Optional.of(this);
+            } else {
+                int step = nodeNavigationPath.getFirst();
+                List<Integer> remainingNodePath = nodeNavigationPath.stream().skip(1).toList();
+
+                PreconditionUtil.checkArgument(step >= 0);
+                Optional<Node> nextNodeOption = this.childStream().skip(step).findFirst();
+                // Recursion
+                return nextNodeOption.flatMap(node -> node.navigate(remainingNodePath));
+            }
+        }
     }
 
     public record Document(Optional<URI> uriOption, List<CanBeChild> children) implements Node {
