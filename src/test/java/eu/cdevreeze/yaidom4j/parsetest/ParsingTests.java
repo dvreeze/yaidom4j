@@ -68,8 +68,8 @@ class ParsingTests {
         Document doc = docParser.parse(new InputSource(url.openStream()));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -82,8 +82,8 @@ class ParsingTests {
         Document doc = handler.resultingDocument();
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -95,8 +95,8 @@ class ParsingTests {
         Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -114,10 +114,10 @@ class ParsingTests {
 
         assertEquals(
                 removeComments(
-                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace()
+                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace()
                 ),
                 removeComments(
-                        combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                        combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
                 )
         );
     }

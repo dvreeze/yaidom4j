@@ -49,7 +49,7 @@ public final class ProcessingInstruction implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.ProcessingInstruction greenTreeNode() {
+    public GreenXmlTrees.ProcessingInstruction toGreenTreeNode() {
         return greenTreeNode;
     }
 

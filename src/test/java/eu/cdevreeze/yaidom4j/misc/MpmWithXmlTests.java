@@ -144,7 +144,7 @@ class MpmWithXmlTests {
                             Objects.requireNonNull(MpmWithXmlTests.class.getResource(classPathResource)).toURI()
                     )
                     .documentElement()
-                    .greenTreeNode();
+                    .toGreenTreeNode();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -179,7 +179,7 @@ class MpmWithXmlTests {
         @Override
         public void body(BodyDescriptor bd, InputStream is) {
             if (bd.getMimeType().equals("text/xml")) {
-                Element element = docParser.parse(new InputSource(is)).documentElement().greenTreeNode();
+                Element element = docParser.parse(new InputSource(is)).documentElement().toGreenTreeNode();
                 xmlCollectionByBodyPathInMpm.put(List.copyOf(bodyPathInMpm), element);
             }
         }

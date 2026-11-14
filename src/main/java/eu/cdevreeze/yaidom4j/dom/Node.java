@@ -36,7 +36,7 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     @Override
     Optional<Node> parentOption();
 
-    GreenXmlTrees.Node greenTreeNode();
+    GreenXmlTrees.Node toGreenTreeNode();
 
     @Override
     default Stream<Node> childStream(Predicate<? super Node> predicate) {

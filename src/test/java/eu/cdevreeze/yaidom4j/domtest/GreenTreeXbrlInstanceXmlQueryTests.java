@@ -63,7 +63,7 @@ class GreenTreeXbrlInstanceXmlQueryTests {
         InputStream inputStream = GreenTreeXbrlInstanceXmlQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
         this.xbrlDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream))
-                .greenTreeNode();
+                .toGreenTreeNode();
     }
 
     @Test

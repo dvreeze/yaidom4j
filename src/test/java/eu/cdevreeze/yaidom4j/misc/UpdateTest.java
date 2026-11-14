@@ -96,6 +96,6 @@ class UpdateTest {
     private GreenXmlTrees.Element createElement(String classPathResource) {
         InputStream is = UpdateTest.class.getResourceAsStream(classPathResource);
         DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
-        return docParser.parse(new InputSource(is)).documentElement().greenTreeNode();
+        return docParser.parse(new InputSource(is)).documentElement().toGreenTreeNode();
     }
 }

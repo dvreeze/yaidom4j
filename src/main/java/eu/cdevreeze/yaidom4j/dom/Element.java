@@ -54,7 +54,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     }
 
     @Override
-    public GreenXmlTrees.Element greenTreeNode() {
+    public GreenXmlTrees.Element toGreenTreeNode() {
         return greenTreeNode;
     }
 
@@ -64,7 +64,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
                 .filter(n -> n instanceof Document)
                 .map(n -> (Document) n)
                 .findFirst()
-                .flatMap(d -> d.greenTreeNode().uriOption());
+                .flatMap(d -> d.toGreenTreeNode().uriOption());
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public NamespaceScope namespaceScope() {
-        return greenTreeNode().namespaceScope();
+        return toGreenTreeNode().namespaceScope();
     }
 
     @Override
@@ -122,27 +122,27 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public QName elementName() {
-        return greenTreeNode().elementName();
+        return toGreenTreeNode().elementName();
     }
 
     @Override
     public Map<QName, String> attributes() {
-        return greenTreeNode().attributes();
+        return toGreenTreeNode().attributes();
     }
 
     @Override
     public Optional<String> attributeOption(QName attrName) {
-        return greenTreeNode().attributeOption(attrName);
+        return toGreenTreeNode().attributeOption(attrName);
     }
 
     @Override
     public String attribute(QName attrName) {
-        return greenTreeNode().attribute(attrName);
+        return toGreenTreeNode().attribute(attrName);
     }
 
     @Override
     public String text() {
-        return greenTreeNode().text();
+        return toGreenTreeNode().text();
     }
 
     @Override

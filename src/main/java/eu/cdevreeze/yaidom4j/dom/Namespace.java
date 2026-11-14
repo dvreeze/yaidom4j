@@ -49,7 +49,7 @@ public final class Namespace implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Namespace greenTreeNode() {
+    public GreenXmlTrees.Namespace toGreenTreeNode() {
         return greenTreeNode;
     }
 

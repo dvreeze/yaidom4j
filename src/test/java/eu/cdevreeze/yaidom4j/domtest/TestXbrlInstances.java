@@ -95,12 +95,12 @@ public class TestXbrlInstances {
 
         public QName dimension() {
             String dimensionAsString = element.attribute(new QName("dimension"));
-            return element.greenTreeNode().namespaceScope().resolveSyntacticQNameInContent(dimensionAsString);
+            return element.toGreenTreeNode().namespaceScope().resolveSyntacticQNameInContent(dimensionAsString);
         }
 
         public QName member() {
             String memberAsString = element.text().strip();
-            return element.greenTreeNode().namespaceScope().resolveSyntacticQNameInContent(memberAsString);
+            return element.toGreenTreeNode().namespaceScope().resolveSyntacticQNameInContent(memberAsString);
         }
     }
 
@@ -287,7 +287,7 @@ public class TestXbrlInstances {
 
         public QName measure() {
             String measureAsString = element.text();
-            return element.greenTreeNode().namespaceScope().resolveSyntacticQNameInContent(measureAsString);
+            return element.toGreenTreeNode().namespaceScope().resolveSyntacticQNameInContent(measureAsString);
         }
     }
 

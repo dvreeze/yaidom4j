@@ -111,7 +111,7 @@ class ThreadSafetyTest {
     private GreenXmlTrees.Element createElement() {
         InputStream is = ThreadSafetyTest.class.getResourceAsStream("/ones.xml");
         DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
-        return docParser.parse(new InputSource(is)).documentElement().greenTreeNode();
+        return docParser.parse(new InputSource(is)).documentElement().toGreenTreeNode();
     }
 
     private void updateAllElements(

@@ -66,8 +66,8 @@ class ValidStandaloneXmlTest {
         SAXParserFactory spf = SAXParserFactory.newDefaultNSInstance();
         DocumentParser documentParser = DocumentParsers.builder(spf).build();
 
-        Document doc = documentParser.parse(xmlUri).greenTreeNode();
-        Document outputDoc = documentParser.parse(outputXmlUri).greenTreeNode();
+        Document doc = documentParser.parse(xmlUri).toGreenTreeNode();
+        Document outputDoc = documentParser.parse(outputXmlUri).toGreenTreeNode();
 
         // Counting the document children (root element plus comments plus processing instructions)
         assertEquals(docChildCount, doc.children().size());
