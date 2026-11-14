@@ -55,21 +55,21 @@ class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkTrees.Element
 
     @Override
     protected BiFunction<String, String, Predicate<GreenClarkTrees.Element>> hasName() {
-        return GreenClarkTrees.ElementPredicates::hasName;
+        return GreenClarkTrees.Element::hasName;
     }
 
     @Override
     protected Function<String, Predicate<GreenClarkTrees.Element>> hasOnlyText() {
-        return GreenClarkTrees.ElementPredicates::hasOnlyText;
+        return GreenClarkTrees.Element::hasOnlyText;
     }
 
     @Override
     protected Function<String, Predicate<GreenClarkTrees.Element>> hasOnlyTextAfterStripping() {
-        return GreenClarkTrees.ElementPredicates::hasOnlyTextAfterStripping;
+        return GreenClarkTrees.Element::hasOnlyTextAfterStripping;
     }
 
     @Override
     protected BiFunction<String, String, Predicate<GreenClarkTrees.Element>> hasAttributeValue() {
-        return GreenClarkTrees.ElementPredicates::hasAttributeValue;
+        return GreenClarkTrees.Element::hasAttributeValue;
     }
 }

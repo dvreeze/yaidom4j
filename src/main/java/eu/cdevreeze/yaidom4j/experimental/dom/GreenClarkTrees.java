@@ -459,13 +459,8 @@ public class GreenClarkTrees {
                             .toList()
             );
         }
-    }
 
-    public static final class ElementPredicates {
-
-        private ElementPredicates() {
-            // Non-instantiable
-        }
+        // Element predicates
 
         public static Predicate<Element> hasName(QName name) {
             return e -> e.name().equals(name);

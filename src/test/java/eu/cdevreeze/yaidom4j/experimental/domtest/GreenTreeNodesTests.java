@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

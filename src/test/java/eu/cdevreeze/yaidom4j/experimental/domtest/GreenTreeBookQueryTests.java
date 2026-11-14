@@ -54,21 +54,21 @@ class GreenTreeBookQueryTests extends AbstractBookQueryTests<GreenXmlTrees.Eleme
 
     @Override
     protected BiFunction<String, String, Predicate<GreenXmlTrees.Element>> hasName() {
-        return GreenXmlTrees.ElementPredicates::hasName;
+        return GreenXmlTrees.Element::hasName;
     }
 
     @Override
     protected Function<String, Predicate<GreenXmlTrees.Element>> hasOnlyText() {
-        return GreenXmlTrees.ElementPredicates::hasOnlyText;
+        return GreenXmlTrees.Element::hasOnlyText;
     }
 
     @Override
     protected Function<String, Predicate<GreenXmlTrees.Element>> hasOnlyTextAfterStripping() {
-        return GreenXmlTrees.ElementPredicates::hasOnlyTextAfterStripping;
+        return GreenXmlTrees.Element::hasOnlyTextAfterStripping;
     }
 
     @Override
     protected BiFunction<String, String, Predicate<GreenXmlTrees.Element>> hasAttributeValue() {
-        return GreenXmlTrees.ElementPredicates::hasAttributeValue;
+        return GreenXmlTrees.Element::hasAttributeValue;
     }
 }

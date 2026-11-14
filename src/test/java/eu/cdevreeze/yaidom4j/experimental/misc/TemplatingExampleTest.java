@@ -33,7 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -70,23 +70,23 @@ class TemplatingExampleTest {
                         .transformChildElements(cdElem ->
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("title"))
+                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
+                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
         GreenXmlTrees.Element tableExtractedFromHtml =
                 transformChildElementsToNodeLists(
-                        htmlElement.descendantElementStream(GreenXmlTrees.ElementPredicates.hasName("table"))
+                        htmlElement.descendantElementStream(GreenXmlTrees.Element.hasName("table"))
                                 .findFirst()
                                 .orElseThrow()
                                 .withAttributes(Map.of()),
                         che ->
-                                che.childElementStream(GreenXmlTrees.ElementPredicates.hasName("th")).findAny().isEmpty() ?
+                                che.childElementStream(GreenXmlTrees.Element.hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
                                         List.of()
                 );
@@ -116,23 +116,23 @@ class TemplatingExampleTest {
                         .transformChildElements(cdElem ->
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("title"))
+                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
+                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
         GreenXmlTrees.Element tableExtractedFromHtml =
                 transformChildElementsToNodeLists(
-                        htmlElement.descendantElementStream(GreenXmlTrees.ElementPredicates.hasName("table"))
+                        htmlElement.descendantElementStream(GreenXmlTrees.Element.hasName("table"))
                                 .findFirst()
                                 .orElseThrow()
                                 .withAttributes(Map.of()),
                         che ->
-                                che.childElementStream(GreenXmlTrees.ElementPredicates.hasName("th")).findAny().isEmpty() ?
+                                che.childElementStream(GreenXmlTrees.Element.hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
                                         List.of()
                 );
@@ -168,7 +168,7 @@ class TemplatingExampleTest {
         Set<String> titlesFromHtml =
                 htmlElement.descendantElementStream()
                         .filter(e -> e.text().contains("Title:"))
-                        .map(e -> e.childElementStream(GreenXmlTrees.ElementPredicates.hasName("span")).findFirst()
+                        .map(e -> e.childElementStream(GreenXmlTrees.Element.hasName("span")).findFirst()
                                 .orElseThrow().text())
                         .collect(Collectors.toSet());
 
@@ -191,7 +191,7 @@ class TemplatingExampleTest {
                                                         .plusChild(GreenXmlTrees.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
-                                                catalogElement.childElementStream(GreenXmlTrees.ElementPredicates.hasName("cd"))
+                                                catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
                                                         .map(this::transformCdElement)
                                                         .collect(Collectors.toUnmodifiableList())
                                         )
@@ -215,9 +215,9 @@ class TemplatingExampleTest {
                                                         .plusChild(GreenXmlTrees.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
-                                                catalogElement.childElementStream(GreenXmlTrees.ElementPredicates.hasName("cd"))
+                                                catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
                                                         .sorted(Comparator.comparing(
-                                                                cdElem -> cdElem.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
+                                                                cdElem -> cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
                                                                         .findAny().orElseThrow().text()
                                                         ))
                                                         .map(this::transformCdElement)
@@ -235,7 +235,7 @@ class TemplatingExampleTest {
                         GreenXmlTrees.elem("body")
                                 .plusChild(GreenXmlTrees.elem("h2").withText("My CD Collection"))
                                 .plusChildren(
-                                        catalogElement.childElementStream(GreenXmlTrees.ElementPredicates.hasName("cd"))
+                                        catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
                                                 .map(this::mapCdElemToParagraph)
                                                 .collect(Collectors.toUnmodifiableList())
                                 )
@@ -245,9 +245,9 @@ class TemplatingExampleTest {
     private GreenXmlTrees.Element transformCdElement(GreenXmlTrees.Element cdElement) {
         PreconditionUtil.checkArgument(cdElement.name().equals(new QName("cd")));
 
-        String title = cdElement.childElementStream(GreenXmlTrees.ElementPredicates.hasName("title"))
+        String title = cdElement.childElementStream(GreenXmlTrees.Element.hasName("title"))
                 .findFirst().orElseThrow().text();
-        String artist = cdElement.childElementStream(GreenXmlTrees.ElementPredicates.hasName("artist"))
+        String artist = cdElement.childElementStream(GreenXmlTrees.Element.hasName("artist"))
                 .findFirst().orElseThrow().text();
         return GreenXmlTrees.elem("tr")
                 .plusChild(
@@ -264,9 +264,9 @@ class TemplatingExampleTest {
         return GreenXmlTrees.elem("p")
                 .plusChildren(
                         transformChildElementsToNodeLists(cdElement, e -> {
-                            if (GreenXmlTrees.ElementPredicates.hasName("title").test(e)) {
+                            if (GreenXmlTrees.Element.hasName("title").test(e)) {
                                 return mapTitleElemToNodes(e);
-                            } else if (GreenXmlTrees.ElementPredicates.hasName("artist").test(e)) {
+                            } else if (GreenXmlTrees.Element.hasName("artist").test(e)) {
                                 return mapArtistElemToNodes(e);
                             } else {
                                 return List.of();

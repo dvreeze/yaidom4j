@@ -19,7 +19,6 @@ package eu.cdevreeze.yaidom4j.experimental.domtest;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.experimental.dom.Element;
-import eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.experimental.parse.DocumentProducingSaxHandler;
 import org.jspecify.annotations.Nullable;
@@ -57,22 +56,22 @@ class BookQueryTests extends AbstractBookQueryTests<Element> {
 
     @Override
     protected BiFunction<String, String, Predicate<Element>> hasName() {
-        return ElementPredicates::hasName;
+        return Element::hasName;
     }
 
     @Override
     protected Function<String, Predicate<Element>> hasOnlyText() {
-        return ElementPredicates::hasOnlyText;
+        return Element::hasOnlyText;
     }
 
     @Override
     protected Function<String, Predicate<Element>> hasOnlyTextAfterStripping() {
-        return ElementPredicates::hasOnlyTextAfterStripping;
+        return Element::hasOnlyTextAfterStripping;
     }
 
     @Override
     protected BiFunction<String, String, Predicate<Element>> hasAttributeValue() {
-        return ElementPredicates::hasAttributeValue;
+        return Element::hasAttributeValue;
     }
 
     @Test

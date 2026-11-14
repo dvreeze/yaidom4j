@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasAttributeValue;
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.Element.hasAttributeValue;
+import static eu.cdevreeze.yaidom4j.experimental.dom.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

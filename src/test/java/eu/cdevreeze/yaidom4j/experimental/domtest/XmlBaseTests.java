@@ -29,7 +29,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

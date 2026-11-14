@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.xml.namespace.QName;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

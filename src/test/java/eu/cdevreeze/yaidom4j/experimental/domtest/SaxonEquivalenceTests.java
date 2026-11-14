@@ -46,7 +46,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.*;
 import static eu.cdevreeze.yaidom4j.experimental.testsupport.saxon.SaxonElementSteps.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -228,7 +227,8 @@ class SaxonEquivalenceTests {
 
         Map<QName, Long> childElemCounts2 =
                 rootElement().topmostDescendantOrSelfElementStream(e ->
-                                hasName(NS, "Book").test(e) || hasName(NS, "Magazine").test(e)
+                                GreenXmlTrees.Element.hasName(NS, "Book").test(e.greenTreeNode()) ||
+                                        GreenXmlTrees.Element.hasName(NS, "Magazine").test(e.greenTreeNode())
                         )
                         .collect(Collectors.groupingBy(Element::elementName, Collectors.counting()));
 
@@ -255,7 +255,8 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryMagazineMonths() {
         List<String> magazineMonths = rootElement()
-                .childElementStream(hasName(NS, "Magazine"))
+                .greenTreeNode()
+                .childElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
@@ -265,7 +266,8 @@ class SaxonEquivalenceTests {
         );
 
         List<String> magazineMonths2 = rootElement()
-                .descendantOrSelfElementStream(hasName(NS, "Magazine"))
+                .greenTreeNode()
+                .descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
@@ -287,9 +289,9 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryMagazineTitles() {
-        List<String> magazineTitles = rootElement().childElementStream(hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.childElementStream(hasName(NS, "Title")))
-                .map(Element::text)
+        List<String> magazineTitles = rootElement().greenTreeNode().childElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.childElementStream(GreenXmlTrees.Element.hasName(NS, "Title")))
+                .map(GreenXmlTrees.Element::text)
                 .distinct()
                 .toList();
 
@@ -302,9 +304,11 @@ class SaxonEquivalenceTests {
                 magazineTitles
         );
 
-        List<String> magazineTitles2 = rootElement().descendantOrSelfElementStream(hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.descendantOrSelfElementStream(hasName(NS, "Title")))
-                .map(Element::text)
+        List<String> magazineTitles2 = rootElement()
+                .greenTreeNode()
+                .descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Title")))
+                .map(GreenXmlTrees.Element::text)
                 .distinct()
                 .toList();
 
@@ -331,21 +335,21 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryBooksCoauthoredByJenniferWidom() {
         Predicate<Element> authorIsJenniferWidom = authorElem ->
-                hasName(NS, "Author").test(authorElem) &&
-                        authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(hasOnlyText("Jennifer")) &&
-                        authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(hasOnlyText("Widom"));
+                Element.hasName(NS, "Author").test(authorElem) &&
+                        authorElem.childElementStream(Element.hasName(NS, "First_Name"))
+                                .anyMatch(Element.hasOnlyText("Jennifer")) &&
+                        authorElem.childElementStream(Element.hasName(NS, "Last_Name"))
+                                .anyMatch(Element.hasOnlyText("Widom"));
 
         Predicate<Element> bookCowrittenByJenniferWidom = bookElem ->
-                hasName(NS, "Book").test(bookElem) &&
-                        bookElem.descendantElementStream(hasName(NS, "Author"))
+                Element.hasName(NS, "Book").test(bookElem) &&
+                        bookElem.descendantElementStream(Element.hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
 
         Set<String> bookTitlesCoauthoredByJenniferWidom =
-                rootElement().childElementStream(hasName(NS, "Book"))
+                rootElement().childElementStream(Element.hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
-                        .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
+                        .flatMap(e -> e.childElementStream(Element.hasName(NS, "Title")))
                         .map(Element::text)
                         .collect(Collectors.toSet());
 
@@ -359,9 +363,9 @@ class SaxonEquivalenceTests {
         );
 
         Set<String> bookTitlesCoauthoredByJenniferWidom2 =
-                rootElement().descendantOrSelfElementStream(hasName(NS, "Book"))
+                rootElement().descendantOrSelfElementStream(Element.hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
-                        .flatMap(e -> e.descendantOrSelfElementStream(hasName(NS, "Title")))
+                        .flatMap(e -> e.descendantOrSelfElementStream(Element.hasName(NS, "Title")))
                         .map(Element::text)
                         .collect(Collectors.toSet());
 
@@ -410,14 +414,14 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryAuthorNames() {
         Function<Element, String> getAuthorName = authorElem -> {
-            PreconditionUtil.checkArgument(hasName(NS, "Author").test(authorElem));
+            PreconditionUtil.checkArgument(Element.hasName(NS, "Author").test(authorElem));
 
-            String firstName = authorElem.childElementStream(hasName(NS, "First_Name"))
+            String firstName = authorElem.childElementStream(Element.hasName(NS, "First_Name"))
                     .findFirst()
                     .map(Element::text)
                     .orElse("");
 
-            String lastName = authorElem.childElementStream(hasName(NS, "Last_Name"))
+            String lastName = authorElem.childElementStream(Element.hasName(NS, "Last_Name"))
                     .findFirst()
                     .map(Element::text)
                     .orElse("");
@@ -426,7 +430,7 @@ class SaxonEquivalenceTests {
         };
 
         Set<String> authorNames = rootElement()
-                .descendantElementStream(hasName(NS, "Author"))
+                .descendantElementStream(Element.hasName(NS, "Author"))
                 .map(getAuthorName)
                 .collect(Collectors.toSet());
 
@@ -436,7 +440,7 @@ class SaxonEquivalenceTests {
         );
 
         Set<String> authorNames2 = rootElement()
-                .topmostDescendantOrSelfElementStream(hasName(NS, "Author"))
+                .topmostDescendantOrSelfElementStream(Element.hasName(NS, "Author"))
                 .map(getAuthorName)
                 .collect(Collectors.toSet());
 
@@ -480,19 +484,19 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryBookIsbnsCoauthoredByJenniferWidom() {
         Predicate<Element> authorIsJenniferWidom = authorElem ->
-                hasName(NS, "Author").test(authorElem) &&
-                        authorElem.childElementStream(hasName(NS, "First_Name"))
-                                .anyMatch(hasOnlyTextAfterStripping("Jennifer")) &&
-                        authorElem.childElementStream(hasName(NS, "Last_Name"))
-                                .anyMatch(hasOnlyTextAfterStripping("Widom"));
+                Element.hasName(NS, "Author").test(authorElem) &&
+                        authorElem.childElementStream(Element.hasName(NS, "First_Name"))
+                                .anyMatch(Element.hasOnlyTextAfterStripping("Jennifer")) &&
+                        authorElem.childElementStream(Element.hasName(NS, "Last_Name"))
+                                .anyMatch(Element.hasOnlyTextAfterStripping("Widom"));
 
         Predicate<Element> bookCowrittenByJenniferWidom = bookElem ->
-                hasName(NS, "Book").test(bookElem) &&
-                        bookElem.descendantElementStream(hasName(NS, "Author"))
+                Element.hasName(NS, "Book").test(bookElem) &&
+                        bookElem.descendantElementStream(Element.hasName(NS, "Author"))
                                 .anyMatch(authorIsJenniferWidom);
 
         Set<String> bookIsbnsCoauthoredByJenniferWidom =
-                rootElement().childElementStream(hasName(NS, "Book"))
+                rootElement().childElementStream(Element.hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .map(e -> e.attribute(new QName("ISBN")))
                         .collect(Collectors.toSet());
@@ -503,7 +507,7 @@ class SaxonEquivalenceTests {
         );
 
         Set<String> bookIsbnsCoauthoredByJenniferWidom2 =
-                rootElement().topmostDescendantOrSelfElementStream(hasName(NS, "Book"))
+                rootElement().topmostDescendantOrSelfElementStream(Element.hasName(NS, "Book"))
                         .filter(bookCowrittenByJenniferWidom)
                         .map(e -> e.attribute(new QName("ISBN")))
                         .collect(Collectors.toSet());
@@ -549,9 +553,9 @@ class SaxonEquivalenceTests {
     @Test
     void testQueryFebruaryMagazines() {
         List<String> februaryMagazineTitles = rootElement()
-                .childElementStream(hasName(NS, "Magazine"))
-                .filter(hasAttributeValue("Month", "February"))
-                .flatMap(e -> e.childElementStream(hasName(NS, "Title")))
+                .childElementStream(Element.hasName(NS, "Magazine"))
+                .filter(Element.hasAttributeValue("Month", "February"))
+                .flatMap(e -> e.childElementStream(Element.hasName(NS, "Title")))
                 .map(Element::text)
                 .toList();
 
@@ -561,9 +565,9 @@ class SaxonEquivalenceTests {
         );
 
         List<String> februaryMagazineTitles2 = rootElement()
-                .topmostDescendantOrSelfElementStream(hasName(NS, "Magazine"))
-                .filter(hasAttributeValue("Month", "February"))
-                .flatMap(e -> e.descendantOrSelfElementStream(hasName(NS, "Title")))
+                .topmostDescendantOrSelfElementStream(Element.hasName(NS, "Magazine"))
+                .filter(Element.hasAttributeValue("Month", "February"))
+                .flatMap(e -> e.descendantOrSelfElementStream(Element.hasName(NS, "Title")))
                 .map(Element::text)
                 .toList();
 

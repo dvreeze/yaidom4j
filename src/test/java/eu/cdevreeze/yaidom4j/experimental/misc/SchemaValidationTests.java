@@ -17,12 +17,12 @@
 package eu.cdevreeze.yaidom4j.experimental.misc;
 
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
-import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParser;
-import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
-import eu.cdevreeze.yaidom4j.experimental.print.ImmutableDomSource;
 import eu.cdevreeze.yaidom4j.experimental.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.experimental.jaxp.SchemaFactories;
+import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParser;
+import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
+import eu.cdevreeze.yaidom4j.experimental.print.ImmutableDomSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -223,4 +223,72 @@ public final class Element implements CanBeChild, ElementApi<Element> {
                 childStream().map(Node::asCanBeChild).toList()
         );
     }
+
+    // Element predicates
+
+    public static Predicate<Element> hasName(QName name) {
+        return e -> e.elementName().equals(name);
+    }
+
+    public static Predicate<Element> hasName(String namespace, String localName) {
+        return e -> e.elementName().getNamespaceURI().equals(namespace) && e.elementName().getLocalPart().equals(localName);
+    }
+
+    public static Predicate<Element> hasName(String noNamespaceName) {
+        return hasName(XMLConstants.NULL_NS_URI, noNamespaceName);
+    }
+
+    public static Predicate<Element> hasLocalName(String localName) {
+        return e -> e.elementName().getLocalPart().equals(localName);
+    }
+
+    public static Predicate<Element> hasAttributeWithName(QName attrName) {
+        return e -> e.attributeOption(attrName).isPresent();
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNamespace, String attrLocalName) {
+        return hasAttributeWithName(new QName(attrNamespace, attrLocalName));
+    }
+
+    public static Predicate<Element> hasAttributeWithName(String attrNoNamespaceName) {
+        return hasAttributeWithName(new QName(attrNoNamespaceName));
+    }
+
+    public static Predicate<Element> hasAttributeValue(QName attrName, Predicate<String> attrValuePredicate) {
+        return e -> e.attributes().entrySet().stream()
+                .anyMatch(kv -> kv.getKey().equals(attrName) && attrValuePredicate.test(kv.getValue()));
+    }
+
+    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, Predicate<String> attrValuePredicate) {
+        return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValuePredicate);
+    }
+
+    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, Predicate<String> attrValuePredicate) {
+        return hasAttributeValue(new QName(attrNoNamespaceName), attrValuePredicate);
+    }
+
+    public static Predicate<Element> hasAttributeValue(QName attrName, String attrValue) {
+        return hasAttributeValue(attrName, s -> s.equals(attrValue));
+    }
+
+    public static Predicate<Element> hasAttributeValue(String attrNamespace, String attrLocalName, String attrValue) {
+        return hasAttributeValue(new QName(attrNamespace, attrLocalName), attrValue);
+    }
+
+    public static Predicate<Element> hasAttributeValue(String attrNoNamespaceName, String attrValue) {
+        return hasAttributeValue(new QName(attrNoNamespaceName), attrValue);
+    }
+
+    public static Predicate<Element> hasOnlyText(Predicate<String> textPredicate) {
+        return e -> e.children().stream().allMatch(ch -> ch instanceof Text) &&
+                textPredicate.test(e.text());
+    }
+
+    public static Predicate<Element> hasOnlyText(String text) {
+        return hasOnlyText(s -> s.equals(text));
+    }
+
+    public static Predicate<Element> hasOnlyTextAfterStripping(String text) {
+        return hasOnlyText(s -> s.strip().equals(text));
+    }
 }

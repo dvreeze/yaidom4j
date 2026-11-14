@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Element.hasName;
 
 /**
  * XBRL instance data model. Incorrect and incomplete, but good enough for the tests it is used in.

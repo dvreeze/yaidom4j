@@ -33,7 +33,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.ElementPredicates.hasName;
+import static eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
