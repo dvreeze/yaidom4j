@@ -35,7 +35,7 @@ public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
     Optional<N> parentOption();
 
     /**
-     * Returns the stream of ancestor-or-self nodes, which is tne transitive closure of the parent axis,
+     * Returns the stream of ancestor-or-self nodes, which is the transitive closure of the parent axis,
      * starting with this node itself.
      * <p>
      * See {@link NodeApi#parentOption()}.
@@ -48,8 +48,7 @@ public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
     Stream<N> ancestorOrSelfStream(Predicate<? super N> predicate);
 
     /**
-     * Returns the stream of ancestor nodes, which is tne transitive closure of the parent axis,
-     * but excluding this node itself.
+     * Returns the stream of ancestor nodes, which is the transitive closure of the parent axis minus this node.
      * <p>
      * See {@link NodeApi#parentOption()}.
      */
