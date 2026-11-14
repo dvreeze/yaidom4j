@@ -33,7 +33,9 @@ import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
  *}
  * Document printing is configurable. The simple code snippet above is equivalent to:
  * {@snippet :
- * import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;DocumentPrinter docPrinter = DocumentPrinters
+ * import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
+ *
+ * DocumentPrinter docPrinter = DocumentPrinters
  *     .builder(TransformerHandlers.newSaxTransformerFactory())
  *     .withTransformerHandlerInitializer(th ->
  *         TransformerHandlers.Config.indenting(4).accept(th)

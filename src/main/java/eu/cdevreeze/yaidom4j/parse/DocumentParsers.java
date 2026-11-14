@@ -28,7 +28,9 @@ import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
  * <p>
  * Example code:
  * {@snippet :
- * import eu.cdevreeze.yaidom4j.dom.Document;DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
+ * import eu.cdevreeze.yaidom4j.dom.Document;
+ *
+ * DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
  * Document doc = docParser.parse(new InputSource(url.openStream()));
  *}
  *

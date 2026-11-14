@@ -28,7 +28,9 @@ import eu.cdevreeze.yaidom4j.dom.Document;
  * <p>
  * Example code:
  * {@snippet :
- * import eu.cdevreeze.yaidom4j.dom.Document;TransformerHandler th = TransformerHandlers.newTransformerHandler();
+ * import eu.cdevreeze.yaidom4j.dom.Document;
+ *
+ * TransformerHandler th = TransformerHandlers.newTransformerHandler();
  * ImmutableDomResult domResult = new ImmutableDomResult();
  * th.setResult(domResult);
  * XMLReader saxReader = SaxParsers.newNonValidatingSaxParserFactory().newSAXParser().getXMLReader();

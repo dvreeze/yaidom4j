@@ -33,7 +33,9 @@ import org.xml.sax.Attributes;
  * <p>
  * Example code:
  * {@snippet :
- * import eu.cdevreeze.yaidom4j.dom.Document;DocumentProducingSaxHandler handler = new DocumentProducingSaxHandler();
+ * import eu.cdevreeze.yaidom4j.dom.Document;
+ *
+ * DocumentProducingSaxHandler handler = new DocumentProducingSaxHandler();
  * SaxParsers.parse(url.toURI(), handler);
  * Document doc = handler.resultingDocument();
  *}
