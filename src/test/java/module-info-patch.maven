@@ -8,10 +8,10 @@ patch-module eu.cdevreeze.yaidom4j {
     add-modules TEST-MODULE-PATH;
     add-reads TEST-MODULE-PATH;
 
-    add-exports eu.cdevreeze.yaidom4j.experimental.conformance.xmltest to org.junit.jupiter.api;
-    add-exports eu.cdevreeze.yaidom4j.experimental.domtest to org.junit.jupiter.api;
-    add-exports eu.cdevreeze.yaidom4j.experimental.misc to org.junit.jupiter.api;
-    add-exports eu.cdevreeze.yaidom4j.experimental.parsetest to org.junit.jupiter.api;
-    add-exports eu.cdevreeze.yaidom4j.experimental.printtest to org.junit.jupiter.api;
-    add-exports eu.cdevreeze.yaidom4j.experimental.testsupport.saxon to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.conformance.xmltest to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.domtest to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.misc to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.parsetest to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.printtest to org.junit.jupiter.api;
+    add-exports eu.cdevreeze.yaidom4j.testsupport.saxon to org.junit.jupiter.api;
 }

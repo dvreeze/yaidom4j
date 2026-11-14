@@ -31,10 +31,10 @@ module eu.cdevreeze.yaidom4j {
     requires transitive java.xml;
     requires transitive org.jspecify;
 
-    exports eu.cdevreeze.yaidom4j.experimental.jaxp;
-    exports eu.cdevreeze.yaidom4j.experimental.core;
-    exports eu.cdevreeze.yaidom4j.experimental.queryapi;
-    exports eu.cdevreeze.yaidom4j.experimental.dom;
-    exports eu.cdevreeze.yaidom4j.experimental.parse;
-    exports eu.cdevreeze.yaidom4j.experimental.print;
+    exports eu.cdevreeze.yaidom4j.jaxp;
+    exports eu.cdevreeze.yaidom4j.core;
+    exports eu.cdevreeze.yaidom4j.queryapi;
+    exports eu.cdevreeze.yaidom4j.dom;
+    exports eu.cdevreeze.yaidom4j.parse;
+    exports eu.cdevreeze.yaidom4j.print;
 }

@@ -103,14 +103,14 @@ Suppose we have the following XML document, in file `bookstore.xml`:
 Then we can obtain the February magazine titles (in a namespace-aware manner) as follows:
 
 ```java
-import eu.cdevreeze.yaidom4j.experimental.dom.Document;
-import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParser;
-import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
+import eu.cdevreeze.yaidom4j.dom.Document;
+import eu.cdevreeze.yaidom4j.parse.DocumentParser;
+import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static eu.cdevreeze.yaidom4j.experimental.dom.Element.*;
+import static eu.cdevreeze.yaidom4j.dom.Element.*;
 
 DocumentParser parser = DocumentParsers.instance();
 Document doc = parser.parse(Path.of("bookstore.xml").toUri());
