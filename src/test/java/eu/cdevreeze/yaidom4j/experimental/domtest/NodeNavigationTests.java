@@ -17,6 +17,7 @@
 package eu.cdevreeze.yaidom4j.experimental.domtest;
 
 import eu.cdevreeze.yaidom4j.experimental.dom.Document;
+import eu.cdevreeze.yaidom4j.experimental.dom.Element;
 import eu.cdevreeze.yaidom4j.experimental.dom.GreenXmlTrees;
 import eu.cdevreeze.yaidom4j.experimental.dom.Node;
 import eu.cdevreeze.yaidom4j.experimental.parse.DocumentParsers;
@@ -64,6 +65,31 @@ class NodeNavigationTests {
 
         List<Node> foundNodes = nodeNavigationPaths.stream()
                 .flatMap(p -> doc.navigate(p).stream())
+                .toList();
+
+        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
+
+        assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
+        assertEquals(greenTreeNodes, greenTreeFoundNodes);
+        assertEquals(
+                greenTreeNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList(),
+                greenTreeFoundNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList()
+        );
+        // For regular ("ancestry-aware") elements we have reference equality
+        // So we don't compare those nodes, but instead compare the underlying green tree nodes
+    }
+
+    @Test
+    void testNavigationFromElement() {
+        Element docElem = new Element(0, null, parseDocument().documentElement().greenTreeNode());
+        List<Node> nodes = docElem.descendantOrSelfStream().toList();
+        List<List<Integer>> nodeNavigationPaths = nodes.stream()
+                .map(Node::nodeNavigationPath)
+                .toList();
+
+        List<Node> foundNodes = nodeNavigationPaths.stream()
+                .flatMap(p -> docElem.navigate(p).stream())
                 .toList();
 
         List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
