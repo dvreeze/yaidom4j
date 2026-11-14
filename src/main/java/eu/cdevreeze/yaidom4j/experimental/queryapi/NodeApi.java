@@ -43,10 +43,7 @@ public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
     Stream<N> ancestorOrSelfStream();
 
     /**
-     * Returns the equivalent of:
-     * {@snippet :
-     * ancestorOrSelfStream().filter(predicate)
-     *}
+     * Returns the equivalent of {@code ancestorOrSelfStream().filter(predicate)}.
      */
     Stream<N> ancestorOrSelfStream(Predicate<? super N> predicate);
 
@@ -59,10 +56,7 @@ public interface NodeApi<N extends NodeApi<N>> extends GreenTreeNodeApi<N> {
     Stream<N> ancestorStream();
 
     /**
-     * Returns the equivalent of:
-     * {@snippet :
-     * ancestorStream().filter(predicate)
-     *}
+     * Returns the equivalent of {@code ancestorStream().filter(predicate)}.
      */
     Stream<N> ancestorStream(Predicate<? super N> predicate);
 }
