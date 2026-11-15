@@ -66,7 +66,7 @@ class GreenTreeNodesTests {
         InputStream inputStream = GreenTreeNodesTests.class.getResourceAsStream(xmlClasspathResource);
         return DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream))
-                .toGreenTreeNode();
+                .greenTreeNode();
     }
 
     @Test

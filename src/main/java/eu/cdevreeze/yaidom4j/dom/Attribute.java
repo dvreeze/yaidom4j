@@ -50,7 +50,7 @@ public final class Attribute implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Attribute toGreenTreeNode() {
+    public GreenXmlTrees.Attribute greenTreeNode() {
         return greenTreeNode;
     }
 

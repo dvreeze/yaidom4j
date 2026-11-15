@@ -49,7 +49,7 @@ public final class Text implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.Text toGreenTreeNode() {
+    public GreenXmlTrees.Text greenTreeNode() {
         return greenTreeNode;
     }
 

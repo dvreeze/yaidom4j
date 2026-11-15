@@ -59,7 +59,7 @@ class GreenTreeSoapMessageQueryTests {
         InputStream inputStream = GreenTreeSoapMessageQueryTests.class.getResourceAsStream("/sample-soap-message.xml");
         soapMessage = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream))
-                .toGreenTreeNode();
+                .greenTreeNode();
     }
 
     @Test

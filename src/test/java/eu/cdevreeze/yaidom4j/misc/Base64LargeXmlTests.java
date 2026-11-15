@@ -118,7 +118,7 @@ class Base64LargeXmlTests {
                                 new GreenXmlTrees.Document(
                                         Optional.empty(),
                                         List.of(
-                                                wrapperDoc.documentElement().toGreenTreeNode().transformDescendantElements(
+                                                wrapperDoc.documentElement().greenTreeNode().transformDescendantElements(
                                                         e -> e.withChildren(
                                                                 e.children()
                                                                         .stream()
@@ -148,7 +148,7 @@ class Base64LargeXmlTests {
         assertEquals(doc.documentElement().elementName(), nestedDoc.documentElement().elementName());
 
         // Hopefully we have equivalent XML again
-        assertEquals(doc.documentElement().toGreenTreeNode().toClarkNode(), nestedDoc.documentElement().toGreenTreeNode().toClarkNode());
+        assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), nestedDoc.documentElement().greenTreeNode().toClarkNode());
     }
 
     private static GreenXmlTrees.Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {

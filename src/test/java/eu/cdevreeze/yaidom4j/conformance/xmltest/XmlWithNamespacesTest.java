@@ -64,7 +64,7 @@ class XmlWithNamespacesTest {
         SAXParserFactory spf = SAXParserFactory.newDefaultNSInstance();
         DocumentParser documentParser = DocumentParsers.builder(spf).build();
 
-        Document doc = documentParser.parse(xmlUri).toGreenTreeNode();
+        Document doc = documentParser.parse(xmlUri).greenTreeNode();
 
         assertTrue(expectation.test(doc.documentElement()));
     }

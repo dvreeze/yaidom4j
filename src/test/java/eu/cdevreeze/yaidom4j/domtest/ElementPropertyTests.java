@@ -62,8 +62,8 @@ class ElementPropertyTests {
                 .toList();
 
         assertEquals(
-                allElems1.stream().map(Element::toGreenTreeNode).toList(),
-                allElems2.stream().map(Element::toGreenTreeNode).toList()
+                allElems1.stream().map(Element::greenTreeNode).toList(),
+                allElems2.stream().map(Element::greenTreeNode).toList()
         );
     }
 
@@ -71,11 +71,11 @@ class ElementPropertyTests {
     @MethodSource("provideValidXmlDocUris")
     void testSameGreenNodesFoundFromDocAndGreenTreeDoc(URI xmlUri) {
         Document doc = parseDocument(xmlUri);
-        GreenXmlTrees.Document greenTreeDoc = doc.toGreenTreeNode();
+        GreenXmlTrees.Document greenTreeDoc = doc.greenTreeNode();
 
         List<GreenXmlTrees.Element> allElems1 = doc.documentElement()
                 .descendantOrSelfElementStream()
-                .map(Element::toGreenTreeNode)
+                .map(Element::greenTreeNode)
                 .toList();
         List<GreenXmlTrees.Element> allElems2 = greenTreeDoc.documentElement()
                 .descendantOrSelfElementStream()
@@ -87,7 +87,7 @@ class ElementPropertyTests {
     @ParameterizedTest
     @MethodSource("provideValidXmlDocUris")
     void testSameClarkNodesFoundFromGreenTreeDocAndClarkTreeDoc(URI xmlUri) {
-        GreenXmlTrees.Document greenTreeDoc = parseDocument(xmlUri).toGreenTreeNode();
+        GreenXmlTrees.Document greenTreeDoc = parseDocument(xmlUri).greenTreeNode();
         GreenClarkTrees.Document clarkDoc = greenTreeDoc.toClarkNode();
 
         List<GreenClarkTrees.Element> allElems1 = greenTreeDoc.documentElement()

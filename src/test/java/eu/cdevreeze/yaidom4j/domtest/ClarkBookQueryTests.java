@@ -43,7 +43,7 @@ class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkTrees.Element
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
         rootElement = saxHandler.resultingDocument()
                 .documentElement()
-                .toGreenTreeNode()
+                .greenTreeNode()
                 .removeInterElementWhitespace()
                 .toClarkNode();
     }

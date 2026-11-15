@@ -73,8 +73,8 @@ class NodeNavigationTests {
                 .flatMap(p -> doc.navigate(p).stream())
                 .toList();
 
-        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::toGreenTreeNode).toList();
-        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::toGreenTreeNode).toList();
+        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
 
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);
@@ -88,7 +88,7 @@ class NodeNavigationTests {
 
     @Test
     void testNavigationFromElement() {
-        Element docElem = Element.of(parseDocument().documentElement().toGreenTreeNode());
+        Element docElem = Element.of(parseDocument().documentElement().greenTreeNode());
         List<Node> nodes = docElem.descendantOrSelfStream().toList();
         List<List<Integer>> nodeNavigationPaths = nodes.stream()
                 .map(Node::nodeNavigationPath)
@@ -98,8 +98,8 @@ class NodeNavigationTests {
                 .flatMap(p -> docElem.navigate(p).stream())
                 .toList();
 
-        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::toGreenTreeNode).toList();
-        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::toGreenTreeNode).toList();
+        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
 
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);

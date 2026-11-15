@@ -57,7 +57,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transform(doc.documentElement().toGreenTreeNode());
+        GreenXmlTrees.Element htmlElement = transform(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
@@ -66,7 +66,7 @@ class TemplatingExampleTest {
         }
 
         GreenXmlTrees.Element tableExtractedFromCatalog =
-                doc.documentElement().toGreenTreeNode().withName(new QName("table"))
+                doc.documentElement().greenTreeNode().withName(new QName("table"))
                         .transformChildElements(cdElem ->
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
@@ -103,7 +103,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transformSortingOnArtist(doc.documentElement().toGreenTreeNode());
+        GreenXmlTrees.Element htmlElement = transformSortingOnArtist(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
@@ -112,7 +112,7 @@ class TemplatingExampleTest {
         }
 
         GreenXmlTrees.Element tableExtractedFromCatalog =
-                doc.documentElement().toGreenTreeNode().withName(new QName("table"))
+                doc.documentElement().greenTreeNode().withName(new QName("table"))
                         .transformChildElements(cdElem ->
                                 GreenXmlTrees.elem("tr")
                                         .plusChildren(
@@ -152,7 +152,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transformToParagraphs(doc.documentElement().toGreenTreeNode());
+        GreenXmlTrees.Element htmlElement = transformToParagraphs(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();

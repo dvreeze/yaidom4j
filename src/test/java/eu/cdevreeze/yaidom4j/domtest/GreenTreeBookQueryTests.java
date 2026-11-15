@@ -43,7 +43,7 @@ class GreenTreeBookQueryTests extends AbstractBookQueryTests<GreenXmlTrees.Eleme
         SaxParsers.parse(new InputSource(inputStream), saxHandler);
         rootElement = saxHandler.resultingDocument()
                 .documentElement()
-                .toGreenTreeNode()
+                .greenTreeNode()
                 .removeInterElementWhitespace();
     }
 

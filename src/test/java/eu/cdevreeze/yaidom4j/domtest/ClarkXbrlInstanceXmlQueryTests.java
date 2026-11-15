@@ -68,7 +68,7 @@ class ClarkXbrlInstanceXmlQueryTests {
         InputStream inputStream = ClarkXbrlInstanceXmlQueryTests.class.getResourceAsStream("/sample-xbrl-instance.xml");
         this.xbrlDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream))
-                .toGreenTreeNode()
+                .greenTreeNode()
                 .toClarkNode();
     }
 

@@ -49,7 +49,7 @@ public final class Comment implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.Comment toGreenTreeNode() {
+    public GreenXmlTrees.Comment greenTreeNode() {
         return greenTreeNode;
     }
 
@@ -59,6 +59,6 @@ public final class Comment implements CanBeChild {
     }
 
     public String value() {
-        return toGreenTreeNode().value();
+        return greenTreeNode().value();
     }
 }

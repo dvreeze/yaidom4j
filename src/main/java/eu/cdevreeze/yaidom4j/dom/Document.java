@@ -44,7 +44,7 @@ public final class Document implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Document toGreenTreeNode() {
+    public GreenXmlTrees.Document greenTreeNode() {
         return greenTreeNode;
     }
 
@@ -62,7 +62,7 @@ public final class Document implements Node {
     }
 
     public Optional<URI> uriOption() {
-        return toGreenTreeNode().uriOption();
+        return greenTreeNode().uriOption();
     }
 
     public List<CanBeChild> children() {

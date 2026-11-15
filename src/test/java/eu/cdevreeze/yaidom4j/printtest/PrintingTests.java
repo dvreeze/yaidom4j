@@ -80,8 +80,8 @@ class PrintingTests {
                 .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -101,8 +101,8 @@ class PrintingTests {
                 .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -112,13 +112,13 @@ class PrintingTests {
         Objects.requireNonNull(document);
 
         // The DOMException was thrown when processing the next line of code
-        org.w3c.dom.Document w3cDoc = ImmutableDomToJaxpDomConverter.convertDocument(document.toGreenTreeNode(), DocumentBuilderFactory.newDefaultNSInstance());
+        org.w3c.dom.Document w3cDoc = ImmutableDomToJaxpDomConverter.convertDocument(document.greenTreeNode(), DocumentBuilderFactory.newDefaultNSInstance());
 
         Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -133,10 +133,10 @@ class PrintingTests {
 
         assertEquals(
                 removeComments(
-                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().toGreenTreeNode().toClarkNode()).removeInterElementWhitespace()
+                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace()
                 ),
                 removeComments(
-                        combineAdjacentTextNodes(doc.documentElement().toGreenTreeNode().toClarkNode().removeInterElementWhitespace())
+                        combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
                 )
         );
     }
