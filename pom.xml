@@ -31,7 +31,7 @@
         <developer>
             <id>dvreeze</id>
             <name>Chris de Vreeze</name>
-            <email>chris.de.vreeze@caiway.net</email>
+            <email>chris.de.vreeze@startmail.com</email>
         </developer>
     </developers>
 
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.6.6</version>
+            <version>1.6.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -152,6 +152,8 @@
                 </configuration>
             </plugin>
             <!-- See https://ik.am/entries/900/en -->
+            <!-- IntelliJ does not seem to like this during compilation. Hence, the plugin has been commented out. -->
+            <!--
             <plugin>
                 <groupId>am.ik.maven</groupId>
                 <artifactId>nullability-maven-plugin</artifactId>
@@ -165,6 +167,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

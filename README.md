@@ -104,6 +104,7 @@ Then we can obtain the February magazine titles (in a namespace-aware manner) as
 
 ```java
 import eu.cdevreeze.yaidom4j.dom.Document;
+import eu.cdevreeze.yaidom4j.dom.Element;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 
@@ -121,7 +122,7 @@ List<String> februaryMagazineTitles = doc.documentElement()
         .childElementStream(hasName(ns, "Magazine"))
         .filter(hasAttributeValue("Month", "February"))
         .flatMap(e -> e.childElementStream(hasName(ns, "Title")))
-        .map(ElementApi::text)
+        .map(Element::text)
         .toList();
 
 // [National Geographic, Newsweek]
