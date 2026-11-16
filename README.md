@@ -239,6 +239,11 @@ So, the XDM contains no entity references etc. The Saxon library seems to follow
 Info Set. So does yaidom4j. Unlike XDM (and Saxon), yaidom4j native node implementations do leave out many properties
 of the nodes in XDM. Again, yaidom4j is not about implementing XML standards, but about easy processing of (most) XML.
 
+Some properties of yaidom related to software best practices are:
+* It is exposed as a (JPMS) Java Module, with minimal dependencies (only JSpecify, ignoring test dependencies)
+* It uses JSpecify nullability annotations, as if (non-)nullability is part of every used type
+* It uses Maven 4, offering a slender consumer POM
+
 ## Evolving the library
 
 In a broad sense, yaidom4j is envisioned to remain roughly what it is now. Yet there is still a lot to
