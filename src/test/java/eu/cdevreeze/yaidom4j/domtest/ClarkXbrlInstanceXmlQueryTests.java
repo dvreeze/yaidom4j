@@ -17,8 +17,8 @@
 package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes.Element;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static eu.cdevreeze.yaidom4j.dom.GreenClarkTrees.Element.hasAttributeValue;
-import static eu.cdevreeze.yaidom4j.dom.GreenClarkTrees.Element.hasName;
+import static eu.cdevreeze.yaidom4j.dom.GreenClarkNodes.Element.hasAttributeValue;
+import static eu.cdevreeze.yaidom4j.dom.GreenClarkNodes.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

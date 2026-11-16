@@ -100,7 +100,7 @@ public class GreenNodes {
             return childStream().flatMap(che -> che.topmostDescendantOrSelfStream(predicate));
         }
 
-        GreenClarkTrees.Node toClarkNode();
+        GreenClarkNodes.Node toClarkNode();
 
         @Override
         default Optional<Node> navigate(List<Integer> nodeNavigationPath) {
@@ -181,8 +181,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Document toClarkNode() {
-            return new GreenClarkTrees.Document(
+        public GreenClarkNodes.Document toClarkNode() {
+            return new GreenClarkNodes.Document(
                     uriOption,
                     children.stream()
                             .map(ch -> ch.toClarkNode().asCanBeChild())
@@ -204,8 +204,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Attribute toClarkNode() {
-            return new GreenClarkTrees.Attribute(name, value);
+        public GreenClarkNodes.Attribute toClarkNode() {
+            return new GreenClarkNodes.Attribute(name, value);
         }
     }
 
@@ -222,7 +222,7 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Node toClarkNode() {
+        public GreenClarkNodes.Node toClarkNode() {
             throw new RuntimeException("No Clark equivalent of a namespace node");
         }
     }
@@ -242,8 +242,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Text toClarkNode() {
-            return new GreenClarkTrees.Text(value);
+        public GreenClarkNodes.Text toClarkNode() {
+            return new GreenClarkNodes.Text(value);
         }
     }
 
@@ -259,8 +259,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Comment toClarkNode() {
-            return new GreenClarkTrees.Comment(value);
+        public GreenClarkNodes.Comment toClarkNode() {
+            return new GreenClarkNodes.Comment(value);
         }
     }
 
@@ -277,8 +277,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.ProcessingInstruction toClarkNode() {
-            return new GreenClarkTrees.ProcessingInstruction(target, data);
+        public GreenClarkNodes.ProcessingInstruction toClarkNode() {
+            return new GreenClarkNodes.ProcessingInstruction(target, data);
         }
     }
 
@@ -515,8 +515,8 @@ public class GreenNodes {
         }
 
         @Override
-        public GreenClarkTrees.Element toClarkNode() {
-            return new GreenClarkTrees.Element(
+        public GreenClarkNodes.Element toClarkNode() {
+            return new GreenClarkNodes.Element(
                     name,
                     attributes,
                     children().stream()

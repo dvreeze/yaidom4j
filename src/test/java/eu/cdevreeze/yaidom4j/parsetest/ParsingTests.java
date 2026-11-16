@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.parsetest;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.dom.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes;
 import eu.cdevreeze.yaidom4j.jaxp.DocumentBuilders;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.jaxp.TransformerHandlers;
@@ -124,49 +124,49 @@ class ParsingTests {
 
     // Comparing with Saxon
 
-    private static GreenClarkTrees.Element removeComments(GreenClarkTrees.Element element) {
+    private static GreenClarkNodes.Element removeComments(GreenClarkNodes.Element element) {
         return element.transformDescendantOrSelfElements(e ->
-                e.withChildren(e.children().stream().filter(n -> !(n instanceof GreenClarkTrees.Comment)).toList())
+                e.withChildren(e.children().stream().filter(n -> !(n instanceof GreenClarkNodes.Comment)).toList())
         );
     }
 
-    private static GreenClarkTrees.Element combineAdjacentTextNodes(GreenClarkTrees.Element element) {
+    private static GreenClarkNodes.Element combineAdjacentTextNodes(GreenClarkNodes.Element element) {
         return element.transformDescendantOrSelfElements(elem ->
                 elem.withChildren(List.copyOf(combineAdjacentTextNodes(elem.children())))
         );
     }
 
-    private static List<GreenClarkTrees.CanBeChild> combineAdjacentTextNodes(List<GreenClarkTrees.CanBeChild> nodes) {
+    private static List<GreenClarkNodes.CanBeChild> combineAdjacentTextNodes(List<GreenClarkNodes.CanBeChild> nodes) {
         if (nodes.isEmpty()) {
             return nodes;
         }
-        if (!(nodes.getFirst() instanceof GreenClarkTrees.Text)) {
-            GreenClarkTrees.CanBeChild firstNode = nodes.getFirst();
-            List<GreenClarkTrees.CanBeChild> remainder = nodes.subList(1, nodes.size());
+        if (!(nodes.getFirst() instanceof GreenClarkNodes.Text)) {
+            GreenClarkNodes.CanBeChild firstNode = nodes.getFirst();
+            List<GreenClarkNodes.CanBeChild> remainder = nodes.subList(1, nodes.size());
 
             // Recursion
-            List<GreenClarkTrees.CanBeChild> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
+            List<GreenClarkNodes.CanBeChild> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
 
-            List<GreenClarkTrees.CanBeChild> result = new ArrayList<>();
+            List<GreenClarkNodes.CanBeChild> result = new ArrayList<>();
             result.add(firstNode);
             result.addAll(remainderWithCombinedTextNodes);
             return List.copyOf(result);
         }
 
-        List<GreenClarkTrees.CanBeChild> adjacentTextNodes = nodes.stream().takeWhile(n -> (n instanceof GreenClarkTrees.Text)).toList();
-        List<GreenClarkTrees.CanBeChild> remainder = nodes.stream().dropWhile(n -> (n instanceof GreenClarkTrees.Text)).toList();
-        List<GreenClarkTrees.CanBeChild> combinedTextNodes = adjacentTextNodes.isEmpty() ?
+        List<GreenClarkNodes.CanBeChild> adjacentTextNodes = nodes.stream().takeWhile(n -> (n instanceof GreenClarkNodes.Text)).toList();
+        List<GreenClarkNodes.CanBeChild> remainder = nodes.stream().dropWhile(n -> (n instanceof GreenClarkNodes.Text)).toList();
+        List<GreenClarkNodes.CanBeChild> combinedTextNodes = adjacentTextNodes.isEmpty() ?
                 List.of() :
-                List.of(new GreenClarkTrees.Text(
+                List.of(new GreenClarkNodes.Text(
                         adjacentTextNodes.stream()
-                                .map(n -> ((GreenClarkTrees.Text) n).value())
+                                .map(n -> ((GreenClarkNodes.Text) n).value())
                                 .collect(Collectors.joining())
                 ));
 
         // Recursion
-        List<GreenClarkTrees.CanBeChild> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
+        List<GreenClarkNodes.CanBeChild> remainderWithCombinedTextNodes = combineAdjacentTextNodes(remainder);
 
-        List<GreenClarkTrees.CanBeChild> result = new ArrayList<>(combinedTextNodes);
+        List<GreenClarkNodes.CanBeChild> result = new ArrayList<>(combinedTextNodes);
         result.addAll(remainderWithCombinedTextNodes);
         return List.copyOf(result);
     }

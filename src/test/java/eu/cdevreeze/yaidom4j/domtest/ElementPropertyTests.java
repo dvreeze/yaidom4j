@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.domtest;
 import module java.base;
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
@@ -88,13 +88,13 @@ class ElementPropertyTests {
     @MethodSource("provideValidXmlDocUris")
     void testSameClarkNodesFoundFromGreenTreeDocAndClarkTreeDoc(URI xmlUri) {
         GreenNodes.Document greenTreeDoc = parseDocument(xmlUri).greenTreeNode();
-        GreenClarkTrees.Document clarkDoc = greenTreeDoc.toClarkNode();
+        GreenClarkNodes.Document clarkDoc = greenTreeDoc.toClarkNode();
 
-        List<GreenClarkTrees.Element> allElems1 = greenTreeDoc.documentElement()
+        List<GreenClarkNodes.Element> allElems1 = greenTreeDoc.documentElement()
                 .descendantOrSelfElementStream()
                 .map(GreenNodes.Element::toClarkNode)
                 .toList();
-        List<GreenClarkTrees.Element> allElems2 = clarkDoc.documentElement()
+        List<GreenClarkNodes.Element> allElems2 = clarkDoc.documentElement()
                 .descendantOrSelfElementStream()
                 .toList();
 

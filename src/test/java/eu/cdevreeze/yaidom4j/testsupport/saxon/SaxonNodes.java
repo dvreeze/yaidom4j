@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.testsupport.saxon;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes;
 import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
@@ -62,7 +62,7 @@ public class SaxonNodes {
 
         GreenNodes.Node toGreenTreeNode();
 
-        GreenClarkTrees.Node toClarkNode();
+        GreenClarkNodes.Node toClarkNode();
 
         @Override
         default Optional<Node> parentOption() {
@@ -195,14 +195,14 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Document toClarkNode() {
+        public GreenClarkNodes.Document toClarkNode() {
             var uriOption = Optional.ofNullable(xdmNode.getUnderlyingNode().getSystemId()).map(URI::create);
-            return new GreenClarkTrees.Document(
+            return new GreenClarkNodes.Document(
                     uriOption,
                     xdmNode().select(Steps.child())
                             .flatMap(n -> optionalNodeFrom(n).stream())
                             .map(Node::toClarkNode)
-                            .map(GreenClarkTrees.Node::asCanBeChild)
+                            .map(GreenClarkNodes.Node::asCanBeChild)
                             .toList()
             );
         }
@@ -250,8 +250,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Attribute toClarkNode() {
-            return new GreenClarkTrees.Attribute(
+        public GreenClarkNodes.Attribute toClarkNode() {
+            return new GreenClarkNodes.Attribute(
                     xdmNode.getNodeName().getStructuredQName().toJaxpQName(),
                     xdmNode.getStringValue()
             );
@@ -300,7 +300,7 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Node toClarkNode() {
+        public GreenClarkNodes.Node toClarkNode() {
             throw new RuntimeException("No Clark equivalent of a namespace node");
         }
     }
@@ -339,12 +339,12 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Element toClarkNode() {
+        public GreenClarkNodes.Element toClarkNode() {
             // Recursive
-            return new GreenClarkTrees.Element(
+            return new GreenClarkNodes.Element(
                     elementName(),
                     attributes(),
-                    childNodeStream().map(Node::toClarkNode).map(GreenClarkTrees.Node::asCanBeChild).toList()
+                    childNodeStream().map(Node::toClarkNode).map(GreenClarkNodes.Node::asCanBeChild).toList()
             );
         }
 
@@ -535,8 +535,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Text toClarkNode() {
-            return new GreenClarkTrees.Text(value());
+        public GreenClarkNodes.Text toClarkNode() {
+            return new GreenClarkNodes.Text(value());
         }
 
         @Override
@@ -583,8 +583,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.Comment toClarkNode() {
-            return new GreenClarkTrees.Comment(value());
+        public GreenClarkNodes.Comment toClarkNode() {
+            return new GreenClarkNodes.Comment(value());
         }
 
         @Override
@@ -635,8 +635,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenClarkTrees.ProcessingInstruction toClarkNode() {
-            return new GreenClarkTrees.ProcessingInstruction(target(), data());
+        public GreenClarkNodes.ProcessingInstruction toClarkNode() {
+            return new GreenClarkNodes.ProcessingInstruction(target(), data());
         }
 
         @Override

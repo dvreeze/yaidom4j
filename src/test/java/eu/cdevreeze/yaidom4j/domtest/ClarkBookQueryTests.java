@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.domtest;
 
 import module java.base;
 import module java.xml;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.parse.DocumentProducingSaxHandler;
 import org.jspecify.annotations.Nullable;
@@ -31,9 +31,9 @@ import org.junit.jupiter.api.BeforeAll;
  *
  * @author Chris de Vreeze
  */
-class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkTrees.Element> {
+class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkNodes.Element> {
 
-    private static GreenClarkTrees.@Nullable Element rootElement = null;
+    private static GreenClarkNodes.@Nullable Element rootElement = null;
 
     @BeforeAll
     protected static void parseRootElement() {
@@ -49,27 +49,27 @@ class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkTrees.Element
     }
 
     @Override
-    protected GreenClarkTrees.Element rootElement() {
+    protected GreenClarkNodes.Element rootElement() {
         return Objects.requireNonNull(rootElement);
     }
 
     @Override
-    protected BiFunction<String, String, Predicate<GreenClarkTrees.Element>> hasName() {
-        return GreenClarkTrees.Element::hasName;
+    protected BiFunction<String, String, Predicate<GreenClarkNodes.Element>> hasName() {
+        return GreenClarkNodes.Element::hasName;
     }
 
     @Override
-    protected Function<String, Predicate<GreenClarkTrees.Element>> hasOnlyText() {
-        return GreenClarkTrees.Element::hasOnlyText;
+    protected Function<String, Predicate<GreenClarkNodes.Element>> hasOnlyText() {
+        return GreenClarkNodes.Element::hasOnlyText;
     }
 
     @Override
-    protected Function<String, Predicate<GreenClarkTrees.Element>> hasOnlyTextAfterStripping() {
-        return GreenClarkTrees.Element::hasOnlyTextAfterStripping;
+    protected Function<String, Predicate<GreenClarkNodes.Element>> hasOnlyTextAfterStripping() {
+        return GreenClarkNodes.Element::hasOnlyTextAfterStripping;
     }
 
     @Override
-    protected BiFunction<String, String, Predicate<GreenClarkTrees.Element>> hasAttributeValue() {
-        return GreenClarkTrees.Element::hasAttributeValue;
+    protected BiFunction<String, String, Predicate<GreenClarkNodes.Element>> hasAttributeValue() {
+        return GreenClarkNodes.Element::hasAttributeValue;
     }
 }
