@@ -32,7 +32,8 @@ public final class Comment implements CanBeChild {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.Comment greenTreeNode;
 
-    public Comment(int offset, @Nullable Node parentOrNull, GreenNodes.Comment greenTreeNode) {
+    // Package-private constructor
+    Comment(int offset, @Nullable Node parentOrNull, GreenNodes.Comment greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;

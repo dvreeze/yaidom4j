@@ -37,7 +37,8 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.Element greenTreeNode;
 
-    public Element(int offset, @Nullable Node parentOrNull, GreenNodes.Element greenTreeNode) {
+    // Package-private constructor
+    Element(int offset, @Nullable Node parentOrNull, GreenNodes.Element greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;

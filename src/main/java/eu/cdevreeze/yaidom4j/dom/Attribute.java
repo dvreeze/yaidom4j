@@ -33,7 +33,8 @@ public final class Attribute implements Node {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.Attribute greenTreeNode;
 
-    public Attribute(int offset, @Nullable Node parentOrNull, GreenNodes.Attribute greenTreeNode) {
+    // Package-private constructor
+    Attribute(int offset, @Nullable Node parentOrNull, GreenNodes.Attribute greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;

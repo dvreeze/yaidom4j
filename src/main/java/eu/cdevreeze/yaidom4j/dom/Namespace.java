@@ -32,7 +32,8 @@ public final class Namespace implements Node {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.Namespace greenTreeNode;
 
-    public Namespace(int offset, @Nullable Node parentOrNull, GreenNodes.Namespace greenTreeNode) {
+    // Package-private constructor
+    Namespace(int offset, @Nullable Node parentOrNull, GreenNodes.Namespace greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;

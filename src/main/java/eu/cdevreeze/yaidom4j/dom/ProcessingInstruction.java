@@ -32,7 +32,8 @@ public final class ProcessingInstruction implements CanBeChild {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.ProcessingInstruction greenTreeNode;
 
-    public ProcessingInstruction(int offset, @Nullable Node parentOrNull, GreenNodes.ProcessingInstruction greenTreeNode) {
+    // Package-private constructor
+    ProcessingInstruction(int offset, @Nullable Node parentOrNull, GreenNodes.ProcessingInstruction greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;

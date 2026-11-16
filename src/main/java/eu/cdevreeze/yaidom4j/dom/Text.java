@@ -32,7 +32,8 @@ public final class Text implements CanBeChild {
     private final @Nullable Node parentOrNull;
     private final GreenNodes.Text greenTreeNode;
 
-    public Text(int offset, @Nullable Node parentOrNull, GreenNodes.Text greenTreeNode) {
+    // Package-private constructor
+    Text(int offset, @Nullable Node parentOrNull, GreenNodes.Text greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
