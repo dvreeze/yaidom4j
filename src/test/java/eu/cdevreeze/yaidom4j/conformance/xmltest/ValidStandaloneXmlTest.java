@@ -74,8 +74,8 @@ class ValidStandaloneXmlTest {
 
         // Besides successful "yaidom4j parsing", the most important check
         assertEquals(
-                makeComparableWithCanonicalXml(outputDoc.documentElement().toClarkNode()),
-                makeComparableWithCanonicalXml(doc.documentElement().toClarkNode())
+                makeComparableWithCanonicalXml(outputDoc.documentElement().toGreenClarkNode()),
+                makeComparableWithCanonicalXml(doc.documentElement().toGreenClarkNode())
         );
 
         // W3C DOM
@@ -84,8 +84,8 @@ class ValidStandaloneXmlTest {
         Document docFromDomDoc = JaxpDomToImmutableDomConverter.convertDocument(domDoc);
 
         assertEquals(
-                combineAdjacentTextNodes(doc.documentElement().toClarkNode().removeInterElementWhitespace()),
-                combineAdjacentTextNodes(docFromDomDoc.documentElement().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(doc.documentElement().toGreenClarkNode().removeInterElementWhitespace()),
+                combineAdjacentTextNodes(docFromDomDoc.documentElement().toGreenClarkNode().removeInterElementWhitespace())
         );
     }
 

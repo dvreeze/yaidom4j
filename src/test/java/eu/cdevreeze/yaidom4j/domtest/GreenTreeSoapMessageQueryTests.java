@@ -144,7 +144,7 @@ class GreenTreeSoapMessageQueryTests {
                         .distinct()
                         .count());
 
-        assertEquals(soapMessage.documentElement().toClarkNode(), editedSoapMessage.toClarkNode());
+        assertEquals(soapMessage.documentElement().toGreenClarkNode(), editedSoapMessage.toGreenClarkNode());
     }
 
     @Test
@@ -157,7 +157,7 @@ class GreenTreeSoapMessageQueryTests {
 
         Document soapMessage2 = JaxpDomToImmutableDomConverter.convertDocument(w3cDomDocument);
 
-        assertEquals(soapMessage.documentElement().toClarkNode(), soapMessage2.documentElement().toClarkNode());
+        assertEquals(soapMessage.documentElement().toGreenClarkNode(), soapMessage2.documentElement().toGreenClarkNode());
 
         // Even stronger guarantee
         assertEquals(soapMessage.documentElement(), soapMessage2.documentElement());

@@ -124,7 +124,7 @@ class GreenTreeXbrlInstanceTransformationTests {
 
         assertEquals(instance.element().descendantOrSelfElementStream().count() + 1, newInstance.element().descendantOrSelfElementStream().count());
 
-        assertEquals(newInstance.element().toClarkNode(), newInstance2.element().toClarkNode());
+        assertEquals(newInstance.element().toGreenClarkNode(), newInstance2.element().toGreenClarkNode());
 
         List<CanBeChild> newInstanceChildren2 = instance.element()
                 .children()
@@ -140,9 +140,9 @@ class GreenTreeXbrlInstanceTransformationTests {
                 newInstance.element().withChildren(newInstanceChildren2)
         );
 
-        assertNotEquals(newInstance.element().toClarkNode(), newInstance3.element().toClarkNode());
-        assertNotEquals(newInstance2.element().toClarkNode(), newInstance3.element().toClarkNode());
+        assertNotEquals(newInstance.element().toGreenClarkNode(), newInstance3.element().toGreenClarkNode());
+        assertNotEquals(newInstance2.element().toGreenClarkNode(), newInstance3.element().toGreenClarkNode());
 
-        assertEquals(instance.element().toClarkNode(), newInstance3.element().toClarkNode());
+        assertEquals(instance.element().toGreenClarkNode(), newInstance3.element().toGreenClarkNode());
     }
 }

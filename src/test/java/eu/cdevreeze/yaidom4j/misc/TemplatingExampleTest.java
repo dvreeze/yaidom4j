@@ -91,7 +91,7 @@ class TemplatingExampleTest {
                                         List.of()
                 );
 
-        assertEquals(tableExtractedFromCatalog.toClarkNode(), tableExtractedFromHtml.toClarkNode());
+        assertEquals(tableExtractedFromCatalog.toGreenClarkNode(), tableExtractedFromHtml.toGreenClarkNode());
     }
 
     @Test
@@ -138,8 +138,8 @@ class TemplatingExampleTest {
                 );
 
         assertEquals(
-                tableExtractedFromCatalog.toClarkNode().childElementStream().collect(Collectors.toSet()),
-                tableExtractedFromHtml.toClarkNode().childElementStream().collect(Collectors.toSet())
+                tableExtractedFromCatalog.toGreenClarkNode().childElementStream().collect(Collectors.toSet()),
+                tableExtractedFromHtml.toGreenClarkNode().childElementStream().collect(Collectors.toSet())
         );
     }
 

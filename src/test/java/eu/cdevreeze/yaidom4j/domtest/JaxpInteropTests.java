@@ -74,7 +74,7 @@ class JaxpInteropTests {
         tf.newTransformer().transform(new ImmutableDomSource(doc), result);
         Document doc2 = result.getDocument();
 
-        assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), doc2.documentElement().greenTreeNode().toClarkNode());
+        assertEquals(doc.documentElement().greenTreeNode().toGreenClarkNode(), doc2.documentElement().greenTreeNode().toGreenClarkNode());
     }
 
     @Test
@@ -90,7 +90,7 @@ class JaxpInteropTests {
         tf.newTransformer().transform(streamSource, result);
         Document doc2 = result.getDocument();
 
-        assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), doc2.documentElement().greenTreeNode().toClarkNode());
+        assertEquals(doc.documentElement().greenTreeNode().toGreenClarkNode(), doc2.documentElement().greenTreeNode().toGreenClarkNode());
     }
 
     @Test
@@ -109,7 +109,7 @@ class JaxpInteropTests {
 
         Document resultDoc = result.getDocument();
 
-        assertEquals(validInstanceDoc.documentElement().greenTreeNode().toClarkNode(), resultDoc.documentElement().greenTreeNode().toClarkNode());
+        assertEquals(validInstanceDoc.documentElement().greenTreeNode().toGreenClarkNode(), resultDoc.documentElement().greenTreeNode().toGreenClarkNode());
     }
 
     @Test
@@ -133,6 +133,6 @@ class JaxpInteropTests {
     void testParsingOfDocumentWithNamespaceUndeclaration() {
         Document feed4Doc = parseDocument("/feed4.xml");
 
-        assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), feed4Doc.documentElement().greenTreeNode().toClarkNode());
+        assertEquals(doc.documentElement().greenTreeNode().toGreenClarkNode(), feed4Doc.documentElement().greenTreeNode().toGreenClarkNode());
     }
 }

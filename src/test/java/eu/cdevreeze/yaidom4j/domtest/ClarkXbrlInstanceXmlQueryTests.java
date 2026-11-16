@@ -69,7 +69,7 @@ class ClarkXbrlInstanceXmlQueryTests {
         this.xbrlDoc = DocumentParsers.builder().removingInterElementWhitespace().build()
                 .parse(new InputSource(inputStream))
                 .greenTreeNode()
-                .toClarkNode();
+                .toGreenClarkNode();
     }
 
     @Test

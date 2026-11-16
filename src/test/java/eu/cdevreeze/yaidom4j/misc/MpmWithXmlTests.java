@@ -64,29 +64,29 @@ class MpmWithXmlTests {
         Element thirdElement = parseElementOnClassPath("/valid-books.xml");
 
         assertEquals(
-                firstElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(1))).toClarkNode()
+                firstElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(1))).toGreenClarkNode()
         );
 
         assertEquals(
-                secondElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(3))).toClarkNode()
+                secondElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(3))).toGreenClarkNode()
         );
 
         assertEquals(
-                thirdElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(4))).toClarkNode()
+                thirdElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(4))).toGreenClarkNode()
         );
 
         assertEquals(
                 Map.of(
-                        List.of(1), firstElement.toClarkNode(),
-                        List.of(3), secondElement.toClarkNode(),
-                        List.of(4), thirdElement.toClarkNode()
+                        List.of(1), firstElement.toGreenClarkNode(),
+                        List.of(3), secondElement.toGreenClarkNode(),
+                        List.of(4), thirdElement.toGreenClarkNode()
                 ),
                 rootElements.entrySet()
                         .stream()
-                        .map(kv -> Map.entry(kv.getKey(), kv.getValue().toClarkNode()))
+                        .map(kv -> Map.entry(kv.getKey(), kv.getValue().toGreenClarkNode()))
                         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }
@@ -110,29 +110,29 @@ class MpmWithXmlTests {
         Element thirdElement = parseElementOnClassPath("/valid-books.xml");
 
         assertEquals(
-                firstElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(1))).toClarkNode()
+                firstElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(1))).toGreenClarkNode()
         );
 
         assertEquals(
-                secondElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(2, 1))).toClarkNode()
+                secondElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(2, 1))).toGreenClarkNode()
         );
 
         assertEquals(
-                thirdElement.toClarkNode(),
-                Objects.requireNonNull(rootElements.get(List.of(3))).toClarkNode()
+                thirdElement.toGreenClarkNode(),
+                Objects.requireNonNull(rootElements.get(List.of(3))).toGreenClarkNode()
         );
 
         assertEquals(
                 Map.of(
-                        List.of(1), firstElement.toClarkNode(),
-                        List.of(2, 1), secondElement.toClarkNode(),
-                        List.of(3), thirdElement.toClarkNode()
+                        List.of(1), firstElement.toGreenClarkNode(),
+                        List.of(2, 1), secondElement.toGreenClarkNode(),
+                        List.of(3), thirdElement.toGreenClarkNode()
                 ),
                 rootElements.entrySet()
                         .stream()
-                        .map(kv -> Map.entry(kv.getKey(), kv.getValue().toClarkNode()))
+                        .map(kv -> Map.entry(kv.getKey(), kv.getValue().toGreenClarkNode()))
                         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
         );
     }

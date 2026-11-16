@@ -80,11 +80,11 @@ class GreenTreeNodesTests {
         Element rootElement1 = rootElement1(innerText);
         Element rootElement2 = rootElement2(innerText);
 
-        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
-        assertEquals(doc1.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
-        assertEquals(doc3.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
+        assertEquals(doc1.documentElement().toGreenClarkNode(), doc2.documentElement().toGreenClarkNode());
+        assertEquals(doc1.documentElement().toGreenClarkNode(), doc3.documentElement().toGreenClarkNode());
+        assertEquals(doc3.documentElement().toGreenClarkNode(), doc2.documentElement().toGreenClarkNode());
 
-        assertNotEquals(doc1.documentElement().toClarkNode(), rootElement1.toClarkNode());
+        assertNotEquals(doc1.documentElement().toGreenClarkNode(), rootElement1.toGreenClarkNode());
 
         Element docRootElement1 = prepareForComparison(doc1.documentElement());
         Element docRootElement2 = prepareForComparison(doc2.documentElement());
@@ -93,10 +93,10 @@ class GreenTreeNodesTests {
                 rootElement1.descendantOrSelfElementStream().map(e -> e.name().getPrefix()).collect(Collectors.toSet()),
                 rootElement2.descendantOrSelfElementStream().map(e -> e.name().getPrefix()).collect(Collectors.toSet())
         );
-        assertEquals(rootElement1.toClarkNode(), rootElement2.toClarkNode());
+        assertEquals(rootElement1.toGreenClarkNode(), rootElement2.toGreenClarkNode());
 
-        assertEquals(docRootElement1.toClarkNode(), rootElement1.toClarkNode());
-        assertEquals(docRootElement2.toClarkNode(), rootElement2.toClarkNode());
+        assertEquals(docRootElement1.toGreenClarkNode(), rootElement1.toGreenClarkNode());
+        assertEquals(docRootElement2.toGreenClarkNode(), rootElement2.toGreenClarkNode());
     }
 
     private static final String ATOM_NS = "http://www.w3.org/2005/Atom";

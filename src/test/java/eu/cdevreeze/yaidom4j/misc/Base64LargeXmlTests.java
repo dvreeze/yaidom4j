@@ -148,7 +148,7 @@ class Base64LargeXmlTests {
         assertEquals(doc.documentElement().elementName(), nestedDoc.documentElement().elementName());
 
         // Hopefully we have equivalent XML again
-        assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), nestedDoc.documentElement().greenTreeNode().toClarkNode());
+        assertEquals(doc.documentElement().greenTreeNode().toGreenClarkNode(), nestedDoc.documentElement().greenTreeNode().toGreenClarkNode());
     }
 
     private static GreenNodes.Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {

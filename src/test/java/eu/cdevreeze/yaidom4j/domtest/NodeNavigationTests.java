@@ -79,8 +79,8 @@ class NodeNavigationTests {
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);
         assertEquals(
-                greenTreeNodes.stream().map(GreenNodes.Node::toClarkNode).toList(),
-                greenTreeFoundNodes.stream().map(GreenNodes.Node::toClarkNode).toList()
+                greenTreeNodes.stream().map(GreenNodes.Node::toGreenClarkNode).toList(),
+                greenTreeFoundNodes.stream().map(GreenNodes.Node::toGreenClarkNode).toList()
         );
         // For regular ("ancestry-aware") elements we have reference equality
         // So we don't compare those nodes, but instead compare the underlying green tree nodes
@@ -104,8 +104,8 @@ class NodeNavigationTests {
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);
         assertEquals(
-                greenTreeNodes.stream().map(GreenNodes.Node::toClarkNode).toList(),
-                greenTreeFoundNodes.stream().map(GreenNodes.Node::toClarkNode).toList()
+                greenTreeNodes.stream().map(GreenNodes.Node::toGreenClarkNode).toList(),
+                greenTreeFoundNodes.stream().map(GreenNodes.Node::toGreenClarkNode).toList()
         );
         // For regular ("ancestry-aware") elements we have reference equality
         // So we don't compare those nodes, but instead compare the underlying green tree nodes

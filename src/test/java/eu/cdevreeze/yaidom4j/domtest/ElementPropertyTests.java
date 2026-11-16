@@ -88,11 +88,11 @@ class ElementPropertyTests {
     @MethodSource("provideValidXmlDocUris")
     void testSameClarkNodesFoundFromGreenTreeDocAndClarkTreeDoc(URI xmlUri) {
         GreenNodes.Document greenTreeDoc = parseDocument(xmlUri).greenTreeNode();
-        GreenClarkNodes.Document clarkDoc = greenTreeDoc.toClarkNode();
+        GreenClarkNodes.Document clarkDoc = greenTreeDoc.toGreenClarkNode();
 
         List<GreenClarkNodes.Element> allElems1 = greenTreeDoc.documentElement()
                 .descendantOrSelfElementStream()
-                .map(GreenNodes.Element::toClarkNode)
+                .map(GreenNodes.Element::toGreenClarkNode)
                 .toList();
         List<GreenClarkNodes.Element> allElems2 = clarkDoc.documentElement()
                 .descendantOrSelfElementStream()

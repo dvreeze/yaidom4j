@@ -81,12 +81,12 @@ class IgnorableWhitespaceTests {
                 DocumentParsers.builder().removingInterElementWhitespace().build().parse(xmlFilePath.toUri());
 
         assertNotEquals(
-                otherDoc.documentElement().greenTreeNode().toClarkNode(),
-                document.documentElement().greenTreeNode().toClarkNode()
+                otherDoc.documentElement().greenTreeNode().toGreenClarkNode(),
+                document.documentElement().greenTreeNode().toGreenClarkNode()
         );
         assertEquals(
-                otherDoc.documentElement().greenTreeNode().toClarkNode(),
-                document.documentElement().greenTreeNode().removeInterElementWhitespace().toClarkNode()
+                otherDoc.documentElement().greenTreeNode().toGreenClarkNode(),
+                document.documentElement().greenTreeNode().removeInterElementWhitespace().toGreenClarkNode()
         );
     }
 
@@ -112,8 +112,8 @@ class IgnorableWhitespaceTests {
                 DocumentParsers.builder().removingInterElementWhitespace().build().parse(xmlFilePath.toUri());
 
         assertEquals(
-                otherDoc.documentElement().greenTreeNode().toClarkNode(),
-                document.documentElement().greenTreeNode().toClarkNode()
+                otherDoc.documentElement().greenTreeNode().toGreenClarkNode(),
+                document.documentElement().greenTreeNode().toGreenClarkNode()
         );
     }
 }

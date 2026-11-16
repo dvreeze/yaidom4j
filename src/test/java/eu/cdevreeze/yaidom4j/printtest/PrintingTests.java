@@ -80,8 +80,8 @@ class PrintingTests {
                 .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toGreenClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toGreenClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -101,8 +101,8 @@ class PrintingTests {
                 .parse(new InputSource(new ByteArrayInputStream(docAsString.getBytes())));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toGreenClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toGreenClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -117,8 +117,8 @@ class PrintingTests {
         Document doc = new Document(JaxpDomToImmutableDomConverter.convertDocument(w3cDoc));
 
         assertEquals(
-                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace(),
-                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toGreenClarkNode()).removeInterElementWhitespace(),
+                combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toGreenClarkNode().removeInterElementWhitespace())
         );
     }
 
@@ -133,10 +133,10 @@ class PrintingTests {
 
         assertEquals(
                 removeComments(
-                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toClarkNode()).removeInterElementWhitespace()
+                        combineAdjacentTextNodes(Objects.requireNonNull(document).documentElement().greenTreeNode().toGreenClarkNode()).removeInterElementWhitespace()
                 ),
                 removeComments(
-                        combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toClarkNode().removeInterElementWhitespace())
+                        combineAdjacentTextNodes(doc.documentElement().greenTreeNode().toGreenClarkNode().removeInterElementWhitespace())
                 )
         );
     }

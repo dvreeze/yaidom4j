@@ -45,7 +45,7 @@ class ClarkBookQueryTests extends AbstractBookQueryTests<GreenClarkNodes.Element
                 .documentElement()
                 .greenTreeNode()
                 .removeInterElementWhitespace()
-                .toClarkNode();
+                .toGreenClarkNode();
     }
 
     @Override

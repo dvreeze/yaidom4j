@@ -46,14 +46,14 @@ class GreenTreeXmlEqualityTests {
         Document doc1 = Objects.requireNonNull(getDocument1());
         Document doc2 = Objects.requireNonNull(getDocument2());
 
-        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
+        assertEquals(doc1.documentElement().toGreenClarkNode(), doc2.documentElement().toGreenClarkNode());
 
         List<Element> allElems1 = doc1.documentElement().descendantOrSelfElementStream().toList();
         List<Element> allElems2 = doc2.documentElement().descendantOrSelfElementStream().toList();
 
         boolean areEqual = allElems1.size() == allElems2.size() &&
                 IntStream.range(0, allElems1.size())
-                        .allMatch(i -> allElems1.get(i).toClarkNode().equals(allElems2.get(i).toClarkNode()));
+                        .allMatch(i -> allElems1.get(i).toGreenClarkNode().equals(allElems2.get(i).toGreenClarkNode()));
 
         assertTrue(areEqual);
 

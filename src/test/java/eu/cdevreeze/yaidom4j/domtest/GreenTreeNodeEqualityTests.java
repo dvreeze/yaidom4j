@@ -152,9 +152,9 @@ class GreenTreeNodeEqualityTests {
 
     @Test
     void testEqualDocumentElements() {
-        assertEquals(doc1.documentElement().toClarkNode(), doc2.documentElement().toClarkNode());
-        assertEquals(doc1.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
-        assertEquals(doc2.documentElement().toClarkNode(), doc3.documentElement().toClarkNode());
+        assertEquals(doc1.documentElement().toGreenClarkNode(), doc2.documentElement().toGreenClarkNode());
+        assertEquals(doc1.documentElement().toGreenClarkNode(), doc3.documentElement().toGreenClarkNode());
+        assertEquals(doc2.documentElement().toGreenClarkNode(), doc3.documentElement().toGreenClarkNode());
     }
 
     @Test
@@ -176,15 +176,15 @@ class GreenTreeNodeEqualityTests {
 
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> elements1.get(i).toClarkNode().equals(elements2.get(i).toClarkNode()))
+                        .allMatch(i -> elements1.get(i).toGreenClarkNode().equals(elements2.get(i).toGreenClarkNode()))
         );
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> elements1.get(i).toClarkNode().equals(elements3.get(i).toClarkNode()))
+                        .allMatch(i -> elements1.get(i).toGreenClarkNode().equals(elements3.get(i).toGreenClarkNode()))
         );
         assertTrue(
                 IntStream.range(0, elements1.size())
-                        .allMatch(i -> elements2.get(i).toClarkNode().equals(elements3.get(i).toClarkNode()))
+                        .allMatch(i -> elements2.get(i).toGreenClarkNode().equals(elements3.get(i).toGreenClarkNode()))
         );
     }
 }
