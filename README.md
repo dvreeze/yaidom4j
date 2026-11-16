@@ -136,7 +136,8 @@ The same querying stream pipeline above (but with different imports and bootstra
 works for multiple yaidom4j element implementations, and not just for the default immutable DOM
 implementation.
 
-Schema-aware parsing is also possible. The parsing code in the example above then becomes:
+Schema-aware parsing is also possible, although the resulting document is not schema-aware.
+The parsing code in the example above then becomes:
 
 ```java
 import eu.cdevreeze.yaidom4j.dom.Document;
@@ -212,7 +213,7 @@ Some characteristics of yaidom4j are as follows:
 * It can be used with StAX for keeping only chunks of XML in memory one chunk at a time, if the structure of the overall XML allows it
 
 Unlike libraries like [Saxon](https://www.saxonica.com/download/java.xml), yaidom4j does not have the aim of
-implementing XML standards. It does have the aim of making (non-schema-aware or schema-aware) XML querying simple and practical.
+implementing XML standards. It does have the aim of making (non-schema-aware) XML querying simple and practical.
 Keeping this limited scope in mind, comparisons to some other XML libraries are as follows:
 * Unlike JDOM, DOM4J, XOM, JAXP DOM, the native node implementations in yaidom4j are deeply immutable and thread-safe
 * Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
