@@ -57,9 +57,7 @@ public class GreenNodes {
         default Stream<Node> descendantOrSelfStream() {
             Stream<Node> selfStream = Stream.of(this);
             // Recursion
-            Stream<Node> descendantStream =
-                    childStream().flatMap(Node::descendantOrSelfStream);
-            return Stream.concat(selfStream, descendantStream);
+            return Stream.concat(selfStream, childStream().flatMap(Node::descendantOrSelfStream));
         }
 
         @Override
@@ -348,9 +346,10 @@ public class GreenNodes {
         public Stream<Element> descendantOrSelfElementStream() {
             Stream<Element> selfStream = Stream.of(this);
             // Recursion
-            Stream<Element> descendantElemStream =
-                    childElementStream().flatMap(Element::descendantOrSelfElementStream);
-            return Stream.concat(selfStream, descendantElemStream);
+            return Stream.concat(
+                    selfStream,
+                    childElementStream().flatMap(Element::descendantOrSelfElementStream)
+            );
         }
 
         @Override

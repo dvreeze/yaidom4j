@@ -162,9 +162,10 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     public Stream<Element> descendantOrSelfElementStream() {
         Stream<Element> selfStream = Stream.of(this);
         // Recursion
-        Stream<Element> descendantElemStream =
-                childElementStream().flatMap(Element::descendantOrSelfElementStream);
-        return Stream.concat(selfStream, descendantElemStream);
+        return Stream.concat(
+                selfStream,
+                childElementStream().flatMap(Element::descendantOrSelfElementStream)
+        );
     }
 
     @Override

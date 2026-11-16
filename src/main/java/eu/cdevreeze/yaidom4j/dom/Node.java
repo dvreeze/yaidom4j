@@ -49,9 +49,7 @@ public sealed interface Node extends NodeApi<Node> permits CanBeChild, Document,
     default Stream<Node> descendantOrSelfStream() {
         Stream<Node> selfStream = Stream.of(this);
         // Recursion
-        Stream<Node> descendantStream =
-                childStream().flatMap(Node::descendantOrSelfStream);
-        return Stream.concat(selfStream, descendantStream);
+        return Stream.concat(selfStream, childStream().flatMap(Node::descendantOrSelfStream));
     }
 
     @Override
