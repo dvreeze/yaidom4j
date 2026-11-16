@@ -196,12 +196,12 @@ improve. See for example the TODOs below.
 But first let's mention recent API changes:
 * The node/element API has been refactored in order to more closely follow the XPath Data Model (e.g. documents are nodes too)
 * This also means that yaidom4j now has a general node query API (with common "XPath axes")
-* The element query API is now a convenience query API, that usually happens to be more practical (i.e. type-safe) in practice
+* The element query API is now a convenience query API, that usually happens to be more practical (i.e. type-safe) in practice than the general node query API
 * After all, only documents and elements can have children, and therefore descendant nodes
 * The distinction between ancestry-aware nodes and non-ancestry-aware nodes is now inspired by so-called "red-green trees"
 * For more on red-green trees, see [Roslyn compiler's red-green trees](https://ericlippert.com/2012/06/08/red-green-trees/)
 * Our "green trees" are not internal implementation details, but regular ("ancestry-aware") nodes are "red", and the "non-ancestry-aware" nodes are explicitly defined as "green" nodes
-* So now we have regular "red" nodes, underlying "green" nodes, from which we can derive "green Clark" nodes; the same 3 kinds as before but with different names
+* So now we have regular "red" nodes and underlying "green" nodes, from which we can derive "green Clark" nodes; the same 3 kinds as before but with different names
 
 TODO:
 * Stabilize API (and keep it small and simple)
