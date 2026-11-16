@@ -17,10 +17,7 @@
 package eu.cdevreeze.yaidom4j.domtest;
 
 import module java.base;
-import eu.cdevreeze.yaidom4j.dom.Document;
-import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenClarkNodes;
-import eu.cdevreeze.yaidom4j.dom.GreenNodes;
+import eu.cdevreeze.yaidom4j.dom.*;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -99,6 +96,90 @@ class ElementPropertyTests {
                 .toList();
 
         assertEquals(allElems1, allElems2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValidXmlDocUris")
+    void testQueryDescendantOrSelfElementsInTermsOfNodeQuery(URI xmlUri) {
+        Document doc = parseDocument(xmlUri);
+
+        Predicate<Element> p1 = e -> e.elementName().getLocalPart().length() % 2 == 0;
+
+        List<Element> elems1 = doc.documentElement().descendantOrSelfElementStream(p1).toList();
+
+        Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
+
+        List<Element> elems2 = doc.documentElement().descendantOrSelfStream(p2)
+                .map(Node::asElement)
+                .toList();
+
+        assertEquals(
+                elems1.stream().map(Element::greenTreeNode).toList(),
+                elems2.stream().map(Element::greenTreeNode).toList()
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValidXmlDocUris")
+    void testQueryDescendantElementsInTermsOfNodeQuery(URI xmlUri) {
+        Document doc = parseDocument(xmlUri);
+
+        Predicate<Element> p1 = e -> e.elementName().getLocalPart().length() % 2 == 0;
+
+        List<Element> elems1 = doc.documentElement().descendantElementStream(p1).toList();
+
+        Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
+
+        List<Element> elems2 = doc.documentElement().descendantStream(p2)
+                .map(Node::asElement)
+                .toList();
+
+        assertEquals(
+                elems1.stream().map(Element::greenTreeNode).toList(),
+                elems2.stream().map(Element::greenTreeNode).toList()
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValidXmlDocUris")
+    void testQueryAncestorOrSelfElementsInTermsOfNodeQuery(URI xmlUri) {
+        Document doc = parseDocument(xmlUri);
+
+        Predicate<Element> p1 = e -> e.elementName().getLocalPart().length() % 2 == 0;
+
+        List<Element> elems1 = doc.documentElement().ancestorOrSelfElementStream(p1).toList();
+
+        Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
+
+        List<Element> elems2 = doc.documentElement().ancestorOrSelfStream(p2)
+                .map(Node::asElement)
+                .toList();
+
+        assertEquals(
+                elems1.stream().map(Element::greenTreeNode).toList(),
+                elems2.stream().map(Element::greenTreeNode).toList()
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValidXmlDocUris")
+    void testQueryAncestorElementsInTermsOfNodeQuery(URI xmlUri) {
+        Document doc = parseDocument(xmlUri);
+
+        Predicate<Element> p1 = e -> e.elementName().getLocalPart().length() % 2 == 0;
+
+        List<Element> elems1 = doc.documentElement().ancestorElementStream(p1).toList();
+
+        Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
+
+        List<Element> elems2 = doc.documentElement().ancestorStream(p2)
+                .map(Node::asElement)
+                .toList();
+
+        assertEquals(
+                elems1.stream().map(Element::greenTreeNode).toList(),
+                elems2.stream().map(Element::greenTreeNode).toList()
+        );
     }
 
     private static Stream<Arguments> provideValidXmlDocUris() throws URISyntaxException {
