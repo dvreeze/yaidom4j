@@ -136,6 +136,56 @@ The same querying stream pipeline above (but with different imports and bootstra
 works for multiple yaidom4j element implementations, and not just for the default immutable DOM
 implementation.
 
+Schema-aware parsing is also possible. The parsing code in the example above then becomes:
+
+```java
+import eu.cdevreeze.yaidom4j.dom.Document;
+import eu.cdevreeze.yaidom4j.dom.Element;
+import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
+import eu.cdevreeze.yaidom4j.parse.DocumentParser;
+import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
+
+import javax.xml.validation.Schema;
+import java.nio.file.Path;
+import java.util.List;
+
+import static eu.cdevreeze.yaidom4j.dom.Element.*;
+
+Schema schema = buildSchema(); // Implementation omitted here
+
+DocumentParser parser = DocumentParsers.builder(
+        SaxParsers.newSaxParserFactory(schema)
+).build();
+
+Document doc = parser.parse(Path.of("bookstore.xml").toUri());
+```
+
+Instead of querying for "regular" elements we could also query for the underlying "green" nodes.
+After all, we do not query for node ancestors. The querying code of the example above then becomes:
+
+```java
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
+import eu.cdevreeze.yaidom4j.parse.DocumentParser;
+import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
+
+import java.nio.file.Path;
+import java.util.List;
+
+DocumentParser parser = DocumentParsers.instance();
+GreenNodes.Document doc = parser.parse(Path.of("bookstore.xml").toUri()).greenTreeNode();
+
+var ns = "http://bookstore";
+
+List<String> februaryMagazineTitles = doc.documentElement()
+        .childElementStream(GreenNodes.Element.hasName(ns, "Magazine"))
+        .filter(GreenNodes.Element.hasAttributeValue("Month", "February"))
+        .flatMap(e -> e.childElementStream(GreenNodes.Element.hasName(ns, "Title")))
+        .map(GreenNodes.Element::text)
+        .toList();
+
+// [National Geographic, Newsweek]
+```
+
 ## Characteristics of yaidom4j
 
 Some characteristics of yaidom4j are as follows:
