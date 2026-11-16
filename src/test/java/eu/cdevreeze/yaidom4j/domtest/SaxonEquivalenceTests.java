@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.parse.DocumentProducingSaxHandler;
 import eu.cdevreeze.yaidom4j.print.DocumentConsumingSaxEventGenerator;
@@ -124,7 +124,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(namespaces, namespaces2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var namespaces3 = xdmDoc
@@ -161,7 +161,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(names, names2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var names3 = xdmDoc
@@ -177,7 +177,7 @@ class SaxonEquivalenceTests {
     void testQueryPrefixOfRootElement() {
         assertEquals("books", rootElement().elementName().getPrefix());
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         assertEquals(
@@ -200,7 +200,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(Set.of(""), prefixes);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         var prefixes2 = xdmDoc
@@ -227,14 +227,14 @@ class SaxonEquivalenceTests {
 
         Map<QName, Long> childElemCounts2 =
                 rootElement().topmostDescendantOrSelfElementStream(e ->
-                                GreenXmlTrees.Element.hasName(NS, "Book").test(e.greenTreeNode()) ||
-                                        GreenXmlTrees.Element.hasName(NS, "Magazine").test(e.greenTreeNode())
+                                GreenNodes.Element.hasName(NS, "Book").test(e.greenTreeNode()) ||
+                                        GreenNodes.Element.hasName(NS, "Magazine").test(e.greenTreeNode())
                         )
                         .collect(Collectors.groupingBy(Element::elementName, Collectors.counting()));
 
         assertEquals(childElemCounts, childElemCounts2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Map<QName, Long> childElemCounts3 = xdmDoc
@@ -256,7 +256,7 @@ class SaxonEquivalenceTests {
     void testQueryMagazineMonths() {
         List<String> magazineMonths = rootElement()
                 .greenTreeNode()
-                .childElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
+                .childElementStream(GreenNodes.Element.hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
@@ -267,13 +267,13 @@ class SaxonEquivalenceTests {
 
         List<String> magazineMonths2 = rootElement()
                 .greenTreeNode()
-                .descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
+                .descendantOrSelfElementStream(GreenNodes.Element.hasName(NS, "Magazine"))
                 .flatMap(e -> e.attributeOption(new QName("Month")).stream())
                 .toList();
 
         assertEquals(magazineMonths, magazineMonths2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineMonths3 = xdmDoc
@@ -289,9 +289,9 @@ class SaxonEquivalenceTests {
 
     @Test
     void testQueryMagazineTitles() {
-        List<String> magazineTitles = rootElement().greenTreeNode().childElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.childElementStream(GreenXmlTrees.Element.hasName(NS, "Title")))
-                .map(GreenXmlTrees.Element::text)
+        List<String> magazineTitles = rootElement().greenTreeNode().childElementStream(GreenNodes.Element.hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.childElementStream(GreenNodes.Element.hasName(NS, "Title")))
+                .map(GreenNodes.Element::text)
                 .distinct()
                 .toList();
 
@@ -306,15 +306,15 @@ class SaxonEquivalenceTests {
 
         List<String> magazineTitles2 = rootElement()
                 .greenTreeNode()
-                .descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Magazine"))
-                .flatMap(magazineElem -> magazineElem.descendantOrSelfElementStream(GreenXmlTrees.Element.hasName(NS, "Title")))
-                .map(GreenXmlTrees.Element::text)
+                .descendantOrSelfElementStream(GreenNodes.Element.hasName(NS, "Magazine"))
+                .flatMap(magazineElem -> magazineElem.descendantOrSelfElementStream(GreenNodes.Element.hasName(NS, "Title")))
+                .map(GreenNodes.Element::text)
                 .distinct()
                 .toList();
 
         assertEquals(magazineTitles, magazineTitles2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> magazineTitles3 = xdmDoc
@@ -371,7 +371,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(bookTitlesCoauthoredByJenniferWidom, bookTitlesCoauthoredByJenniferWidom2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -446,7 +446,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(authorNames, authorNames2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Function<XdmNode, String> getAuthorNameInSaxon = authorElem -> {
@@ -514,7 +514,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(bookIsbnsCoauthoredByJenniferWidom, bookIsbnsCoauthoredByJenniferWidom2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         Predicate<XdmNode> authorIsJenniferWidomInSaxon = authorElem ->
@@ -573,7 +573,7 @@ class SaxonEquivalenceTests {
 
         assertEquals(februaryMagazineTitles, februaryMagazineTitles2);
 
-        Document doc = new Document(new GreenXmlTrees.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
+        Document doc = new Document(new GreenNodes.Document(Optional.empty(), List.of(rootElement().greenTreeNode())));
         XdmNode xdmDoc = convertToSaxon(doc, processor);
 
         List<String> februaryMagazineTitles3 = xdmDoc

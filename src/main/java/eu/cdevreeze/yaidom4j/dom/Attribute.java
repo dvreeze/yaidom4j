@@ -31,9 +31,9 @@ public final class Attribute implements Node {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.Attribute greenTreeNode;
+    private final GreenNodes.Attribute greenTreeNode;
 
-    public Attribute(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Attribute greenTreeNode) {
+    public Attribute(int offset, @Nullable Node parentOrNull, GreenNodes.Attribute greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -50,7 +50,7 @@ public final class Attribute implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Attribute greenTreeNode() {
+    public GreenNodes.Attribute greenTreeNode() {
         return greenTreeNode;
     }
 

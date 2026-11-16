@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.dom.Node;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.Test;
@@ -73,14 +73,14 @@ class NodeNavigationTests {
                 .flatMap(p -> doc.navigate(p).stream())
                 .toList();
 
-        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
-        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenNodes.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenNodes.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
 
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);
         assertEquals(
-                greenTreeNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList(),
-                greenTreeFoundNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList()
+                greenTreeNodes.stream().map(GreenNodes.Node::toClarkNode).toList(),
+                greenTreeFoundNodes.stream().map(GreenNodes.Node::toClarkNode).toList()
         );
         // For regular ("ancestry-aware") elements we have reference equality
         // So we don't compare those nodes, but instead compare the underlying green tree nodes
@@ -98,14 +98,14 @@ class NodeNavigationTests {
                 .flatMap(p -> docElem.navigate(p).stream())
                 .toList();
 
-        List<GreenXmlTrees.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
-        List<GreenXmlTrees.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenNodes.Node> greenTreeNodes = nodes.stream().map(Node::greenTreeNode).toList();
+        List<GreenNodes.Node> greenTreeFoundNodes = foundNodes.stream().map(Node::greenTreeNode).toList();
 
         assertEquals(greenTreeNodes.size(), greenTreeFoundNodes.size());
         assertEquals(greenTreeNodes, greenTreeFoundNodes);
         assertEquals(
-                greenTreeNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList(),
-                greenTreeFoundNodes.stream().map(GreenXmlTrees.Node::toClarkNode).toList()
+                greenTreeNodes.stream().map(GreenNodes.Node::toClarkNode).toList(),
+                greenTreeFoundNodes.stream().map(GreenNodes.Node::toClarkNode).toList()
         );
         // For regular ("ancestry-aware") elements we have reference equality
         // So we don't compare those nodes, but instead compare the underlying green tree nodes

@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.domtest;
 
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

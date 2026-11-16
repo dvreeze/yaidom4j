@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.domtest;
 
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 import javax.xml.namespace.QName;
@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element.hasName;
+import static eu.cdevreeze.yaidom4j.dom.GreenNodes.Element.hasName;
 
 /**
  * XBRL instance data model. Incorrect and incomplete, but good enough for the tests it is used in.

@@ -30,9 +30,9 @@ public final class Text implements CanBeChild {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.Text greenTreeNode;
+    private final GreenNodes.Text greenTreeNode;
 
-    public Text(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Text greenTreeNode) {
+    public Text(int offset, @Nullable Node parentOrNull, GreenNodes.Text greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -49,7 +49,7 @@ public final class Text implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.Text greenTreeNode() {
+    public GreenNodes.Text greenTreeNode() {
         return greenTreeNode;
     }
 

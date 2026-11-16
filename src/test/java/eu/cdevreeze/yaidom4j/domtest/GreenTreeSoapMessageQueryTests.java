@@ -17,8 +17,8 @@
 package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
 import eu.cdevreeze.yaidom4j.jaxp.DocumentBuilders;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import eu.cdevreeze.yaidom4j.parse.JaxpDomToImmutableDomConverter;
@@ -33,7 +33,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import static eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element.hasName;
+import static eu.cdevreeze.yaidom4j.dom.GreenNodes.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

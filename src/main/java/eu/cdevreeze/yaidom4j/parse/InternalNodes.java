@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.parse;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -34,13 +34,13 @@ class InternalNodes {
 
     sealed interface InternalNode permits InternalCanBeChild, InternalText {
 
-        GreenXmlTrees.Node toGreenTreeNode();
+        GreenNodes.Node toGreenTreeNode();
     }
 
     sealed interface InternalCanBeChild extends InternalNode {
 
         @Override
-        GreenXmlTrees.CanBeChild toGreenTreeNode();
+        GreenNodes.CanBeChild toGreenTreeNode();
     }
 
     static final class InternalElement implements InternalCanBeChild {
@@ -80,13 +80,13 @@ class InternalNodes {
         }
 
         @Override
-        public GreenXmlTrees.Element toGreenTreeNode() {
+        public GreenNodes.Element toGreenTreeNode() {
             // Recursive
-            return new GreenXmlTrees.Element(
+            return new GreenNodes.Element(
                     name,
                     attributes,
                     namespaceScope,
-                    children.stream().map(InternalNode::toGreenTreeNode).map(GreenXmlTrees.Node::asCanBeChild).toList()
+                    children.stream().map(InternalNode::toGreenTreeNode).map(GreenNodes.Node::asCanBeChild).toList()
             );
         }
     }
@@ -94,8 +94,8 @@ class InternalNodes {
     record InternalText(String value) implements InternalNode {
 
         @Override
-        public GreenXmlTrees.Text toGreenTreeNode() {
-            return new GreenXmlTrees.Text(value);
+        public GreenNodes.Text toGreenTreeNode() {
+            return new GreenNodes.Text(value);
         }
 
     }
@@ -103,16 +103,16 @@ class InternalNodes {
     record InternalComment(String value) implements InternalCanBeChild {
 
         @Override
-        public GreenXmlTrees.Comment toGreenTreeNode() {
-            return new GreenXmlTrees.Comment(value);
+        public GreenNodes.Comment toGreenTreeNode() {
+            return new GreenNodes.Comment(value);
         }
     }
 
     record InternalProcessingInstruction(String target, String data) implements InternalCanBeChild {
 
         @Override
-        public GreenXmlTrees.ProcessingInstruction toGreenTreeNode() {
-            return new GreenXmlTrees.ProcessingInstruction(target, data);
+        public GreenNodes.ProcessingInstruction toGreenTreeNode() {
+            return new GreenNodes.ProcessingInstruction(target, data);
         }
     }
 }

@@ -17,7 +17,7 @@
 package eu.cdevreeze.yaidom4j.misc;
 
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.dom.Node;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
@@ -66,7 +66,7 @@ class ThreadSafetyTest {
 
     @Test
     void testThreadSafety() throws ExecutionException, InterruptedException {
-        final AtomicReference<GreenXmlTrees.Element> elementHolder = new AtomicReference<>(createElement());
+        final AtomicReference<GreenNodes.Element> elementHolder = new AtomicReference<>(createElement());
 
         // Node navigation paths starting with an element, not a document
         List<List<Integer>> nodeNavigationPaths =
@@ -90,7 +90,7 @@ class ThreadSafetyTest {
 
         resultFuture.get();
 
-        GreenXmlTrees.Element endElement = elementHolder.get();
+        GreenNodes.Element endElement = elementHolder.get();
 
         DocumentPrinter docPrinter = DocumentPrinters.instance();
 
@@ -108,14 +108,14 @@ class ThreadSafetyTest {
         }
     }
 
-    private GreenXmlTrees.Element createElement() {
+    private GreenNodes.Element createElement() {
         InputStream is = ThreadSafetyTest.class.getResourceAsStream("/ones.xml");
         DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
         return docParser.parse(new InputSource(is)).documentElement().greenTreeNode();
     }
 
     private void updateAllElements(
-            AtomicReference<GreenXmlTrees.Element> elementHolder,
+            AtomicReference<GreenNodes.Element> elementHolder,
             List<List<Integer>> nodeNavigationPaths
     ) {
         updateAllElements(
@@ -130,7 +130,7 @@ class ThreadSafetyTest {
                         logger.trace("Current thread (updating element from {} to {}): {}", oldValue, newValue, Thread.currentThread());
                         return elem.withChildren(
                                 List.of(
-                                        new GreenXmlTrees.Text(String.valueOf(newValue))
+                                        new GreenNodes.Text(String.valueOf(newValue))
                                 )
                         );
                     }
@@ -139,9 +139,9 @@ class ThreadSafetyTest {
     }
 
     private void updateAllElements(
-            AtomicReference<GreenXmlTrees.Element> elementHolder,
+            AtomicReference<GreenNodes.Element> elementHolder,
             List<List<Integer>> nodeNavigationPaths,
-            UnaryOperator<GreenXmlTrees.Element> f
+            UnaryOperator<GreenNodes.Element> f
     ) {
         if (!nodeNavigationPaths.isEmpty()) {
             List<Integer> lastPath = nodeNavigationPaths.getLast();
@@ -156,10 +156,10 @@ class ThreadSafetyTest {
         }
     }
 
-    private GreenXmlTrees.Element updateElement(
-            GreenXmlTrees.Element element,
+    private GreenNodes.Element updateElement(
+            GreenNodes.Element element,
             List<Integer> nodeNavigationPath,
-            UnaryOperator<GreenXmlTrees.Element> f) {
+            UnaryOperator<GreenNodes.Element> f) {
         // Very expensive recursive function
 
         if (nodeNavigationPath.isEmpty()) {
@@ -174,7 +174,7 @@ class ThreadSafetyTest {
                             .map(ch -> {
                                 int currNodeIndex = nodeIndex.getAndIncrement();
 
-                                if (ch instanceof GreenXmlTrees.Element che) {
+                                if (ch instanceof GreenNodes.Element che) {
                                     if (currNodeIndex == firstNavigationPathEntry) {
                                         // Recursive call
                                         return updateElement(che, nodeNavigationPath.stream().skip(1).toList(), f);

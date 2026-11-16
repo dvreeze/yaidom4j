@@ -20,7 +20,7 @@ import module java.base;
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
 import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -71,13 +71,13 @@ class ElementPropertyTests {
     @MethodSource("provideValidXmlDocUris")
     void testSameGreenNodesFoundFromDocAndGreenTreeDoc(URI xmlUri) {
         Document doc = parseDocument(xmlUri);
-        GreenXmlTrees.Document greenTreeDoc = doc.greenTreeNode();
+        GreenNodes.Document greenTreeDoc = doc.greenTreeNode();
 
-        List<GreenXmlTrees.Element> allElems1 = doc.documentElement()
+        List<GreenNodes.Element> allElems1 = doc.documentElement()
                 .descendantOrSelfElementStream()
                 .map(Element::greenTreeNode)
                 .toList();
-        List<GreenXmlTrees.Element> allElems2 = greenTreeDoc.documentElement()
+        List<GreenNodes.Element> allElems2 = greenTreeDoc.documentElement()
                 .descendantOrSelfElementStream()
                 .toList();
 
@@ -87,12 +87,12 @@ class ElementPropertyTests {
     @ParameterizedTest
     @MethodSource("provideValidXmlDocUris")
     void testSameClarkNodesFoundFromGreenTreeDocAndClarkTreeDoc(URI xmlUri) {
-        GreenXmlTrees.Document greenTreeDoc = parseDocument(xmlUri).greenTreeNode();
+        GreenNodes.Document greenTreeDoc = parseDocument(xmlUri).greenTreeNode();
         GreenClarkTrees.Document clarkDoc = greenTreeDoc.toClarkNode();
 
         List<GreenClarkTrees.Element> allElems1 = greenTreeDoc.documentElement()
                 .descendantOrSelfElementStream()
-                .map(GreenXmlTrees.Element::toClarkNode)
+                .map(GreenNodes.Element::toClarkNode)
                 .toList();
         List<GreenClarkTrees.Element> allElems2 = clarkDoc.documentElement()
                 .descendantOrSelfElementStream()

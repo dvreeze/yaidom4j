@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.Test;
@@ -42,10 +42,10 @@ class UpdateTest {
 
     @Test
     void testUpdateChildElements() {
-        GreenXmlTrees.Element element = createElement("/ones.xml");
+        GreenNodes.Element element = createElement("/ones.xml");
 
-        GreenXmlTrees.Element updatedElement = element.transformChildElements(e ->
-                new GreenXmlTrees.Element(
+        GreenNodes.Element updatedElement = element.transformChildElements(e ->
+                new GreenNodes.Element(
                         new QName("onesChild"),
                         e.attributes(),
                         e.namespaceScope(),
@@ -55,22 +55,22 @@ class UpdateTest {
 
         assertEquals(
                 Set.of(new QName("onesChild")),
-                updatedElement.childElementStream().map(GreenXmlTrees.Element::name).collect(Collectors.toSet())
+                updatedElement.childElementStream().map(GreenNodes.Element::name).collect(Collectors.toSet())
         );
         assertEquals(
                 Set.of(new QName("grandchild"), new QName("number")),
                 updatedElement.childElementStream()
-                        .flatMap(GreenXmlTrees.Element::descendantElementStream)
-                        .map(GreenXmlTrees.Element::name)
+                        .flatMap(GreenNodes.Element::descendantElementStream)
+                        .map(GreenNodes.Element::name)
                         .collect(Collectors.toSet())
         );
     }
 
     @Test
     void testEquivalentTransformationAndUpdate() {
-        GreenXmlTrees.Element element = createElement("/ones.xml");
+        GreenNodes.Element element = createElement("/ones.xml");
 
-        GreenXmlTrees.Element updatedElement = element.transformDescendantOrSelfElements(this::addOneToElement);
+        GreenNodes.Element updatedElement = element.transformDescendantOrSelfElements(this::addOneToElement);
 
         assertTrue(
                 updatedElement.descendantOrSelfElementStream().allMatch(e ->
@@ -79,13 +79,13 @@ class UpdateTest {
         );
     }
 
-    private GreenXmlTrees.Element addOneToElement(GreenXmlTrees.Element elem) {
+    private GreenNodes.Element addOneToElement(GreenNodes.Element elem) {
         if (elem.text().isBlank()) {
             return elem;
         } else {
             return elem.withChildren(
                     List.of(
-                            new GreenXmlTrees.Text(
+                            new GreenNodes.Text(
                                     String.valueOf(Integer.parseInt(elem.text()) + 1)
                             )
                     )
@@ -93,7 +93,7 @@ class UpdateTest {
         }
     }
 
-    private GreenXmlTrees.Element createElement(String classPathResource) {
+    private GreenNodes.Element createElement(String classPathResource) {
         InputStream is = UpdateTest.class.getResourceAsStream(classPathResource);
         DocumentParser docParser = DocumentParsers.builder().removingInterElementWhitespace().build();
         return docParser.parse(new InputSource(is)).documentElement().greenTreeNode();

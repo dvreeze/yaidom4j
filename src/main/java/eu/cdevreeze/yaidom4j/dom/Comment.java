@@ -30,9 +30,9 @@ public final class Comment implements CanBeChild {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.Comment greenTreeNode;
+    private final GreenNodes.Comment greenTreeNode;
 
-    public Comment(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Comment greenTreeNode) {
+    public Comment(int offset, @Nullable Node parentOrNull, GreenNodes.Comment greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -49,7 +49,7 @@ public final class Comment implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.Comment greenTreeNode() {
+    public GreenNodes.Comment greenTreeNode() {
         return greenTreeNode;
     }
 

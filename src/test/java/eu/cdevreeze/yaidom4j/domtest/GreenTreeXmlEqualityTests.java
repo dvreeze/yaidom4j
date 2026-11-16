@@ -17,9 +17,9 @@
 package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Text;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Text;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;

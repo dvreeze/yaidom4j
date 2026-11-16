@@ -19,8 +19,8 @@ package eu.cdevreeze.yaidom4j.conformance.xmltest;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import net.sf.saxon.s9api.*;
@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.xml.namespace.QName;
 
-import static eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element.hasName;
+import static eu.cdevreeze.yaidom4j.dom.GreenNodes.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

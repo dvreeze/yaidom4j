@@ -20,7 +20,7 @@ import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.queryapi.ElementApi;
 import eu.cdevreeze.yaidom4j.queryapi.NodeApi;
@@ -60,7 +60,7 @@ public class SaxonNodes {
 
         boolean isElement();
 
-        GreenXmlTrees.Node toGreenTreeNode();
+        GreenNodes.Node toGreenTreeNode();
 
         GreenClarkTrees.Node toClarkNode();
 
@@ -182,14 +182,14 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Document toGreenTreeNode() {
+        public GreenNodes.Document toGreenTreeNode() {
             var uriOption = Optional.ofNullable(xdmNode.getUnderlyingNode().getSystemId()).map(URI::create);
-            return new GreenXmlTrees.Document(
+            return new GreenNodes.Document(
                     uriOption,
                     xdmNode().select(Steps.child())
                             .flatMap(n -> optionalNodeFrom(n).stream())
                             .map(Node::toGreenTreeNode)
-                            .map(GreenXmlTrees.Node::asCanBeChild)
+                            .map(GreenNodes.Node::asCanBeChild)
                             .toList()
             );
         }
@@ -242,8 +242,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Attribute toGreenTreeNode() {
-            return new GreenXmlTrees.Attribute(
+        public GreenNodes.Attribute toGreenTreeNode() {
+            return new GreenNodes.Attribute(
                     xdmNode.getNodeName().getStructuredQName().toJaxpQName(),
                     xdmNode.getStringValue()
             );
@@ -292,8 +292,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Namespace toGreenTreeNode() {
-            return new GreenXmlTrees.Namespace(
+        public GreenNodes.Namespace toGreenTreeNode() {
+            return new GreenNodes.Namespace(
                     xdmNode.getUnderlyingNode().getDisplayName(),
                     xdmNode.getStringValue()
             );
@@ -328,13 +328,13 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Element toGreenTreeNode() {
+        public GreenNodes.Element toGreenTreeNode() {
             // Recursive
-            return new GreenXmlTrees.Element(
+            return new GreenNodes.Element(
                     elementName(),
                     attributes(),
                     namespaceScope(),
-                    childNodeStream().map(Node::toGreenTreeNode).map(GreenXmlTrees.Node::asCanBeChild).toList()
+                    childNodeStream().map(Node::toGreenTreeNode).map(GreenNodes.Node::asCanBeChild).toList()
             );
         }
 
@@ -530,8 +530,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Text toGreenTreeNode() {
-            return new GreenXmlTrees.Text(value());
+        public GreenNodes.Text toGreenTreeNode() {
+            return new GreenNodes.Text(value());
         }
 
         @Override
@@ -578,8 +578,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.Comment toGreenTreeNode() {
-            return new GreenXmlTrees.Comment(value());
+        public GreenNodes.Comment toGreenTreeNode() {
+            return new GreenNodes.Comment(value());
         }
 
         @Override
@@ -630,8 +630,8 @@ public class SaxonNodes {
         }
 
         @Override
-        public GreenXmlTrees.ProcessingInstruction toGreenTreeNode() {
-            return new GreenXmlTrees.ProcessingInstruction(target(), data());
+        public GreenNodes.ProcessingInstruction toGreenTreeNode() {
+            return new GreenNodes.ProcessingInstruction(target(), data());
         }
 
         @Override

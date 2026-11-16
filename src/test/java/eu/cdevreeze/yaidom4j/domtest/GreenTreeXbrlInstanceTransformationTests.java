@@ -16,11 +16,11 @@
 
 package eu.cdevreeze.yaidom4j.domtest;
 
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.CanBeChild;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Text;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.CanBeChild;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Text;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -81,7 +81,7 @@ class GreenTreeXbrlInstanceTransformationTests {
                 List.of(new Text(String.valueOf(2500)))
         );
 
-        List<GreenXmlTrees.CanBeChild> newInstanceChildren = instance.element()
+        List<GreenNodes.CanBeChild> newInstanceChildren = instance.element()
                 .children()
                 .stream()
                 .flatMap(ch -> switch (ch) {

@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.misc;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import eu.cdevreeze.yaidom4j.print.DocumentPrinters;
 import org.junit.jupiter.api.Test;
@@ -103,7 +103,7 @@ class Base64LargeXmlTests {
         String ns = doc.documentElement().elementName().getNamespaceURI();
         String prefix = doc.documentElement().elementName().getPrefix();
 
-        GreenXmlTrees.Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
+        GreenNodes.Element rootElem = createWrapperElementTree(base64EncodedXmlAsString, nsScope, ns, prefix);
 
         String wrapperXmlString = DocumentPrinters.instance().print(Element.of(rootElem));
 
@@ -115,14 +115,14 @@ class Base64LargeXmlTests {
         System.out.println(
                 DocumentPrinters.instance().print(
                         new Document(
-                                new GreenXmlTrees.Document(
+                                new GreenNodes.Document(
                                         Optional.empty(),
                                         List.of(
                                                 wrapperDoc.documentElement().greenTreeNode().transformDescendantElements(
                                                         e -> e.withChildren(
                                                                 e.children()
                                                                         .stream()
-                                                                        .filter(n -> !(n instanceof GreenXmlTrees.Text))
+                                                                        .filter(n -> !(n instanceof GreenNodes.Text))
                                                                         .toList()
                                                         )
                                                 )
@@ -151,17 +151,17 @@ class Base64LargeXmlTests {
         assertEquals(doc.documentElement().greenTreeNode().toClarkNode(), nestedDoc.documentElement().greenTreeNode().toClarkNode());
     }
 
-    private static GreenXmlTrees.Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {
-        return new GreenXmlTrees.Element(
+    private static GreenNodes.Element createWrapperElementTree(String childElementText, NamespaceScope nsScope, String ns, String prefix) {
+        return new GreenNodes.Element(
                 new QName(ns, "dummyRoot", prefix),
                 Map.of(),
                 nsScope,
                 List.of(
-                        new GreenXmlTrees.Element(
+                        new GreenNodes.Element(
                                 new QName(ns, "dummyChild", prefix),
                                 Map.of(),
                                 nsScope,
-                                List.of(new GreenXmlTrees.Text(childElementText))
+                                List.of(new GreenNodes.Text(childElementText))
                         )
                 )
         );

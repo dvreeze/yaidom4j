@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.yaidom4j.misc;
 
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;

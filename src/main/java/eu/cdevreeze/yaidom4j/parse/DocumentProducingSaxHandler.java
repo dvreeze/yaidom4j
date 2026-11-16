@@ -20,7 +20,7 @@ import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
 import eu.cdevreeze.yaidom4j.dom.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
@@ -233,7 +233,7 @@ public class DocumentProducingSaxHandler extends DefaultHandler implements Lexic
     }
 
     public Document resultingDocument() {
-        GreenXmlTrees.Document greenTreeDoc = new GreenXmlTrees.Document(
+        GreenNodes.Document greenTreeDoc = new GreenNodes.Document(
                 Optional.ofNullable(docUriOrNull),
                 docChildren.stream()
                         .map(InternalNodes.InternalCanBeChild::toGreenTreeNode)

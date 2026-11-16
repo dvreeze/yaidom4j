@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.misc;
 
 import eu.cdevreeze.yaidom4j.dom.Document;
 import eu.cdevreeze.yaidom4j.dom.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
@@ -57,7 +57,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transform(doc.documentElement().greenTreeNode());
+        GreenNodes.Element htmlElement = transform(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
@@ -65,28 +65,28 @@ class TemplatingExampleTest {
             System.out.println(docPrinter.print(Element.of(htmlElement)));
         }
 
-        GreenXmlTrees.Element tableExtractedFromCatalog =
+        GreenNodes.Element tableExtractedFromCatalog =
                 doc.documentElement().greenTreeNode().withName(new QName("table"))
                         .transformChildElements(cdElem ->
-                                GreenXmlTrees.elem("tr")
+                                GreenNodes.elem("tr")
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("title"))
+                                                cdElem.childElementStream(GreenNodes.Element.hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
+                                                cdElem.childElementStream(GreenNodes.Element.hasName("artist"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
-        GreenXmlTrees.Element tableExtractedFromHtml =
+        GreenNodes.Element tableExtractedFromHtml =
                 transformChildElementsToNodeLists(
-                        htmlElement.descendantElementStream(GreenXmlTrees.Element.hasName("table"))
+                        htmlElement.descendantElementStream(GreenNodes.Element.hasName("table"))
                                 .findFirst()
                                 .orElseThrow()
                                 .withAttributes(Map.of()),
                         che ->
-                                che.childElementStream(GreenXmlTrees.Element.hasName("th")).findAny().isEmpty() ?
+                                che.childElementStream(GreenNodes.Element.hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
                                         List.of()
                 );
@@ -103,7 +103,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transformSortingOnArtist(doc.documentElement().greenTreeNode());
+        GreenNodes.Element htmlElement = transformSortingOnArtist(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
@@ -111,28 +111,28 @@ class TemplatingExampleTest {
             System.out.println(docPrinter.print(Element.of(htmlElement)));
         }
 
-        GreenXmlTrees.Element tableExtractedFromCatalog =
+        GreenNodes.Element tableExtractedFromCatalog =
                 doc.documentElement().greenTreeNode().withName(new QName("table"))
                         .transformChildElements(cdElem ->
-                                GreenXmlTrees.elem("tr")
+                                GreenNodes.elem("tr")
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("title"))
+                                                cdElem.childElementStream(GreenNodes.Element.hasName("title"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                                         .plusChildren(
-                                                cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
+                                                cdElem.childElementStream(GreenNodes.Element.hasName("artist"))
                                                         .findFirst().map(e -> e.withName(new QName("td")).asCanBeChild()).stream().toList()
                                         )
                         );
 
-        GreenXmlTrees.Element tableExtractedFromHtml =
+        GreenNodes.Element tableExtractedFromHtml =
                 transformChildElementsToNodeLists(
-                        htmlElement.descendantElementStream(GreenXmlTrees.Element.hasName("table"))
+                        htmlElement.descendantElementStream(GreenNodes.Element.hasName("table"))
                                 .findFirst()
                                 .orElseThrow()
                                 .withAttributes(Map.of()),
                         che ->
-                                che.childElementStream(GreenXmlTrees.Element.hasName("th")).findAny().isEmpty() ?
+                                che.childElementStream(GreenNodes.Element.hasName("th")).findAny().isEmpty() ?
                                         List.of(che) :
                                         List.of()
                 );
@@ -152,7 +152,7 @@ class TemplatingExampleTest {
                                 .getResource("/transformationexamples/catalog.xml")).toURI()
                 );
 
-        GreenXmlTrees.Element htmlElement = transformToParagraphs(doc.documentElement().greenTreeNode());
+        GreenNodes.Element htmlElement = transformToParagraphs(doc.documentElement().greenTreeNode());
 
         if (Boolean.parseBoolean(System.getProperty("debugTemplatingExampleTest"))) {
             DocumentPrinter docPrinter = DocumentPrinters.instance();
@@ -168,30 +168,30 @@ class TemplatingExampleTest {
         Set<String> titlesFromHtml =
                 htmlElement.descendantElementStream()
                         .filter(e -> e.text().contains("Title:"))
-                        .map(e -> e.childElementStream(GreenXmlTrees.Element.hasName("span")).findFirst()
+                        .map(e -> e.childElementStream(GreenNodes.Element.hasName("span")).findFirst()
                                 .orElseThrow().text())
                         .collect(Collectors.toSet());
 
         assertEquals(titlesFromCatalog, titlesFromHtml);
     }
 
-    GreenXmlTrees.Element transform(GreenXmlTrees.Element catalogElement) {
+    GreenNodes.Element transform(GreenNodes.Element catalogElement) {
         PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        return GreenXmlTrees.elem("html")
-                .plusChild(GreenXmlTrees.elem("body")
-                        .plusChild(GreenXmlTrees.elem("h2").withText("My CD Collection"))
+        return GreenNodes.elem("html")
+                .plusChild(GreenNodes.elem("body")
+                        .plusChild(GreenNodes.elem("h2").withText("My CD Collection"))
                         .plusChild(
-                                GreenXmlTrees.elem("table")
+                                GreenNodes.elem("table")
                                         .plusAttribute(new QName("border"), "1")
                                         .plusChild(
-                                                GreenXmlTrees.elem("tr")
+                                                GreenNodes.elem("tr")
                                                         .plusAttribute(new QName("bgcolor"), "#9acd32")
-                                                        .plusChild(GreenXmlTrees.elem("th").withText("Title"))
-                                                        .plusChild(GreenXmlTrees.elem("th").withText("Artist"))
+                                                        .plusChild(GreenNodes.elem("th").withText("Title"))
+                                                        .plusChild(GreenNodes.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
-                                                catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
+                                                catalogElement.childElementStream(GreenNodes.Element.hasName("cd"))
                                                         .map(this::transformCdElement)
                                                         .collect(Collectors.toUnmodifiableList())
                                         )
@@ -199,25 +199,25 @@ class TemplatingExampleTest {
                 );
     }
 
-    GreenXmlTrees.Element transformSortingOnArtist(GreenXmlTrees.Element catalogElement) {
+    GreenNodes.Element transformSortingOnArtist(GreenNodes.Element catalogElement) {
         PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        return GreenXmlTrees.elem("html")
-                .plusChild(GreenXmlTrees.elem("body")
-                        .plusChild(GreenXmlTrees.elem("h2").withText("My CD Collection"))
+        return GreenNodes.elem("html")
+                .plusChild(GreenNodes.elem("body")
+                        .plusChild(GreenNodes.elem("h2").withText("My CD Collection"))
                         .plusChild(
-                                GreenXmlTrees.elem("table")
+                                GreenNodes.elem("table")
                                         .plusAttribute(new QName("border"), "1")
                                         .plusChild(
-                                                GreenXmlTrees.elem("tr")
+                                                GreenNodes.elem("tr")
                                                         .plusAttribute(new QName("bgcolor"), "#9acd32")
-                                                        .plusChild(GreenXmlTrees.elem("th").withText("Title"))
-                                                        .plusChild(GreenXmlTrees.elem("th").withText("Artist"))
+                                                        .plusChild(GreenNodes.elem("th").withText("Title"))
+                                                        .plusChild(GreenNodes.elem("th").withText("Artist"))
                                         )
                                         .plusChildren(
-                                                catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
+                                                catalogElement.childElementStream(GreenNodes.Element.hasName("cd"))
                                                         .sorted(Comparator.comparing(
-                                                                cdElem -> cdElem.childElementStream(GreenXmlTrees.Element.hasName("artist"))
+                                                                cdElem -> cdElem.childElementStream(GreenNodes.Element.hasName("artist"))
                                                                         .findAny().orElseThrow().text()
                                                         ))
                                                         .map(this::transformCdElement)
@@ -227,46 +227,46 @@ class TemplatingExampleTest {
                 );
     }
 
-    GreenXmlTrees.Element transformToParagraphs(GreenXmlTrees.Element catalogElement) {
+    GreenNodes.Element transformToParagraphs(GreenNodes.Element catalogElement) {
         PreconditionUtil.checkArgument(catalogElement.name().equals(new QName("catalog")));
 
-        return GreenXmlTrees.elem("html")
+        return GreenNodes.elem("html")
                 .plusChild(
-                        GreenXmlTrees.elem("body")
-                                .plusChild(GreenXmlTrees.elem("h2").withText("My CD Collection"))
+                        GreenNodes.elem("body")
+                                .plusChild(GreenNodes.elem("h2").withText("My CD Collection"))
                                 .plusChildren(
-                                        catalogElement.childElementStream(GreenXmlTrees.Element.hasName("cd"))
+                                        catalogElement.childElementStream(GreenNodes.Element.hasName("cd"))
                                                 .map(this::mapCdElemToParagraph)
                                                 .collect(Collectors.toUnmodifiableList())
                                 )
                 );
     }
 
-    private GreenXmlTrees.Element transformCdElement(GreenXmlTrees.Element cdElement) {
+    private GreenNodes.Element transformCdElement(GreenNodes.Element cdElement) {
         PreconditionUtil.checkArgument(cdElement.name().equals(new QName("cd")));
 
-        String title = cdElement.childElementStream(GreenXmlTrees.Element.hasName("title"))
+        String title = cdElement.childElementStream(GreenNodes.Element.hasName("title"))
                 .findFirst().orElseThrow().text();
-        String artist = cdElement.childElementStream(GreenXmlTrees.Element.hasName("artist"))
+        String artist = cdElement.childElementStream(GreenNodes.Element.hasName("artist"))
                 .findFirst().orElseThrow().text();
-        return GreenXmlTrees.elem("tr")
+        return GreenNodes.elem("tr")
                 .plusChild(
-                        GreenXmlTrees.elem("td").withText(title)
+                        GreenNodes.elem("td").withText(title)
                 )
                 .plusChild(
-                        GreenXmlTrees.elem("td").withText(artist)
+                        GreenNodes.elem("td").withText(artist)
                 );
     }
 
-    private GreenXmlTrees.Element mapCdElemToParagraph(GreenXmlTrees.Element cdElement) {
+    private GreenNodes.Element mapCdElemToParagraph(GreenNodes.Element cdElement) {
         PreconditionUtil.checkArgument(cdElement.name().equals(new QName("cd")));
 
-        return GreenXmlTrees.elem("p")
+        return GreenNodes.elem("p")
                 .plusChildren(
                         transformChildElementsToNodeLists(cdElement, e -> {
-                            if (GreenXmlTrees.Element.hasName("title").test(e)) {
+                            if (GreenNodes.Element.hasName("title").test(e)) {
                                 return mapTitleElemToNodes(e);
-                            } else if (GreenXmlTrees.Element.hasName("artist").test(e)) {
+                            } else if (GreenNodes.Element.hasName("artist").test(e)) {
                                 return mapArtistElemToNodes(e);
                             } else {
                                 return List.of();
@@ -275,40 +275,40 @@ class TemplatingExampleTest {
                 );
     }
 
-    private List<GreenXmlTrees.Node> mapTitleElemToNodes(GreenXmlTrees.Element titleElement) {
+    private List<GreenNodes.Node> mapTitleElemToNodes(GreenNodes.Element titleElement) {
         PreconditionUtil.checkArgument(titleElement.name().equals(new QName("title")));
 
         return List.of(
-                GreenXmlTrees.text("Title: "),
-                GreenXmlTrees.elem("span")
+                GreenNodes.text("Title: "),
+                GreenNodes.elem("span")
                         .withText(titleElement.text())
                         .plusAttribute(new QName("style"), "color:#ff0000"),
-                GreenXmlTrees.elem("br")
+                GreenNodes.elem("br")
         );
     }
 
-    private List<GreenXmlTrees.Node> mapArtistElemToNodes(GreenXmlTrees.Element artistElement) {
+    private List<GreenNodes.Node> mapArtistElemToNodes(GreenNodes.Element artistElement) {
         PreconditionUtil.checkArgument(artistElement.name().equals(new QName("artist")));
 
         return List.of(
-                GreenXmlTrees.text("Artist: "),
-                GreenXmlTrees.elem("span")
+                GreenNodes.text("Artist: "),
+                GreenNodes.elem("span")
                         .withText(artistElement.text())
                         .plusAttribute(new QName("style"), "color:#00ff00"),
-                GreenXmlTrees.elem("br")
+                GreenNodes.elem("br")
         );
     }
 
-    private GreenXmlTrees.Element transformChildElementsToNodeLists(
-            GreenXmlTrees.Element element,
-            Function<GreenXmlTrees.Element, List<GreenXmlTrees.Node>> f
+    private GreenNodes.Element transformChildElementsToNodeLists(
+            GreenNodes.Element element,
+            Function<GreenNodes.Element, List<GreenNodes.Node>> f
     ) {
         return element.withChildren(
                 element.children()
                         .stream()
                         .flatMap(ch -> switch (ch) {
-                            case GreenXmlTrees.Element che ->
-                                    f.apply(che).stream().map(GreenXmlTrees.Node::asCanBeChild);
+                            case GreenNodes.Element che ->
+                                    f.apply(che).stream().map(GreenNodes.Node::asCanBeChild);
                             default -> Stream.of(ch);
                         })
                         .toList()

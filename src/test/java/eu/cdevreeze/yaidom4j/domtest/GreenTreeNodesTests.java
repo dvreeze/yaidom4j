@@ -17,11 +17,11 @@
 package eu.cdevreeze.yaidom4j.domtest;
 
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Comment;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Text;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Comment;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Element;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Text;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Element.hasName;
+import static eu.cdevreeze.yaidom4j.dom.GreenNodes.Element.hasName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -113,22 +113,22 @@ class GreenTreeNodesTests {
     );
 
     private static Element rootElement1(String innerText) {
-        return GreenXmlTrees.elem(new QName(ATOM_NS, "feed", "")).withParentAttributeScope(parentScope)
+        return GreenNodes.elem(new QName(ATOM_NS, "feed", "")).withParentAttributeScope(parentScope)
                 .transformSelfElement(e ->
                         e.plusChild(
-                                GreenXmlTrees.elem(new QName(ATOM_NS, "title", ""))
+                                GreenNodes.elem(new QName(ATOM_NS, "title", ""))
                                         .withParentAttributeScope(e.namespaceScope())
                                         .plusText("Example Feed"))
                 )
                 .transformSelfElement(e ->
                         e.plusChild(
-                                GreenXmlTrees.elem(new QName(ATOM_NS, "rights", ""))
+                                GreenNodes.elem(new QName(ATOM_NS, "rights", ""))
                                         .withParentAttributeScope(e.namespaceScope())
                                         .plusAttribute(new QName("type"), "xhtml")
                                         .plusAttribute(new QName(EXAMPLE_NS, "type", "my"), "silly")
                                         .transformSelfElement(e2 ->
                                                 e2.plusChild(
-                                                        GreenXmlTrees.elem(new QName(XHTML_NS, "div", "xhtml"))
+                                                        GreenNodes.elem(new QName(XHTML_NS, "div", "xhtml"))
                                                                 .withParentAttributeScope(e2.namespaceScope())
                                                                 .plusText(innerText)
                                                 )
@@ -138,15 +138,15 @@ class GreenTreeNodesTests {
     }
 
     private static Element rootElement2(String innerText) {
-        return GreenXmlTrees.elem(new QName(ATOM_NS, "feed", ""))
+        return GreenNodes.elem(new QName(ATOM_NS, "feed", ""))
                 .transformSelfElement(e ->
-                        e.plusChild(GreenXmlTrees.elem(new QName(ATOM_NS, "title", ""))
+                        e.plusChild(GreenNodes.elem(new QName(ATOM_NS, "title", ""))
                                 .withParentAttributeScope(e.namespaceScope())
                                 .plusText("Example Feed"))
                 )
                 .transformSelfElement(e ->
                         e.plusChild(
-                                GreenXmlTrees.elem(new QName(ATOM_NS, "rights", ""))
+                                GreenNodes.elem(new QName(ATOM_NS, "rights", ""))
                                         .withParentAttributeScope(
                                                 e.namespaceScope().resolve("example", EXAMPLE_NS)
                                         )
@@ -154,7 +154,7 @@ class GreenTreeNodesTests {
                                         .plusAttribute(new QName(EXAMPLE_NS, "type", "example"), "silly")
                                         .transformSelfElement(e2 ->
                                                 e2.plusChild(
-                                                        GreenXmlTrees.elem(new QName(XHTML_NS, "div", ""))
+                                                        GreenNodes.elem(new QName(XHTML_NS, "div", ""))
                                                                 .withParentAttributeScope(e2.namespaceScope())
                                                                 .plusText(innerText)
                                                 )

@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.conformance.xmltest;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.dom.GreenClarkTrees;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees.Document;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes.Document;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 import eu.cdevreeze.yaidom4j.parse.DocumentParser;
 import eu.cdevreeze.yaidom4j.parse.DocumentParsers;

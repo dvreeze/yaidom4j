@@ -27,9 +27,9 @@ import module java.base;
  */
 public final class Document implements Node {
 
-    private final GreenXmlTrees.Document greenTreeNode;
+    private final GreenNodes.Document greenTreeNode;
 
-    public Document(GreenXmlTrees.Document greenTreeNode) {
+    public Document(GreenNodes.Document greenTreeNode) {
         this.greenTreeNode = greenTreeNode;
     }
 
@@ -44,20 +44,20 @@ public final class Document implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Document greenTreeNode() {
+    public GreenNodes.Document greenTreeNode() {
         return greenTreeNode;
     }
 
     @Override
     public Stream<Node> childStream() {
-        List<GreenXmlTrees.CanBeChild> children = greenTreeNode.children();
+        List<GreenNodes.CanBeChild> children = greenTreeNode.children();
         int numberOfChildren = children.size();
         return IntStream.range(0, numberOfChildren)
                 .mapToObj(idx -> switch (children.get(idx)) {
-                    case GreenXmlTrees.Element e -> new Element(idx, this, e);
-                    case GreenXmlTrees.Text t -> new Text(idx, this, t);
-                    case GreenXmlTrees.Comment c -> new Comment(idx, this, c);
-                    case GreenXmlTrees.ProcessingInstruction p -> new ProcessingInstruction(idx, this, p);
+                    case GreenNodes.Element e -> new Element(idx, this, e);
+                    case GreenNodes.Text t -> new Text(idx, this, t);
+                    case GreenNodes.Comment c -> new Comment(idx, this, c);
+                    case GreenNodes.ProcessingInstruction p -> new ProcessingInstruction(idx, this, p);
                 });
     }
 

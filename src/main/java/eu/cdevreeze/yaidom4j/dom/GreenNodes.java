@@ -38,9 +38,9 @@ import eu.cdevreeze.yaidom4j.queryapi.GreenTreeNodeApi;
  *
  * @author Chris de Vreeze
  */
-public class GreenXmlTrees {
+public class GreenNodes {
 
-    private GreenXmlTrees() {
+    private GreenNodes() {
         // Non-instantiable
     }
 

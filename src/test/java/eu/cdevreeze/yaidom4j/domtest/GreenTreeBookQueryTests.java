@@ -18,7 +18,7 @@ package eu.cdevreeze.yaidom4j.domtest;
 
 import module java.base;
 import module java.xml;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.jaxp.SaxParsers;
 import eu.cdevreeze.yaidom4j.parse.DocumentProducingSaxHandler;
 import org.jspecify.annotations.Nullable;
@@ -31,9 +31,9 @@ import org.junit.jupiter.api.BeforeAll;
  *
  * @author Chris de Vreeze
  */
-class GreenTreeBookQueryTests extends AbstractBookQueryTests<GreenXmlTrees.Element> {
+class GreenTreeBookQueryTests extends AbstractBookQueryTests<GreenNodes.Element> {
 
-    private static GreenXmlTrees.@Nullable Element rootElement;
+    private static GreenNodes.@Nullable Element rootElement;
 
     @BeforeAll
     protected static void parseRootElement() {
@@ -48,27 +48,27 @@ class GreenTreeBookQueryTests extends AbstractBookQueryTests<GreenXmlTrees.Eleme
     }
 
     @Override
-    protected GreenXmlTrees.Element rootElement() {
+    protected GreenNodes.Element rootElement() {
         return Objects.requireNonNull(rootElement);
     }
 
     @Override
-    protected BiFunction<String, String, Predicate<GreenXmlTrees.Element>> hasName() {
-        return GreenXmlTrees.Element::hasName;
+    protected BiFunction<String, String, Predicate<GreenNodes.Element>> hasName() {
+        return GreenNodes.Element::hasName;
     }
 
     @Override
-    protected Function<String, Predicate<GreenXmlTrees.Element>> hasOnlyText() {
-        return GreenXmlTrees.Element::hasOnlyText;
+    protected Function<String, Predicate<GreenNodes.Element>> hasOnlyText() {
+        return GreenNodes.Element::hasOnlyText;
     }
 
     @Override
-    protected Function<String, Predicate<GreenXmlTrees.Element>> hasOnlyTextAfterStripping() {
-        return GreenXmlTrees.Element::hasOnlyTextAfterStripping;
+    protected Function<String, Predicate<GreenNodes.Element>> hasOnlyTextAfterStripping() {
+        return GreenNodes.Element::hasOnlyTextAfterStripping;
     }
 
     @Override
-    protected BiFunction<String, String, Predicate<GreenXmlTrees.Element>> hasAttributeValue() {
-        return GreenXmlTrees.Element::hasAttributeValue;
+    protected BiFunction<String, String, Predicate<GreenNodes.Element>> hasAttributeValue() {
+        return GreenNodes.Element::hasAttributeValue;
     }
 }

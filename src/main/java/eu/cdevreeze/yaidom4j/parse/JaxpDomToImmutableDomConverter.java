@@ -19,7 +19,7 @@ package eu.cdevreeze.yaidom4j.parse;
 import module java.base;
 import module java.xml;
 import eu.cdevreeze.yaidom4j.core.NamespaceScope;
-import eu.cdevreeze.yaidom4j.dom.GreenXmlTrees;
+import eu.cdevreeze.yaidom4j.dom.GreenNodes;
 import eu.cdevreeze.yaidom4j.internal.PreconditionUtil;
 
 /**
@@ -42,7 +42,7 @@ public class JaxpDomToImmutableDomConverter {
         // Non-instantiable
     }
 
-    public static GreenXmlTrees.Document convertDocument(org.w3c.dom.Document doc) {
+    public static GreenNodes.Document convertDocument(org.w3c.dom.Document doc) {
         PreconditionUtil.checkArgument(
                 Optional.ofNullable(doc.getDocumentElement().getLocalName()).isPresent(),
                 "Could not get the local name of the document element. Was the document created in a namespace-aware manner?"
@@ -55,7 +55,7 @@ public class JaxpDomToImmutableDomConverter {
                 .or(() -> Optional.ofNullable(doc.getBaseURI()))
                 .map(JaxpDomToImmutableDomConverter::createUri);
 
-        List<GreenXmlTrees.CanBeChild> children =
+        List<GreenNodes.CanBeChild> children =
                 convertNodeListToList(doc.getChildNodes())
                         .stream()
                         .flatMap(n -> switch (n) {
@@ -67,10 +67,10 @@ public class JaxpDomToImmutableDomConverter {
                         })
                         .collect(Collectors.toUnmodifiableList());
 
-        return new GreenXmlTrees.Document(uriOption, children);
+        return new GreenNodes.Document(uriOption, children);
     }
 
-    public static GreenXmlTrees.Element convertElement(org.w3c.dom.Element elem, NamespaceScope parentNamespaceScope) {
+    public static GreenNodes.Element convertElement(org.w3c.dom.Element elem, NamespaceScope parentNamespaceScope) {
         PreconditionUtil.checkArgument(
                 Optional.ofNullable(elem.getLocalName()).isPresent(),
                 "Could not get the local name of the element. Was the element created in a namespace-aware manner?"
@@ -85,16 +85,16 @@ public class JaxpDomToImmutableDomConverter {
                         NamespaceScope.withoutPrefixedNamespaceUndeclarations(extractNamespaceDeclarations(elem.getAttributes())));
         PreconditionUtil.checkArgument(parentNamespaceScope.withoutDefaultNamespace().subScopeOf(newScope.withoutDefaultNamespace()));
 
-        List<GreenXmlTrees.CanBeChild> childNodes = convertNodeListToList(elem.getChildNodes())
+        List<GreenNodes.CanBeChild> childNodes = convertNodeListToList(elem.getChildNodes())
                 .stream()
                 .flatMap(n -> convertNode(n, newScope).stream())
-                .map(GreenXmlTrees.Node::asCanBeChild)
+                .map(GreenNodes.Node::asCanBeChild)
                 .toList();
 
-        return new GreenXmlTrees.Element(name, attrs, newScope, childNodes);
+        return new GreenNodes.Element(name, attrs, newScope, childNodes);
     }
 
-    public static Optional<GreenXmlTrees.Node> convertNode(org.w3c.dom.Node node, NamespaceScope parentNamespaceScope) {
+    public static Optional<GreenNodes.Node> convertNode(org.w3c.dom.Node node, NamespaceScope parentNamespaceScope) {
         return switch (node) {
             case org.w3c.dom.Element e -> Optional.of(convertElement(e, parentNamespaceScope));
             case org.w3c.dom.Text t -> Optional.of(convertText(t, parentNamespaceScope));
@@ -105,16 +105,16 @@ public class JaxpDomToImmutableDomConverter {
         };
     }
 
-    public static GreenXmlTrees.Text convertText(org.w3c.dom.Text text, NamespaceScope parentNamespaceScope) {
-        return new GreenXmlTrees.Text(text.getData());
+    public static GreenNodes.Text convertText(org.w3c.dom.Text text, NamespaceScope parentNamespaceScope) {
+        return new GreenNodes.Text(text.getData());
     }
 
-    public static GreenXmlTrees.Comment convertComment(org.w3c.dom.Comment comment, NamespaceScope parentNamespaceScope) {
-        return new GreenXmlTrees.Comment(comment.getData());
+    public static GreenNodes.Comment convertComment(org.w3c.dom.Comment comment, NamespaceScope parentNamespaceScope) {
+        return new GreenNodes.Comment(comment.getData());
     }
 
-    public static GreenXmlTrees.ProcessingInstruction convertProcessingInstruction(org.w3c.dom.ProcessingInstruction pi, NamespaceScope parentNamespaceScope) {
-        return new GreenXmlTrees.ProcessingInstruction(pi.getTarget(), pi.getData());
+    public static GreenNodes.ProcessingInstruction convertProcessingInstruction(org.w3c.dom.ProcessingInstruction pi, NamespaceScope parentNamespaceScope) {
+        return new GreenNodes.ProcessingInstruction(pi.getTarget(), pi.getData());
     }
 
     private static URI createUri(String uri) {

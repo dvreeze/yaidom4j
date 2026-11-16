@@ -30,9 +30,9 @@ public final class Namespace implements Node {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.Namespace greenTreeNode;
+    private final GreenNodes.Namespace greenTreeNode;
 
-    public Namespace(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Namespace greenTreeNode) {
+    public Namespace(int offset, @Nullable Node parentOrNull, GreenNodes.Namespace greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -49,7 +49,7 @@ public final class Namespace implements Node {
     }
 
     @Override
-    public GreenXmlTrees.Namespace greenTreeNode() {
+    public GreenNodes.Namespace greenTreeNode() {
         return greenTreeNode;
     }
 

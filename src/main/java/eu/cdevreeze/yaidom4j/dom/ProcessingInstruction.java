@@ -30,9 +30,9 @@ public final class ProcessingInstruction implements CanBeChild {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.ProcessingInstruction greenTreeNode;
+    private final GreenNodes.ProcessingInstruction greenTreeNode;
 
-    public ProcessingInstruction(int offset, @Nullable Node parentOrNull, GreenXmlTrees.ProcessingInstruction greenTreeNode) {
+    public ProcessingInstruction(int offset, @Nullable Node parentOrNull, GreenNodes.ProcessingInstruction greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -49,7 +49,7 @@ public final class ProcessingInstruction implements CanBeChild {
     }
 
     @Override
-    public GreenXmlTrees.ProcessingInstruction greenTreeNode() {
+    public GreenNodes.ProcessingInstruction greenTreeNode() {
         return greenTreeNode;
     }
 

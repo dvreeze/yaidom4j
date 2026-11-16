@@ -35,9 +35,9 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     private final int offset;
     private final @Nullable Node parentOrNull;
-    private final GreenXmlTrees.Element greenTreeNode;
+    private final GreenNodes.Element greenTreeNode;
 
-    public Element(int offset, @Nullable Node parentOrNull, GreenXmlTrees.Element greenTreeNode) {
+    public Element(int offset, @Nullable Node parentOrNull, GreenNodes.Element greenTreeNode) {
         this.offset = offset;
         this.parentOrNull = parentOrNull;
         this.greenTreeNode = greenTreeNode;
@@ -54,7 +54,7 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     }
 
     @Override
-    public GreenXmlTrees.Element greenTreeNode() {
+    public GreenNodes.Element greenTreeNode() {
         return greenTreeNode;
     }
 
@@ -206,14 +206,14 @@ public final class Element implements CanBeChild, ElementApi<Element> {
 
     @Override
     public Stream<Node> childStream() {
-        List<GreenXmlTrees.CanBeChild> children = greenTreeNode.children();
+        List<GreenNodes.CanBeChild> children = greenTreeNode.children();
         int numberOfChildren = children.size();
         return IntStream.range(0, numberOfChildren)
                 .mapToObj(idx -> switch (children.get(idx)) {
-                    case GreenXmlTrees.Element e -> new Element(idx, this, e);
-                    case GreenXmlTrees.Text t -> new Text(idx, this, t);
-                    case GreenXmlTrees.Comment c -> new Comment(idx, this, c);
-                    case GreenXmlTrees.ProcessingInstruction p -> new ProcessingInstruction(idx, this, p);
+                    case GreenNodes.Element e -> new Element(idx, this, e);
+                    case GreenNodes.Text t -> new Text(idx, this, t);
+                    case GreenNodes.Comment c -> new Comment(idx, this, c);
+                    case GreenNodes.ProcessingInstruction p -> new ProcessingInstruction(idx, this, p);
                 });
     }
 
@@ -227,10 +227,10 @@ public final class Element implements CanBeChild, ElementApi<Element> {
     // Factories
 
     /**
-     * Creates a top-level {@link Element} from the given {@link GreenXmlTrees.Element}.
+     * Creates a top-level {@link Element} from the given {@link GreenNodes.Element}.
      * Hence, the returned element has no parent node, not even a document.
      */
-    public static Element of(GreenXmlTrees.Element greenTreeElement) {
+    public static Element of(GreenNodes.Element greenTreeElement) {
         return new Element(0, null, greenTreeElement);
     }
 
