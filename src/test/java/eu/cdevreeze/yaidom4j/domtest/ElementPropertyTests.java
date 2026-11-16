@@ -109,7 +109,7 @@ class ElementPropertyTests {
 
         Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
 
-        List<Element> elems2 = doc.documentElement().descendantOrSelfStream(p2)
+        List<Element> elems2 = doc.descendantOrSelfStream(p2)
                 .map(Node::asElement)
                 .toList();
 
@@ -130,7 +130,7 @@ class ElementPropertyTests {
 
         Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
 
-        List<Element> elems2 = doc.documentElement().descendantStream(p2)
+        List<Element> elems2 = doc.descendantStream(p2)
                 .map(Node::asElement)
                 .toList();
 
@@ -151,7 +151,7 @@ class ElementPropertyTests {
 
         Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
 
-        List<Element> elems2 = doc.documentElement().ancestorOrSelfStream(p2)
+        List<Element> elems2 = doc.ancestorOrSelfStream(p2)
                 .map(Node::asElement)
                 .toList();
 
@@ -172,7 +172,7 @@ class ElementPropertyTests {
 
         Predicate<Node> p2 = node -> node instanceof Element e && p1.test(e);
 
-        List<Element> elems2 = doc.documentElement().ancestorStream(p2)
+        List<Element> elems2 = doc.ancestorStream(p2)
                 .map(Node::asElement)
                 .toList();
 
