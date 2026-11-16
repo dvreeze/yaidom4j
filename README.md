@@ -4,13 +4,14 @@
 
 ## Introduction
 
-**Yaidom4j** is a small and easy-to-use Java XML library. It requires Java 25 or later.
+**Yaidom4j** is a small and easy-to-use tree-based Java XML library. It requires Java 25 or later.
 
 It mainly offers the following features:
 * An *immutable* and *thread-safe* XML DOM implementation
-* An easy-to-use *generic element query API*, leveraging the *Java Stream API*
+* An easy-to-use *generic node query API*, leveraging the *Java Stream API*
+* A similar easy-to-use *generic element node query API*, as a convenience API
 
-The element query API has multiple implementations, and more implementations can always be added.
+The node/element query APIs have multiple implementations, and more implementations can always be added.
 One such implementation is backed by the above-mentioned immutable DOM elements.
 
 Yaidom4j is **not** any of the following:
@@ -129,8 +130,7 @@ List<String> februaryMagazineTitles = doc.documentElement()
 ```
 
 As shown above, XML querying in yaidom4j is *Java Stream processing*. It's just that yaidom4j adds
-*Stream factories* corresponding to XPath axes, except that these Stream factories return streams
-of element nodes, instead of streams of arbitrary nodes.
+*Stream factories* corresponding to XPath axes.
 
 The same querying stream pipeline above (but with different imports and bootstrapping, of course)
 works for multiple yaidom4j element implementations, and not just for the default immutable DOM
@@ -139,19 +139,19 @@ implementation.
 ## Characteristics of yaidom4j
 
 Some characteristics of yaidom4j are as follows:
-* It is foremost an XML DOM *element query API*, with multiple implementations backed by different DOM implementations
-* It is also an *immutable thread-safe* DOM implementation (offering the element query API mentioned before)
+* It is foremost an XML DOM *node/element query API*, with multiple implementations backed by different DOM implementations
+* It is also an *immutable thread-safe* DOM implementation (offering the node/element query API mentioned before)
 * It requires Java 25 or later
 * It depends on *effectively immutable collections*, using [unmodifiable collections](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html#unmodifiable)
   * So no dependency on Guava and its immutable collections is needed
   * Unlike Guava immutable collections, these immutable collections do not express immutability in terms of their collection types
   * Instead, factory methods like `List.copyOf`, `List.of`, `Map.copyOf`,`Map.of` and `Stream.toList` express and enforce immutability
-  * These effectively immutable collections are also thread-safe; see for example [JEP 269](https://openjdk.org/jeps/269) (or [creating immutable collections](https://docs.oracle.com/javase/10/core/creating-immutable-lists-sets-and-maps.htm#JSCOR-GUID-4F3E2B7D-CE90-4862-A78A-414FC08DA6E4))
+  * These effectively immutable collections are also thread-safe; see for example [JEP 269](https://openjdk.org/jeps/269) and [creating immutable collections](https://docs.oracle.com/javase/10/core/creating-immutable-lists-sets-and-maps.htm#JSCOR-GUID-4F3E2B7D-CE90-4862-A78A-414FC08DA6E4)
   * Note the difference between [unmodifiable collections](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html#unmodifiable) and [unmodifiable view collections](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Collection.html#unmodview)
 * It has a *small conceptual surface area*, and a small, rather *stable API*
 * It is *not* a schema validator (against DTD or XSD), nor is it an O-X mapper, or XPath/XQuery processor, or HTML library
-* The *element query API* mostly returns *Java Streams*, which can be used in Java Stream pipelines
-* Some of those Java element Stream factory methods are *inspired by XPath axes*
+* The *node/element query API* mostly returns *Java Streams*, which can be used in Java Stream pipelines
+* Some of those Java node/element Stream factory methods are *inspired by XPath axes*
 * The *immutable DOM elements* can even be transformed recursively; formatting of the resulting XML could then be left to *xmllint*, for example
 * The library does not try to implement XML standards, but tries to make XML easier to use in some respects
 * In particular, it knows nothing about DTDs or XSDs
@@ -162,24 +162,19 @@ Some characteristics of yaidom4j are as follows:
 * It can be used with StAX for keeping only chunks of XML in memory one chunk at a time, if the structure of the overall XML allows it
 
 Unlike libraries like [Saxon](https://www.saxonica.com/download/java.xml), yaidom4j does not have the aim of
-implementing XML standards. It does have the aim of making (non-schema-aware) XML querying simple and practical.
+implementing XML standards. It does have the aim of making (non-schema-aware or schema-aware) XML querying simple and practical.
 Keeping this limited scope in mind, comparisons to some other XML libraries are as follows:
-* Unlike JDOM, DOM4J, XOM, JAXP DOM, the native element implementations in yaidom4j are deeply immutable and thread-safe
+* Unlike JDOM, DOM4J, XOM, JAXP DOM, the native node implementations in yaidom4j are deeply immutable and thread-safe
 * Like JAXP DOM, yaidom4j can represent "mixed content" and not just data-oriented XML documents
-* Unlike JAXP XPath (1.0) support, the element query API in yaidom4j is very easy to use without any involved bootstrapping
-* Like *Saxon* a Java Stream-based query API is offered, but unlike Saxon's query API this query API is *element-node-centric*
+* Unlike JAXP XPath (1.0) support, the node/element query API in yaidom4j is very easy to use without any involved bootstrapping
+* Like *Saxon* a Java Stream-based query API is offered
 
 As said above, yaidom4j does not try to implement the full XML InfoSet in its *immutable DOM* implementation. For example:
-* If *information item* loosely means *node*, a *document* is not treated as an information item or node
-* Neither are *attributes*, which are simply properties of *element nodes*
-* Neither are *namespace information items*; instead, element nodes contain the in-scope namespaces as property of the element
-* *Namespace attributes* do not exist in yaidom4j; instead, all attributes are "normal attributes" binding a string value to an attribute name
 * The library contains *no unexpanded entity references*
 * It contains *no DTD information items*
 * It contains *no notation information items*
 
-Yaidom4j is more like the [XPath Data Model](https://www.w3.org/TR/xpath-datamodel-31/#Node) than the
-[XML Information Set](https://www.w3.org/TR/2004/REC-xml-infoset-20040204/). The XPath Data Model (only) contains
+Yaidom4j is more like the [XPath Data Model](https://www.w3.org/TR/xpath-datamodel-31/#Node) than the [XML Information Set](https://www.w3.org/TR/2004/REC-xml-infoset-20040204/). The XPath Data Model (only) contains
 the following kinds of nodes:
 * documents
 * elements
@@ -190,29 +185,27 @@ the following kinds of nodes:
 * comment
 
 So, the XDM contains no entity references etc. The Saxon library seems to follow the XDM rather than the
-Info Set. Yaidom4j follows the XDM more loosely, in that documents, attributes and namespaces are not treated
-as nodes in yaidom4j. Yet all kinds of nodes in XDM are first-class citizens in yaidom4j, whether as nodes or
-not. Unlike XDM (and Saxon), yaidom4j native node implementations do leave out many properties of the nodes in XDM.
-Again, yaidom4j is not about implementing XML standards, but about easy processing of (most) XML.
-
-In a way, yaidom4j is more *type-safe* than a "direct" representation of the XML InfoSet, in that the compiler does not allow
-text nodes as child nodes of documents. Neither does the compiler allow for element children to be any other node than
-element nodes, text nodes, comment nodes or processing instructions.
-
-On the other hand, if desired, an element query API implementation can be created for DOM implementations that
-do model XML InfoSet information items that yaidom4j itself is not interested in.
+Info Set. So does yaidom4j. Unlike XDM (and Saxon), yaidom4j native node implementations do leave out many properties
+of the nodes in XDM. Again, yaidom4j is not about implementing XML standards, but about easy processing of (most) XML.
 
 ## Evolving the library
 
 In a broad sense, yaidom4j is envisioned to remain roughly what it is now. Yet there is still a lot to
 improve. See for example the TODOs below.
 
+But first let's mention recent API changes:
+* The node/element API has been refactored in order to more closely follow the XPath Data Model (e.g. documents are nodes too)
+* This also means that yaidom4j now has a general node query API (with common "XPath axes")
+* The element query API is now a convenience query API, that usually happens to be more practical (i.e. type-safe) in practice
+* After all, only documents and elements can have children, and therefore descendant nodes
+* The distinction between ancestry-aware nodes and non-ancestry-aware nodes is now inspired by so-called "red-green trees"
+* For more on red-green trees, see [Roslyn compiler's red-green trees](https://ericlippert.com/2012/06/08/red-green-trees/)
+* Our "green trees" are not internal implementation details, but regular ("ancestry-aware") nodes are "red", and the "non-ancestry-aware" nodes are explicitly defined as "green" nodes
+* So now we have regular "red" nodes, underlying "green" nodes, from which we can derive "green Clark" nodes; the same 3 kinds as before but with different names
+
 TODO:
 * Stabilize API (and keep it small and simple)
-  * Also, do we really need Clark nodes and "ancestry-aware" nodes, or can we achieve their benefits in a different way?
-  * Or, alternatively, could we just offer the "ancestry-aware" nodes as XML node implementation (reducing the now "regular" nodes to internal implementation details, like the "green" trees in red-green trees)
-  * The latter alternative would not necessarily hide the "green" trees as internal implementation details, but could still make them publicly available, explicitly calling their nodes "green XML tree nodes"
-  * For more on red-green trees, see [Roslyn compiler's red-green trees](https://ericlippert.com/2012/06/08/red-green-trees/)
+  * For tweaks to the API, we may get some inspiration from the upcoming simple JSON API that will be part of the JDK
 * Improve performance, but not at the expense of clarity and simplicity of the API
 * Add useful "scripts" (or should we keep them outside the main source code tree?)
 * Add and improve documentation
@@ -221,11 +214,3 @@ TODO:
   * Automatic dependency updates (?)
   * Code analysis, security checks, test coverage
   * etc.
-
-Also, maybe we could get some inspiration from the upcoming simple JSON API that will be part of the JDK.
-Both the scope of the API (in that case for JSON, in our case for XML) and implementation details (think: immutability) may inspire us.
-
-Moreover, maybe we should follow the XPath Data Model (and [XPath Axes](https://developer.mozilla.org/en-US/docs/Web/XML/XPath/Reference/Axes)) more closely:
-* Documents etc. are nodes too, but introduce `Node` subtype `CanBeChildNode` for document children and element children
-* Introduce methods like `childStream`, `descendantOrSelfStream` etc., where `childElementStream` and `descendantOrSelfElementStream` etc. are "convenience methods" returning only element nodes
-  * On the other hand, according to the XPath specification only documents and elements can have children and therefore descendants, so what would be the point of those XPath axes for non-element nodes?
